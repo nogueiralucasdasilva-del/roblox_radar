@@ -1,6 +1,6 @@
 {
   "name": "radar-panel",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Roblox Radar pipeline control: flow map, full screen stages with chat, sources, advisor reports, idea cards with proto_id, and title and thumbnail repositories.",
   "types": "./types/index.d.ts",
   "icon": "./assets/icon.png"
