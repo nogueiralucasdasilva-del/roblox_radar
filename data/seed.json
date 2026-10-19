@@ -1,0 +1,109 @@
+{
+ "ideas": [
+  {
+   "title": "Monster truck",
+   "note": "Own a monster truck, farm to build a better one each time, arena in the city and a destructible city, customize engine and tires, almost sandbox. Scan done, waiting for Yes, No or Adjust.",
+   "origin": "own"
+  },
+  {
+   "title": "Bid for Monsters",
+   "note": "Social auction game where up to six players bid on mystery monsters. Competitors cited: Bid Battles! and Bid A Brainrot. Scan done, waiting for Yes, No or Adjust.",
+   "origin": "own"
+  },
+  {
+   "title": "K-pop tycoon",
+   "note": "Tycoon for girls where the goal is to create and grow a K-pop group. Scan re-evaluated after the concept-only rule, waiting for Yes, No or Adjust.",
+   "origin": "own"
+  }
+ ],
+ "knowledge": {
+  "thumb": [
+   {
+    "kind": "principle",
+    "text": "The storefront is a contract: icon, thumbnail, title and short video form one promise. Healthy chain: image, expectation, play, confirmation. Toxic chain: image, expectation, play, broken promise, bounce.",
+    "source": "NOSSOS_MANDAMENTOS V2, commandment 7",
+    "tag": "unrated"
+   },
+   {
+    "kind": "technique",
+    "text": "A good thumbnail compresses one of: transformation, threat, scale, rarity, conflict, comparison, status, before and after, reveal, absurd, visual question.",
+    "source": "NOSSOS_MANDAMENTOS V2, commandment 7",
+    "tag": "unrated"
+   },
+   {
+    "kind": "pitfall",
+    "text": "The best sold moment has to exist quickly in the product. A thumbnail that promises something the first minutes do not deliver breaks the chain.",
+    "source": "NOSSOS_MANDAMENTOS V2, commandments 7 and 8",
+    "tag": "unrated"
+   },
+   {
+    "kind": "technique",
+    "text": "Hook test used by the weekly report: a Roblox kid recognizes it in under a second and it drops into an existing game's art without changing the game.",
+    "source": "Weekly thumbnail report, 2026-10-12",
+    "tag": "F"
+   },
+   {
+    "kind": "result",
+    "text": "Eggs hook used in Dylan's egg event: creatives did not perform. No CTR numbers reported. Eggs moved to the bottom of the ranking.",
+    "source": "Weekly thumbnail report 2026-10-05 and 2026-10-12",
+    "tag": "F"
+   },
+   {
+    "kind": "technique",
+    "text": "Keep listing kills separate from concept kills when reading a test (listing problem versus concept problem).",
+    "source": "roblox-experiment-protocol skill",
+    "tag": "unrated"
+   }
+  ],
+  "titulo": [
+   {
+    "kind": "principle",
+    "text": "Plain communication beats plain gameplay: Roblox needs a legible promise. Verb plus noun is a heuristic, not a law. Easy to understand does not mean shallow to master.",
+    "source": "NOSSOS_MANDAMENTOS V2, commandment 6",
+    "tag": "unrated"
+   },
+   {
+    "kind": "principle",
+    "text": "The storefront is a contract: the title is part of the promise the thumbnail makes.",
+    "source": "NOSSOS_MANDAMENTOS V2, commandment 7",
+    "tag": "unrated"
+   },
+   {
+    "kind": "pattern",
+    "text": "\"+1\" titles: about 22 rising titles on Oct 12, for example +1 Stone Skipping 56K, +1 Mog Evolution 19K.",
+    "source": "Weekly thumbnail report, 2026-10-12, item 30",
+    "tag": "F"
+   },
+   {
+    "kind": "pattern",
+    "text": "\"STEAL\" in the title: about 22 titles on Oct 12, for example Break and Steal an Egg 137K. Eggs clones are decaying, so check the theme before copying the word.",
+    "source": "Weekly thumbnail report, 2026-10-12, item 31",
+    "tag": "F"
+   },
+   {
+    "kind": "pattern",
+    "text": "\"Survive N Days\": 7 Days Cat-Sitting 37.8K, 100 Days At Sea 17.3K, Survive 7 Days In Arctic 9.6K.",
+    "source": "Weekly thumbnail report, 2026-10-12, item 29",
+    "tag": "F"
+   },
+   {
+    "kind": "pattern",
+    "text": "\"Verb THE Object!\" chore titles: Peel THE Potato 16.8K, Melt All The Ice 9.4K, Renovate A House 6.9K. One object, one chore verb.",
+    "source": "Weekly thumbnail report, 2026-10-05, item 19",
+    "tag": "F"
+   },
+   {
+    "kind": "pattern",
+    "text": "Live tags and timers in titles: [EVENT] Ride A Pet 101K, [BLOOD MOON] in Pet Simulator 99. Keyboard Escape swaps its multiplier daily.",
+    "source": "Weekly thumbnail report, 2026-10-12, item 32",
+    "tag": "F"
+   },
+   {
+    "kind": "pattern",
+    "text": "Pumpkin emoji in the title: about 22 rising titles on Oct 12. Calendar window ends 2026-10-31.",
+    "source": "Weekly thumbnail report, 2026-10-12, item 33",
+    "tag": "F"
+   }
+  ]
+ }
+}

@@ -1,0 +1,731 @@
+{
+ "updated": "2026-10-19",
+ "note": "Snapshot recorded by checks on 2026-10-18 and 2026-10-19, not read live by the mod. An empty checked_at means never checked live.",
+ "stages": [
+  {
+   "id": "coleta",
+   "name": "Radar and collection",
+   "sub": "daily sources",
+   "gate": false,
+   "desc": "Daily collection of signals from Roblox, TikTok, YouTube, Reddit, Google Trends and free search. Writes dated entity files and deltas to Drive.",
+   "inputs": "Public sources and Apify actors",
+   "outputs": "radar_entities, daily deltas, status_fase_1",
+   "build": "built",
+   "build_note": "Running daily. 17 of 20 legs ok on 2026-10-18.",
+   "owner_chat": "Phase 1",
+   "trigger_ids": [
+    "trig_0115pKQ89HEqsF7st1X4tGxS",
+    "trig_014rmUm2ju7sdM8cMubM2yyf",
+    "trig_01LgqhEscsx78thoHJBxdNt1"
+   ],
+   "status_doc": "status_fase_1",
+   "docs": [
+    {
+     "name": "fase_1.md",
+     "state": "installed"
+    },
+    {
+     "name": "premissas_do_projeto.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "radar leg skills",
+     "state": "installed"
+    },
+    {
+     "name": "analytics-events",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "c2",
+     "text": "First run with the new prompt on Oct 17. Weekly entity rebuild has never run.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "c3",
+     "text": "Gmail only creates drafts, it does not send.",
+     "owner": "external",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "c1b",
+     "text": "Check the Apify Creative Center actor (period, country, cache): tiktok_trends came identical to the previous day.",
+     "owner": "Lucas",
+     "since": "2026-10-18",
+     "done": false
+    }
+   ],
+   "no_task_note": "",
+   "flag": {
+    "level": "warn",
+    "text": "3 stale legs on 2026-10-18: rblxdb_fastest_growing, rotrends, tiktok_trends (identical to the day before)."
+   },
+   "checked_at": "2026-10-18T18:12:00Z",
+   "extra_tabs": [
+    {
+     "id": "sources",
+     "label": "Sources"
+    }
+   ]
+  },
+  {
+   "id": "triagem",
+   "name": "Screening and advisor",
+   "sub": "PASS, MAYBE, REJECT",
+   "gate": false,
+   "desc": "Daily advisor that classifies themes as PASS, MAYBE or REJECT and logs each verdict to a ledger for backtesting.",
+   "inputs": "Collected entities",
+   "outputs": "Daily verdicts, weekly thumbnails, Monday email",
+   "build": "built",
+   "build_note": "Running. 219 candidate rows on 2026-10-18: 39 PASS, 94 MAYBE, 86 REJECT. Ledger and backtest still empty.",
+   "owner_chat": "Phase 1",
+   "trigger_ids": [
+    "trig_01XTS5J36T1vnTTVb7hFTL9e",
+    "trig_0154xTHNwzG2nSbcRGkjykjr"
+   ],
+   "status_doc": "status_fase_1",
+   "docs": [
+    {
+     "name": "fase_1.md",
+     "state": "installed"
+    },
+    {
+     "name": "mandamentos_operacional.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "daily-brief",
+     "state": "installed"
+    },
+    {
+     "name": "thumbnail-brief",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "t1",
+     "text": "Advisor calibration review.",
+     "owner": "Lucas",
+     "since": "2026-10-06",
+     "done": false
+    },
+    {
+     "id": "t2",
+     "text": "Ledger and backtest only carry signal after 28+ days.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "t3",
+     "text": "Push notification only works in the app.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "t4",
+     "text": "Review the 48 open postmortem amendments.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "",
+   "flag": null,
+   "checked_at": "2026-10-18T18:12:00Z",
+   "extra_tabs": [
+    {
+     "id": "reports",
+     "label": "Reports"
+    }
+   ]
+  },
+  {
+   "id": "escolha",
+   "name": "Monday email",
+   "sub": "you pick a theme",
+   "gate": true,
+   "desc": "You read the Monday email with the best themes and pick one to take to the pre-validation.",
+   "inputs": "Weekly email",
+   "outputs": "Chosen theme",
+   "build": "partial",
+   "build_note": "Email exists as a draft. The pick is manual.",
+   "owner_chat": "Central",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [],
+   "pendencies": [],
+   "no_task_note": "Manual stage, no automated task.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You pick the theme.",
+   "extra_tabs": []
+  },
+  {
+   "id": "prevalid",
+   "name": "Pre-validation",
+   "sub": "quick scan, yes or no",
+   "gate": true,
+   "desc": "Quick scan of a chosen theme or idea: potential, one-line wedge and a yes, no or adjust call, before any brief is written.",
+   "inputs": "Theme picked on Monday or a raw idea",
+   "outputs": "Class STRONG, PROMISING, WEAK or KILL, wedge, and a yes, no or adjust decision",
+   "build": "partial",
+   "build_note": "The new validator has never run on a real idea.",
+   "owner_chat": "Phase 2",
+   "trigger_ids": [
+    "trig_011f2k8V3a5eatSfj31MhbX4"
+   ],
+   "status_doc": "status_fase_2",
+   "docs": [
+    {
+     "name": "fase_2.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "concept-validator",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "k1",
+     "text": "Answer Yes, No or Adjust: K-pop tycoon, monster truck, Bid for Monsters.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "k4",
+     "text": "Run the validator on a real idea.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You decide yes or no.",
+   "extra_tabs": [
+    {
+     "id": "ideas",
+     "label": "Ideas"
+    }
+   ]
+  },
+  {
+   "id": "brief",
+   "name": "2-page brief",
+   "sub": "concept, wedge, proto_id",
+   "gate": true,
+   "desc": "Only after a yes: a 2-page brief with the concept, the wedge and the hypothesis to test. It creates the proto_id.",
+   "inputs": "Approved pre-validation",
+   "outputs": "2-page brief with proto_id",
+   "build": "partial",
+   "build_note": "Part of the concept-validator skill. Not yet its own skill.",
+   "owner_chat": "Phase 2",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [
+    {
+     "name": "premissas_do_projeto.md",
+     "state": "installed"
+    },
+    {
+     "name": "changelog_central.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "concept-validator (brief part)",
+     "state": "installed"
+    },
+    {
+     "name": "learning-log",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "k2",
+     "text": "Review the evidence tags in the commandments.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "k3",
+     "text": "Decide the proto_id format.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "k5",
+     "text": "Decide whether the brief becomes a skill separate from the pre-validation.",
+     "owner": "Lucas",
+     "since": "2026-10-17",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task of its own. The Phase 2 status lives on the pre-validation stage.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You validate the 2-page brief.",
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "template",
+   "name": "Template match",
+   "sub": "pick and slots",
+   "gate": true,
+   "desc": "Matches the brief to a template in the library and defines the variation slots and the uniqueness rule.",
+   "inputs": "Validated brief",
+   "outputs": "Chosen template and variation slots",
+   "build": "not_built",
+   "build_note": "No template built yet.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [
+    {
+     "name": "one skill per template (e.g. steal an egg)",
+     "state": "does not exist"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "m1",
+     "text": "Define how to pick the first template.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "m2",
+     "text": "Define the variation slots per template.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "m3",
+     "text": "Define the uniqueness rule between prototypes.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task: stage not built.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You validate the template match.",
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "doccompleto",
+   "name": "Full doc",
+   "sub": "brief + template mechanics",
+   "gate": true,
+   "desc": "Merges the 2-page brief with the template documentation and describes the full test-game mechanics: loop, rules, tunables, analytics events, minimum scope.",
+   "inputs": "Brief and chosen template",
+   "outputs": "Full development doc with mechanics",
+   "build": "not_built",
+   "build_note": "No skill written. Depends on the first template.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [
+    {
+     "name": "full-doc skill",
+     "state": "does not exist"
+    },
+    {
+     "name": "analytics-events",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "d1",
+     "text": "Define the full doc format (fixed sections and per-template mechanics).",
+     "owner": "Lucas",
+     "since": "2026-10-17",
+     "done": false
+    },
+    {
+     "id": "d2",
+     "text": "The doc can only be written after the first template is documented.",
+     "owner": "agent",
+     "since": "2026-10-17",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task: stage not built.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You approve the full doc before the build.",
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "build",
+   "name": "Build",
+   "sub": "template + skills",
+   "gate": false,
+   "desc": "Builds the prototype with universal skills and the template's gameplay skill.",
+   "inputs": "Full doc",
+   "outputs": "Playable prototype in Studio",
+   "build": "partial",
+   "build_note": "Universal skills are partial. No template yet.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [
+    {
+     "name": "analytics-events",
+     "state": "installed"
+    },
+    {
+     "name": "qa-checklist",
+     "state": "installed"
+    },
+    {
+     "name": "luau-standards",
+     "state": "proposed"
+    },
+    {
+     "name": "publish-pipeline",
+     "state": "proposed"
+    },
+    {
+     "name": "ux-ui-kit",
+     "state": "deferred"
+    },
+    {
+     "name": "onboarding-ftue",
+     "state": "deferred"
+    },
+    {
+     "name": "art skill",
+     "state": "does not exist"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "b1",
+     "text": "Hello world in Studio.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "b2",
+     "text": "Save the luau-standards and publish-pipeline cards.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "b3",
+     "text": "Art and 3D map bottleneck.",
+     "owner": "external",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "b4",
+     "text": "Analytics can only be verified live.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "titulo",
+   "name": "Title",
+   "sub": "game name and listing text",
+   "gate": false,
+   "desc": "Picks the game name and store listing title for each prototype. Has its own repository of principles, patterns and techniques that grows with what gets launched.",
+   "inputs": "Brief and prototype",
+   "outputs": "Title options and the title used in the test",
+   "build": "not_built",
+   "build_note": "Not built. Repository seeded from the commandments and the weekly advisor reports.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [
+    {
+     "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "title-craft",
+     "state": "does not exist"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "ti1",
+     "text": "Create the title skill. The repository tab holds the knowledge it will use.",
+     "owner": "agent",
+     "since": "2026-10-19",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    },
+    {
+     "id": "knowledge",
+     "label": "Knowledge"
+    }
+   ]
+  },
+  {
+   "id": "thumb",
+   "name": "Thumbnail",
+   "sub": "icon, thumbnail and short video",
+   "gate": false,
+   "desc": "Builds the storefront image for each prototype. Has its own repository of principles, patterns and techniques. The weekly advisor already produces genre-agnostic thumbnail hooks that feed it.",
+   "inputs": "Brief, prototype and the weekly thumbnail hooks",
+   "outputs": "Thumbnail options and the one used in the test",
+   "build": "not_built",
+   "build_note": "Not built. Weekly hooks report exists in the advisor stage.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [
+    {
+     "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [
+    {
+     "name": "store-listing-hook",
+     "state": "deferred"
+    },
+    {
+     "name": "thumbnail-brief",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "l1",
+     "text": "Confirm whether Ads Manager reports per thumbnail.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    },
+    {
+     "id": "knowledge",
+     "label": "Knowledge"
+    }
+   ]
+  },
+  {
+   "id": "publicar",
+   "name": "Publish and traffic",
+   "sub": "Studio and ads",
+   "gate": true,
+   "desc": "Publishing on Roblox and buying traffic for the test.",
+   "inputs": "Prototype and listing",
+   "outputs": "Prototype live with traffic",
+   "build": "partial",
+   "build_note": "Publish pipeline only proposed.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [
+    {
+     "name": "publish-pipeline",
+     "state": "proposed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "u1",
+     "text": "Define budget, audience and duration per prototype.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "u2",
+     "text": "Define who operates Ads Manager.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "u3",
+     "text": "Target days from detection to live (hypothesis: 14).",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "You approve the spend.",
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "metricas",
+   "name": "Metrics and learning",
+   "sub": "retro, kill or scale",
+   "gate": true,
+   "desc": "Reads metrics by proto_id, records wins and errors, feeds them back to the early stages and decides kill or scale.",
+   "inputs": "Roblox and Ads Manager metrics",
+   "outputs": "Retro, learning log, kill or scale decision",
+   "build": "partial",
+   "build_note": "The learning log exists. The metrics reader does not.",
+   "owner_chat": "to create",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [],
+   "skills": [
+    {
+     "name": "learning-log",
+     "state": "installed"
+    },
+    {
+     "name": "experiment-protocol",
+     "state": "installed"
+    }
+   ],
+   "pendencies": [
+    {
+     "id": "e1",
+     "text": "Build the metrics reader after the first launch.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    },
+    {
+     "id": "e2",
+     "text": "Per-template statistics only with 5+ prototypes.",
+     "owner": "agent",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "gate_note": "Kill or scale is your call, based on the retro.",
+   "extra_tabs": [
+    {
+     "id": "protos",
+     "label": "Prototypes"
+    }
+   ]
+  },
+  {
+   "id": "registro",
+   "name": "Registry (proto_id)",
+   "sub": "one row per prototype",
+   "gate": false,
+   "desc": "Prototypes sheet with one row per proto_id: trend, brief, full doc, metrics and post mortem.",
+   "inputs": "Approved brief",
+   "outputs": "One row per prototype",
+   "build": "not_built",
+   "build_note": "Sheet not created yet.",
+   "owner_chat": "Central",
+   "trigger_ids": [],
+   "status_doc": "",
+   "docs": [
+    {
+     "name": "premissas_do_projeto.md",
+     "state": "installed"
+    }
+   ],
+   "skills": [],
+   "pendencies": [
+    {
+     "id": "r1",
+     "text": "Approve the RB-<yyyymmdd>-<slug> format and create the prototypes sheet.",
+     "owner": "Lucas",
+     "since": "2026-10-16",
+     "done": false
+    }
+   ],
+   "no_task_note": "No automated task.",
+   "flag": null,
+   "checked_at": null,
+   "extra_tabs": [
+    {
+     "id": "registry",
+     "label": "Registry"
+    }
+   ]
+  }
+ ]
+}

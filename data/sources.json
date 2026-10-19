@@ -1,0 +1,128 @@
+{
+ "asof": "2026-10-18T18:12:00Z",
+ "origin": "Snapshot of status_fase_1 (Drive), written 2026-10-18 18:12 UTC. Times are the run windows named there, not per-source timestamps. The mod does not read Drive.",
+ "summary": "20 collection legs: 17 ok, 3 stale, 0 degraded, 0 dead, 0 missing.",
+ "sources": [
+  {
+   "id": "google_trends_apify",
+   "name": "google_trends_apify",
+   "family": "Apify",
+   "cadence": "daily",
+   "status": "attention",
+   "collected_label": "Oct 18, files created 13:35 to 13:50 UTC",
+   "collected_at": "2026-10-18T13:50:00Z",
+   "note": "File 62,693 B, 1.29x the 7-day median. Open item: volume labels were swapped (reported 2026-10-16).",
+   "evidence": "status_fase_1 2026-10-18; pending c1"
+  },
+  {
+   "id": "reddit_daily2",
+   "name": "reddit_daily2",
+   "family": "Apify",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, files created 13:35 to 13:50 UTC",
+   "collected_at": "2026-10-18T13:50:00Z",
+   "note": "File 151,068 B, 1.11x the 7-day median. Earlier light-record problem is not visible in today's size.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "tiktok_roblox",
+   "name": "tiktok_roblox",
+   "family": "Apify",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, files created 13:35 to 13:50 UTC",
+   "collected_at": "2026-10-18T13:50:00Z",
+   "note": "File 66,236 B, 0.97x the 7-day median.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "tiktok_trends",
+   "name": "tiktok_trends",
+   "family": "Apify",
+   "cadence": "daily file, new data Mon and Thu per the docs",
+   "status": "stale",
+   "collected_label": "Oct 18, files created 13:35 to 13:50 UTC",
+   "collected_at": "2026-10-18T13:50:00Z",
+   "note": "Rank, hashtag, posts and views identical to Oct 17. First identical day. Check the Creative Center actor.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "rblxdb_fastest_growing",
+   "name": "rblxdb_fastest_growing",
+   "family": "Roblox sites",
+   "cadence": "daily",
+   "status": "stale",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "Identical to Oct 17, with and without the ?d= cache buster.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "rotrends",
+   "name": "rotrends",
+   "family": "Roblox sites",
+   "cadence": "daily",
+   "status": "stale",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "5 of 7 lists identical to the previous day. Marked dead on Oct 13 and 14.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "kym",
+   "name": "KnowYourMeme",
+   "family": "Culture",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "Leg ok. The All Entries sub-list repeated yesterday.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "rblx_news",
+   "name": "rblx_news",
+   "family": "Roblox sites",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "Leg ok. Some sections repeated yesterday.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "steam",
+   "name": "Steam",
+   "family": "Games",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "Leg ok. 51 of 60 rows equal to the previous day.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "free_scout",
+   "name": "free_scout (free search)",
+   "family": "Free search",
+   "cadence": "daily 13:40 UTC",
+   "status": "working",
+   "collected_label": "Oct 18, run 13:41 to 13:48 UTC",
+   "collected_at": "2026-10-18T13:48:00Z",
+   "note": "20 rows. Run SUCCEEDED.",
+   "evidence": "status_fase_1 2026-10-18"
+  },
+  {
+   "id": "unnamed_ok",
+   "name": "11 more legs reported ok",
+   "family": "Mixed",
+   "cadence": "daily",
+   "status": "working",
+   "collected_label": "Oct 18, collection run 15:40 to 16:10 UTC",
+   "collected_at": "2026-10-18T16:10:00Z",
+   "note": "The report counts 17 ok legs and names 6. The rest are not named, so no per-source detail. Project docs list YouTube charts, DevForum, RoVitals, official charts, RoMonitor and explore-api among the sources, but the report does not say which of these are in the 11.",
+   "evidence": "status_fase_1 2026-10-18 health_summary: ok 17, stale 3, degraded 0, dead 0, missing 0"
+  }
+ ]
+}

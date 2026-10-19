@@ -1,0 +1,442 @@
+{
+ "asof": "2026-10-19T12:00:00Z",
+ "origin": "Read from Slack #roblox_trends_2 (themes) and #roblox_trends (thumbnail hooks) on 2026-10-19. Earlier Monday theme emails were Gmail drafts and are not listed. The mod does not read Slack.",
+ "reports": [
+  {
+   "id": "2026-10-12-themes",
+   "date": "2026-10-12",
+   "kind": "themes",
+   "title": "TEMAS STAGE 1",
+   "channel": "#roblox_trends_2",
+   "posted": "2026-10-12 14:28 BRT",
+   "summary": "Week Oct 6 to 12: 157 themes. 26 PASS, 60 MAYBE, 71 REJECT.",
+   "sections": [
+    {
+     "name": "PASS (top 5)",
+     "items": [
+      {
+       "title": "FNAF and Fortnitemares",
+       "verdict": "PASS",
+       "note": "Confidence high. Kids and teens via YouTube. 1 game, 3.8K. Surviving animatronics that move when you do not look is already the game.",
+       "ip": true
+      },
+      {
+       "title": "Makeup and transformation",
+       "verdict": "PASS",
+       "note": "Confidence high. TikTok and Roblox creators. 2 games, leader Makeup Mania 29K and rising. Before and after, being judged on looks. #makeupmania 38M on TikTok.",
+       "ip": false
+      },
+      {
+       "title": "Super Mario",
+       "verdict": "PASS",
+       "note": "Confidence medium. Kids (costumes, creators). 0 games. Power-ups and transformation come from the IP.",
+       "ip": true
+      },
+      {
+       "title": "Anomaly (spot the error)",
+       "verdict": "PASS",
+       "note": "Confidence medium. Horror creators. 4 games, leader Sell Fries 57K and rising. Observe and reveal transfers cleanly.",
+       "ip": false
+      },
+      {
+       "title": "Impostor at the door",
+       "verdict": "PASS",
+       "note": "Confidence medium. Roblox horror creators. 1 game, 7.8K, 7 of 7 days. Is the one knocking who they say? Observation, deception, fear.",
+       "ip": false
+      }
+     ]
+    },
+    {
+     "name": "More PASS (outside the top 5)",
+     "items": [
+      {
+       "title": "Backrooms",
+       "verdict": "PASS",
+       "note": "Listed as a new PASS outside the top 5. No detail in the post.",
+       "ip": false
+      },
+      {
+       "title": "+1 Stone Skipping",
+       "verdict": "PASS",
+       "note": "Listed as a new PASS outside the top 5. No detail in the post.",
+       "ip": false
+      }
+     ]
+    },
+    {
+     "name": "MAYBE",
+     "items": [
+      {
+       "title": "Eggs (Steal An Egg)",
+       "verdict": "MAYBE",
+       "note": "Crowded. Leader at 1.57M.",
+       "ip": false
+      },
+      {
+       "title": "Halloween",
+       "verdict": "MAYBE",
+       "note": "Crowded. Every big game already has a skin.",
+       "ip": false
+      },
+      {
+       "title": "Huss Valley",
+       "verdict": "MAYBE",
+       "note": "Is there a theme beyond the game itself?",
+       "ip": false
+      },
+      {
+       "title": "Carrie",
+       "verdict": "MAYBE",
+       "note": "Mild sensitivity (bullying and revenge).",
+       "ip": false
+      },
+      {
+       "title": "he ate them.",
+       "verdict": "MAYBE",
+       "note": "Gameability only medium, even with 2.6M on YouTube.",
+       "ip": false
+      },
+      {
+       "title": "Inside Roblox only: Hide In Pixels, Survive a Million Monkeys, Firefighting Sim",
+       "verdict": "MAYBE",
+       "note": "Does the attention come from the theme or from one game?",
+       "ip": false
+      }
+     ]
+    },
+    {
+     "name": "Rejected with the biggest reach",
+     "items": [
+      {
+       "title": "MrBeast in Minecraft (31.5M)",
+       "verdict": "REJECT",
+       "note": "Creator gameplay.",
+       "ip": false
+      },
+      {
+       "title": "Tip Toein' In My Jordans (38M on TikTok)",
+       "verdict": "REJECT",
+       "note": "It is music, nothing to do.",
+       "ip": false
+      },
+      {
+       "title": "Political theme (elections)",
+       "verdict": "REJECT",
+       "note": "Gate 0.",
+       "ip": false
+      }
+     ]
+    }
+   ],
+   "gaps": "Data holes: YouTube overall and gaming GB repeat the previous day, RoTrends stopped for the 2nd day, X without counts, no threshold_hit today."
+  },
+  {
+   "id": "2026-10-12-hooks",
+   "date": "2026-10-12",
+   "kind": "hooks",
+   "title": "THUMBNAIL HOOKS",
+   "channel": "#roblox_trends",
+   "posted": "2026-10-12 14:14 BRT",
+   "summary": "Genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+   "sections": [
+    {
+     "name": "Top 12",
+     "items": [
+      {
+       "title": "The cat that is not your cat",
+       "verdict": "HOOK",
+       "note": "7 Days Cat-Sitting 14.2K to 37.8K, Up-and-Coming #6. TikTok 1.2M, YouTube 898K.",
+       "ip": false
+      },
+      {
+       "title": "The monster that hears you",
+       "verdict": "HOOK",
+       "note": "SMii7Y Hidden Entity 3.0M. THRESHOLD talking monster TikTok 1.0M.",
+       "ip": false
+      },
+      {
+       "title": "Giant mouth: HE ATE THEM",
+       "verdict": "HOOK",
+       "note": "he ate them [HORROR] 4.6K to 14K inside. Foltyn video 1.3M to 2.6M in 2 days.",
+       "ip": false
+      },
+      {
+       "title": "Verity (update)",
+       "verdict": "HOOK",
+       "note": "Bunker vs Verity 23.6K, Steal A Verity 18.1K, 7 live Verity titles.",
+       "ip": false
+      },
+      {
+       "title": "Monkeys and apes (update)",
+       "verdict": "HOOK",
+       "note": "Million Monkeys 10.4K to 24K, Lethal Ape 16.1K to 26.3K.",
+       "ip": false
+      },
+      {
+       "title": "Cat in the Hat (week five)",
+       "verdict": "HOOK",
+       "note": "MM2 Slowly Becoming Cat in the Hat 315K. Window: 2026-11-05.",
+       "ip": true
+      },
+      {
+       "title": "FNAF animatronics (update)",
+       "verdict": "HOOK",
+       "note": "#fortnitemares 120M to 126M on TikTok. Window: 2026-10-31.",
+       "ip": true
+      },
+      {
+       "title": "Cameraman (Skibidi)",
+       "verdict": "HOOK",
+       "note": "Episode 82 4.8M on YouTube. Cameraman Tower Defense 7K now, 99% like.",
+       "ip": true
+      },
+      {
+       "title": "KPop Demon Hunters and Pennywise",
+       "verdict": "HOOK",
+       "note": "#1 and #2 costume searches. Window: 2026-10-31.",
+       "ip": true
+      },
+      {
+       "title": "Beerus",
+       "verdict": "HOOK",
+       "note": "Dragon Ball trailer 1.1M to 2.2M. Dragon Ball Rage 1.9K.",
+       "ip": true
+      },
+      {
+       "title": "Duck",
+       "verdict": "HOOK",
+       "note": "Duck Duck (Tag) 13.7K to 15.6K. Detective Duck 4.7K (+827%).",
+       "ip": false
+      },
+      {
+       "title": "Other Mommy",
+       "verdict": "HOOK",
+       "note": "#othermommy 70.6M on TikTok. Look unverified. Test cheap.",
+       "ip": true
+      }
+     ]
+    }
+   ],
+   "gaps": "Feedback in the post: the only hook tested so far (eggs, in Dylan's egg event) did not perform, so eggs stay last."
+  },
+  {
+   "id": "2026-10-05-hooks",
+   "date": "2026-10-05",
+   "kind": "hooks",
+   "title": "THUMBNAIL HOOKS",
+   "channel": "#roblox_trends",
+   "posted": "2026-10-05 13:03 BRT",
+   "summary": "Genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+   "sections": [
+    {
+     "name": "Top 10",
+     "items": [
+      {
+       "title": "Cat in the Hat (back, extended)",
+       "verdict": "HOOK",
+       "note": "Creators still posting in week four. Window: 2026-10-31.",
+       "ip": true
+      },
+      {
+       "title": "FNAF animatronics (update)",
+       "verdict": "HOOK",
+       "note": "Fortnitemares trailer 1.7M to 2.6M on YouTube Gaming.",
+       "ip": true
+      },
+      {
+       "title": "Verity (update)",
+       "verdict": "HOOK",
+       "note": "Steal A Verity 13.8K to 25.4K over the week.",
+       "ip": false
+      },
+      {
+       "title": "Giant ants (update)",
+       "verdict": "HOOK",
+       "note": "Build An Ant Empire 7.7K to 25.7K, 96% like. Inside only.",
+       "ip": false
+      },
+      {
+       "title": "Ape (renewed)",
+       "verdict": "HOOK",
+       "note": "Lethal Ape Experience 19K, Survive a Million Monkeys 7K at 96% like.",
+       "ip": false
+      },
+      {
+       "title": "Bigfoot",
+       "verdict": "HOOK",
+       "note": "How Hard Is Finding Bigfoot 809K on YouTube US. Outside only.",
+       "ip": false
+      },
+      {
+       "title": "Giant centipede",
+       "verdict": "HOOK",
+       "note": "How Long Can Creepy Centipede Get 480K on YouTube US.",
+       "ip": false
+      },
+      {
+       "title": "Potato being peeled",
+       "verdict": "HOOK",
+       "note": "Peel THE Potato 473 to 16.8K in a week, 94% like.",
+       "ip": false
+      },
+      {
+       "title": "Drill boring into the ground",
+       "verdict": "HOOK",
+       "note": "Drill for Eggs 16.7K (+285% wow). Foltyn video 509K.",
+       "ip": false
+      },
+      {
+       "title": "Skipping stone on water",
+       "verdict": "HOOK",
+       "note": "+1 Stone Skipping 12.6K to 31.8K, Top Playing Now #38.",
+       "ip": false
+      }
+     ]
+    }
+   ],
+   "gaps": "Feedback in the post: 1 hook tested last week. Eggs went into the egg event and the creatives did not perform. No CTR numbers yet."
+  },
+  {
+   "id": "2026-09-28-hooks",
+   "date": "2026-09-28",
+   "kind": "hooks",
+   "title": "THUMBNAIL HOOKS",
+   "channel": "#roblox_trends",
+   "posted": "2026-09-28 13:09 BRT",
+   "summary": "Genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+   "sections": [
+    {
+     "name": "Top 10",
+     "items": [
+      {
+       "title": "FNAF animatronics",
+       "verdict": "HOOK",
+       "note": "FNAF joins Fortnitemares, #1 on YouTube Gaming US. Window: 2026-10-31.",
+       "ip": true
+      },
+      {
+       "title": "Werewolf",
+       "verdict": "HOOK",
+       "note": "WERWULF trailer 2 #2 on YouTube US (4.9M). Keep it a generic werewolf.",
+       "ip": false
+      },
+      {
+       "title": "Verity (moved up)",
+       "verdict": "HOOK",
+       "note": "Steal A Verity entered Top Playing Now at 17.3K.",
+       "ip": false
+      },
+      {
+       "title": "Mermaid",
+       "verdict": "HOOK",
+       "note": "Aphmau video 319K. Mermaid Awakening +104% in 24h inside.",
+       "ip": false
+      },
+      {
+       "title": "Giant ants",
+       "verdict": "HOOK",
+       "note": "Build An Ant Empire 8.7K, +396% week over week.",
+       "ip": false
+      },
+      {
+       "title": "Gnome",
+       "verdict": "HOOK",
+       "note": "SSundee Gnome RNG video 317K in 17h. Cheap cameo test.",
+       "ip": false
+      },
+      {
+       "title": "Eggs (update)",
+       "verdict": "HOOK",
+       "note": "Steal An Egg decaying, clones multiplying. Still the top object.",
+       "ip": false
+      },
+      {
+       "title": "Half-built pyramid",
+       "verdict": "HOOK",
+       "note": "Build the Pyramid rose all week, 11.3K to 22.8K.",
+       "ip": false
+      },
+      {
+       "title": "Needle in a haystack",
+       "verdict": "HOOK",
+       "note": "Search For The Needle Chapter 3 22.7K, +48% in 24h.",
+       "ip": false
+      },
+      {
+       "title": "Lucky Block",
+       "verdict": "HOOK",
+       "note": "Kick a Lucky Block 22K to 30K all week.",
+       "ip": false
+      }
+     ]
+    }
+   ],
+   "gaps": ""
+  },
+  {
+   "id": "2026-09-24-hooks",
+   "date": "2026-09-24",
+   "kind": "hooks",
+   "title": "THUMBNAIL HOOKS",
+   "channel": "#roblox_trends",
+   "posted": "2026-09-24 16:55 BRT",
+   "summary": "Genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+   "sections": [
+    {
+     "name": "Top 8",
+     "items": [
+      {
+       "title": "Cat in the Hat",
+       "verdict": "HOOK",
+       "note": "Top 10 on TikTok US for six days. Now thumbnail bait, not a game theme.",
+       "ip": true
+      },
+      {
+       "title": "Art the Clown",
+       "verdict": "HOOK",
+       "note": "23M, six days in the top 10. Window through October.",
+       "ip": true
+      },
+      {
+       "title": "Chimpanzee vs human",
+       "verdict": "HOOK",
+       "note": "Debate meme, 4.5M, alive for a week.",
+       "ip": false
+      },
+      {
+       "title": "Tilcayo, the new cat species",
+       "verdict": "HOOK",
+       "note": "KnowYourMeme and Google Trends 1000+. Small but clean.",
+       "ip": false
+      },
+      {
+       "title": "Verity",
+       "verdict": "HOOK",
+       "note": "Cooling as a game, but the face still pulls. Use as a horror cameo.",
+       "ip": false
+      },
+      {
+       "title": "Eggs",
+       "verdict": "HOOK",
+       "note": "Steal An Egg at 1.8M players, five clones at 10K+ each.",
+       "ip": false
+      },
+      {
+       "title": "iPhone 18 Pro",
+       "verdict": "HOOK",
+       "note": "Seven topics between 219M and 745M on TikTok US. Brand risk is a team call.",
+       "ip": false
+      },
+      {
+       "title": "Boxing gloves and championship belt",
+       "verdict": "HOOK",
+       "note": "Garcia vs Benn #1 sports topic (316M).",
+       "ip": false
+      }
+     ]
+    }
+   ],
+   "gaps": "First report. Cadence was then Monday, Wednesday, Friday."
+  }
+ ]
+}
