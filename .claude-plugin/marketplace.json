@@ -1,0 +1,13 @@
+{
+  "name": "roblox-radar",
+  "owner": {
+    "name": "Lucas Nogueira"
+  },
+  "plugins": [
+    {
+      "name": "radar-panel",
+      "source": "./"
+    }
+  ],
+  "description": "Roblox Radar pipeline panel"
+}
