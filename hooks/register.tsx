@@ -172,20 +172,20 @@ async function driveCall($: any, tool: string, args: Record<string, unknown>): P
   const errors: string[] = []
   const found = await discoverDrive($, tool)
   if (found) {
-    // mcp__<server>__<tool>: the engine's own connection first (no permission prompt), then a plain tool call.
+    // mcp__<server>__<tool>: a plain tool call first (goes through the permission flow), then the engine's own connection.
     const server = found.slice('mcp__'.length, found.length - tool.length - 2)
     const tries: { label: string; run: () => Promise<any> }[] = [
-      { label: `mcp "${server}"`, run: () => $.mcp.call(server, tool, args) },
       { label: found, run: () => $.tool.call({ tool: found, ...args }) },
+      { label: `mcp "${server}"`, run: () => $.mcp.call(server, tool, args) },
     ]
     for (const t of tries) {
       try {
         const r: any = await t.run()
-        if (r && r.deny) errors.push(`${t.label}: denied ${String(r.deny).slice(0, 80)}`)
-        else if (r && r.isError) errors.push(`${t.label}: error ${textOf(r).slice(0, 120)}`)
+        if (r && r.deny) errors.push(`${t.label}: denied ${String(r.deny).slice(0, 400)}`)
+        else if (r && r.isError) errors.push(`${t.label}: error ${textOf(r).slice(0, 400)}`)
         else return textOf(r)
       } catch (err: any) {
-        errors.push(`${t.label}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 120)}`)
+        errors.push(`${t.label}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 400)}`)
       }
     }
   }
@@ -265,7 +265,7 @@ async function fetchReceipts($: any): Promise<void> {
     await $.store.set(RECEIPT_KEY, { receipts: list })
     rcp = { at, ok: true, receipts: list }
   } catch (err: any) {
-    rcp = { at, ok: false, error: String((err && err.message) || err).slice(0, 700), receipts: rcp ? rcp.receipts : [] }
+    rcp = { at, ok: false, error: String((err && err.message) || err).slice(0, 1400), receipts: rcp ? rcp.receipts : [] }
   } finally {
     rcpBusy = false
   }
