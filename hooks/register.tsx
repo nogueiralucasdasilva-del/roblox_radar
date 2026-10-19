@@ -147,18 +147,22 @@ let visibleMcp = ''
 async function discoverDrive($: any, tool: string): Promise<string | null> {
   if (discovered[tool]) return discovered[tool] as string
   try {
-    const list: { name: string; mcp: boolean }[] = await $.tool.list()
-    const mcpNames = list.filter(t => t.mcp).map(t => t.name)
+    const list: { name: string; description?: string; mcp: boolean }[] = await $.tool.list()
+    const mcpTools = list.filter(t => t.mcp)
     const servers = new Set<string>()
-    for (const n of mcpNames) {
-      const m = /^mcp__(.+?)__/.exec(n)
+    for (const t of mcpTools) {
+      const m = /^mcp__(.+?)__/.exec(t.name)
       if (m && m[1]) servers.add(m[1])
     }
     visibleMcp = servers.size > 0 ? `MCP tools visible here come from: ${[...servers].join(', ')}.` : 'No MCP tools are visible to the panel in this session.'
+    // The desktop app names claude.ai connectors by an id (mcp__<uuid>__search_files), so the server name says
+    // nothing. The tool name is the Drive connector's own, so match on it, then on the description.
+    const exact = mcpTools.find(t => t.name.endsWith(`__${tool}`))
     const re = DRIVE_TOOL_RE[tool]
-    const hit = re ? mcpNames.find(n => /drive/i.test(n) && re.test(n)) : undefined
-    if (hit) discovered[tool] = hit
-    return hit ?? null
+    const alt = re ? mcpTools.find(t => re.test(t.name) && /drive/i.test(`${t.name} ${t.description ?? ''}`)) : undefined
+    const hit = exact ?? alt
+    if (hit) discovered[tool] = hit.name
+    return hit ? hit.name : null
   } catch {
     return null
   }
@@ -168,13 +172,21 @@ async function driveCall($: any, tool: string, args: Record<string, unknown>): P
   const errors: string[] = []
   const found = await discoverDrive($, tool)
   if (found) {
-    try {
-      const r: any = await $.tool.call({ tool: found, ...args })
-      if (r && r.deny) errors.push(`${found}: denied ${String(r.deny).slice(0, 80)}`)
-      else if (r && r.isError) errors.push(`${found}: error ${textOf(r).slice(0, 120)}`)
-      else return textOf(r)
-    } catch (err: any) {
-      errors.push(`${found}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 120)}`)
+    // mcp__<server>__<tool>: the engine's own connection first (no permission prompt), then a plain tool call.
+    const server = found.slice('mcp__'.length, found.length - tool.length - 2)
+    const tries: { label: string; run: () => Promise<any> }[] = [
+      { label: `mcp "${server}"`, run: () => $.mcp.call(server, tool, args) },
+      { label: found, run: () => $.tool.call({ tool: found, ...args }) },
+    ]
+    for (const t of tries) {
+      try {
+        const r: any = await t.run()
+        if (r && r.deny) errors.push(`${t.label}: denied ${String(r.deny).slice(0, 80)}`)
+        else if (r && r.isError) errors.push(`${t.label}: error ${textOf(r).slice(0, 120)}`)
+        else return textOf(r)
+      } catch (err: any) {
+        errors.push(`${t.label}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 120)}`)
+      }
     }
   }
   const all: DriveHow[] = [
