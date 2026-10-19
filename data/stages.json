@@ -48,13 +48,6 @@
      "done": false
     },
     {
-     "id": "c3",
-     "text": "Gmail only creates drafts, it does not send.",
-     "owner": "external",
-     "since": "2026-10-16",
-     "done": false
-    },
-    {
      "id": "c1b",
      "text": "Check the Apify Creative Center actor (period, country, cache): tiktok_trends came identical to the previous day.",
      "owner": "Lucas",
@@ -82,7 +75,7 @@
    "gate": false,
    "desc": "Daily advisor that classifies themes as PASS, MAYBE or REJECT and logs each verdict to a ledger for backtesting.",
    "inputs": "Collected entities",
-   "outputs": "Daily verdicts, weekly thumbnails, Monday email",
+   "outputs": "Daily verdicts, weekly thumbnails, Slack posts",
    "build": "built",
    "build_note": "Running. 219 candidate rows on 2026-10-18: 39 PASS, 94 MAYBE, 86 REJECT. Ledger and backtest still empty.",
    "owner_chat": "Phase 1",
@@ -153,14 +146,14 @@
   },
   {
    "id": "escolha",
-   "name": "Monday email",
-   "sub": "you pick a theme",
+   "name": "Theme pick",
+   "sub": "you pick from Slack",
    "gate": true,
-   "desc": "You read the Monday email with the best themes and pick one to take to the pre-validation.",
-   "inputs": "Weekly email",
+   "desc": "You read the themes the advisor posts to Slack #roblox_trends_2 and pick one to take to the pre-validation. No email.",
+   "inputs": "Slack #roblox_trends_2",
    "outputs": "Chosen theme",
-   "build": "partial",
-   "build_note": "Email exists as a draft. The pick is manual.",
+   "build": "built",
+   "build_note": "Slack post is live. The pick is manual.",
    "owner_chat": "Central",
    "trigger_ids": [],
    "status_doc": "",
