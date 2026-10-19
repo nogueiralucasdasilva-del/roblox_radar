@@ -26,7 +26,25 @@ import {
   recentHistory,
   summarizerPrompt,
 } from './model'
-import type { IdeaStatus, Knowledge, LogEntry, Msg, Store, Thread } from './model'
+import { STALE_BUSY_MS } from './model'
+import type { Idea, IdeaStatus, Job, Knowledge, LogEntry, Msg, Store, Thread } from './model'
+import {
+  KEEP_MESSAGES,
+  MEMORY_FOLDER_ID,
+  applyEvents,
+  briefPrompt,
+  crudeMemory,
+  eventTitle,
+  ideaChatPrompt,
+  ideaHistory,
+  ideaSnapshot,
+  memoryPrompt,
+  parseMemEvent,
+  parsePotential,
+  scanPrompt,
+} from './memory'
+import type { MemEvent } from './memory'
+import { ICON_SVG } from './icon'
 import {
   RECEIPT_DAYS,
   RECEIPT_FOLDER_ID,
@@ -216,6 +234,234 @@ async function driveCall($: any, tool: string, args: Record<string, unknown>): P
   throw new Error(`Google Drive is not reachable from this session. ${visibleMcp} ${errors.length > 0 && found ? errors.join(' | ') : ''}`.trim())
 }
 
+/* ---------- memory in Drive ---------- */
+
+let flushBusy = false
+let restoreBusy = false
+let memError = ''
+let version = ''
+
+async function loadVersion($: any): Promise<string> {
+  if (version) return version
+  try {
+    const o = JSON.parse(String(await $.fs.read(`${$.plugin.root}/.claude-plugin/plugin.json`)))
+    version = typeof o?.version === 'string' ? o.version : 'dev'
+  } catch {
+    version = 'dev'
+  }
+  return version
+}
+
+function enqueue(s: Store, e: MemEvent): void {
+  s.outbox.push({ title: eventTitle(e), content: JSON.stringify(e), at: e.at })
+  if (s.outbox.length > 500) s.outbox = s.outbox.slice(-500)
+}
+
+// Writes waiting memory events to Drive, oldest first. A failure keeps them for the next cycle.
+async function flushOutbox($: any): Promise<void> {
+  if (flushBusy) return
+  flushBusy = true
+  try {
+    const s0 = await loadStore($)
+    const batch = s0.outbox.slice(0, 10)
+    if (batch.length === 0) return
+    const done: string[] = []
+    for (const o of batch) {
+      try {
+        await driveCall($, 'create_file', { title: o.title, parentId: MEMORY_FOLDER_ID, contentMimeType: 'text/plain', textContent: o.content })
+        done.push(`${o.title}|${o.at}`)
+      } catch (err: any) {
+        memError = String((err && err.message) || err).slice(0, 600)
+        break
+      }
+    }
+    if (done.length > 0) {
+      memError = ''
+      await mutate($, s => {
+        s.outbox = s.outbox.filter(o => !done.includes(`${o.title}|${o.at}`))
+        s.memSaved += done.length
+      })
+    }
+  } finally {
+    flushBusy = false
+  }
+}
+
+// Once per install: replay the memory events saved in Drive, so a new machine or a reinstall starts where the last one stopped.
+async function restoreMemory($: any): Promise<void> {
+  if (restoreBusy) return
+  const s0 = await loadStore($)
+  if (s0.restoredAt) return
+  restoreBusy = true
+  try {
+    const ids = new Set<string>()
+    let pageToken: string | undefined
+    for (let page = 0; page < 5; page++) {
+      const raw = await driveCall($, 'search_files', {
+        query: `parentId = '${MEMORY_FOLDER_ID}' and title contains 'mem_'`,
+        pageSize: 100,
+        excludeContentSnippets: true,
+        ...(pageToken ? { pageToken } : {}),
+      })
+      const o: any = jsonOf(raw)
+      const files: any[] = Array.isArray(o?.files) ? o.files : []
+      for (const f of files) if (f && typeof f.id === 'string') ids.add(f.id)
+      pageToken = typeof o?.nextPageToken === 'string' ? o.nextPageToken : undefined
+      if (!pageToken || files.length === 0) break
+    }
+    const events: MemEvent[] = []
+    for (const id of [...ids].slice(0, 300)) {
+      try {
+        const e = parseMemEvent(await driveCall($, 'read_file_content', { fileId: id }))
+        if (e) events.push(e)
+      } catch {
+        // one unreadable file does not stop the restore
+      }
+    }
+    await mutate($, s => {
+      const n = applyEvents(s, events)
+      s.restoredAt = new Date().toISOString()
+      if (n > 0) addLog(s, 'prevalid', 'memory', `Restored ${n} memory events from Drive.`)
+    })
+  } catch (err: any) {
+    memError = `Restore failed: ${String((err && err.message) || err).slice(0, 500)}`
+  } finally {
+    restoreBusy = false
+  }
+}
+
+async function rewriteMemory($: any, label: string, old: string, user: string, answer: string): Promise<string> {
+  try {
+    const r = await $.model.complete({ model: 'haiku', prompt: memoryPrompt(label, old, user, answer), maxTokens: 700 })
+    const t = r.isAnswered ? String(r.text).trim() : ''
+    if (t) return t
+  } catch {
+    // fall through to the crude memory
+  }
+  return crudeMemory(old, user, answer)
+}
+
+// What every stage agent gets besides its own chat: its memory, the previous stage's memory, and the ideas in it.
+function stageContext(data: Data, s: Store, stageId: string): string[] {
+  const out: string[] = []
+  const mem = s.memory[stageId]
+  if (mem) out.push(`Memory of this stage (decisions and facts so far, updated ${mem.at.slice(0, 16)} UTC):`, mem.text)
+  const idx = data.stages.findIndex(x => x.id === stageId)
+  const prev = idx > 0 ? data.stages[idx - 1] : undefined
+  const prevMem = prev ? s.memory[prev.id] : undefined
+  if (prev && prevMem) out.push(`Memory of the previous stage, ${prev.name}:`, clip(prevMem.text, 1500))
+  const here = s.ideas.filter(i => i.stage === stageId)
+  if (here.length > 0) {
+    out.push(
+      'Ideas in this stage now:',
+      ...here
+        .slice(0, 12)
+        .map(
+          i =>
+            `- ${i.title}${i.proto_id ? ` (${i.proto_id})` : ''}, ${i.status}${i.scan ? `, potential ${i.scan.level}` : ''}${i.memory ? `. Memory: ${clip(i.memory, 500)}` : ''}`,
+        ),
+    )
+  }
+  out.push(`Full transcripts are kept as files in the Drive folder roblox_radar_memory (id ${MEMORY_FOLDER_ID}). Search there if you need something older.`)
+  return out
+}
+
+/* ---------- idea cards: quick scan, chat and brief ---------- */
+
+const PURPOSE_LINE: Record<Job['purpose'], string> = {
+  scan: 'Quick scan started.',
+  brief: 'Full brief started.',
+  chat: '',
+}
+
+async function startIdeaJob($: any, ideaId: string, purpose: Job['purpose'], text: string): Promise<void> {
+  const data = await load($)
+  const s0 = await loadStore($)
+  const idea = s0.ideas.find(i => i.id === ideaId)
+  if (!data || !idea) return
+  if (idea.busy && Date.now() - Date.parse(idea.busy.at) < STALE_BUSY_MS) {
+    $.ui.toast('The agent is still working on this idea.')
+    return
+  }
+  const stage = data.stages.find(x => x.id === idea.stage)
+  const stageMem = s0.memory[idea.stage]?.text ?? ''
+  const prompt =
+    purpose === 'scan'
+      ? scanPrompt(idea, stageMem)
+      : purpose === 'brief'
+        ? briefPrompt(idea)
+        : ideaChatPrompt(idea, stage?.name ?? idea.stage, stageMem, ideaHistory(idea), text)
+  const now = new Date().toISOString()
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const msgs = i.messages ?? []
+    msgs.push(purpose === 'chat' ? { role: 'user', text, at: now } : { role: 'system', text: PURPOSE_LINE[purpose], at: now })
+    i.messages = msgs.slice(-KEEP_MESSAGES)
+    i.busy = { agentId: 'pending', at: now }
+  })
+  try {
+    const started = await $.agent.spawn({ prompt, description: `Radar idea: ${clip(idea.title, 40)}`, subagentType: 'general-purpose' })
+    if (started.deny) throw new Error(String(started.deny))
+    const agentId = String(started.agentId)
+    await mutate($, s => {
+      const i = s.ideas.find(x => x.id === ideaId)
+      if (i) i.busy = { agentId, at: new Date().toISOString() }
+      s.jobs[agentId] = { kind: 'idea', scope: ideaId, purpose }
+      addLog(s, idea.stage, 'agent', `Idea agent started for "${clip(idea.title, 40)}" (${purpose}).`)
+    })
+  } catch (err: any) {
+    await mutate($, s => {
+      const i = s.ideas.find(x => x.id === ideaId)
+      if (!i) return
+      i.busy = null
+      i.messages = [...(i.messages ?? []), { role: 'system', text: `Could not start the agent: ${String((err && err.message) || err).slice(0, 200)}`, at: new Date().toISOString() }]
+    })
+  }
+}
+
+async function onIdeaDone($: any, agentId: string, job: Job, answer: string, reason: string): Promise<void> {
+  let user = ''
+  let clean = ''
+  let ok = false
+  const now = new Date().toISOString()
+  await mutate($, s => {
+    delete s.jobs[agentId]
+    const i = s.ideas.find(x => x.id === job.scope)
+    if (!i) return
+    i.busy = null
+    const msgs = i.messages ?? []
+    if (reason !== 'answer') {
+      msgs.push({ role: 'system', text: `The agent stopped (${reason}). Try again.`, at: now })
+      i.messages = msgs
+      return
+    }
+    clean = answer.trim() || '(empty answer)'
+    user = job.purpose === 'chat' ? ([...msgs].reverse().find(m => m.role === 'user')?.text ?? '') : PURPOSE_LINE[job.purpose]
+    msgs.push({ role: 'assistant', text: clean, at: now })
+    i.messages = msgs.slice(-KEEP_MESSAGES)
+    if (job.purpose === 'scan') {
+      const level = parsePotential(clean)
+      if (level) i.scan = { level, at: now }
+    }
+    i.updated = now
+    ok = true
+    addLog(s, i.stage, 'ideas', `Agent answered on "${clip(i.title, 40)}" (${job.purpose}).`)
+  })
+  if (!ok) return
+  const s1 = await loadStore($)
+  const idea = s1.ideas.find(x => x.id === job.scope)
+  if (!idea) return
+  const memText = await rewriteMemory($, `the idea "${idea.title}"`, idea.memory ?? '', user, clean)
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === job.scope)
+    if (!i) return
+    i.memory = memText
+    enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at: now, stage: i.stage, user, answer: clean, purpose: job.purpose, memory: memText, idea: ideaSnapshot(i) })
+  })
+  void flushOutbox($)
+}
+
 async function fetchReceipts($: any): Promise<void> {
   if (rcpBusy) return
   rcpBusy = true
@@ -393,15 +639,19 @@ async function sendItem($: any, report: Report, si: number, ii: number): Promise
   const item = report.sections[si]?.items[ii]
   if (!item) return
   const from = `${report.id}#${si}.${ii}`
+  let newId = ''
   await mutate($, s => {
     if (s.ideas.some(i => i.from === from)) return
     const now = new Date().toISOString()
     const idea = newIdea(item.title, `${item.note} (from the ${report.title} report of ${report.date}, section "${report.sections[si]?.name ?? ''}")`, 'advisor', from, now, s.ideas.length)
     s.ideas.push(idea)
+    newId = idea.id
+    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: now, stage: idea.stage, idea: ideaSnapshot(idea) })
     addLog(s, 'triagem', 'ideas', `Sent "${item.title}" from the ${report.date} report to pre-validation.`)
     addLog(s, 'prevalid', 'ideas', `Received "${item.title}" from the advisor report of ${report.date}.`)
   })
   $.ui.toast(`Sent to pre-validation: ${item.title}`)
+  if (newId) void startIdeaJob($, newId, 'scan', '')
 }
 
 async function saveHook($: any, report: Report, item: ReportItem): Promise<void> {
@@ -422,7 +672,9 @@ async function setStatus($: any, ideaId: string, status: IdeaStatus): Promise<vo
     if (!idea) return
     setIdeaStatus(idea, status, new Date().toISOString())
     addLog(s, idea.stage, 'ideas', `"${idea.title}" set to ${status}.`)
+    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: idea.updated, stage: idea.stage, idea: ideaSnapshot(idea) })
   })
+  void flushOutbox($)
 }
 
 async function promote($: any, ideaId: string, stages: Stage[]): Promise<void> {
@@ -437,18 +689,33 @@ async function promote($: any, ideaId: string, stages: Stage[]): Promise<void> {
     msg = `"${idea.title}" moved to ${name}${idea.proto_id ? ` as ${idea.proto_id}` : ''}.`
     addLog(s, from, 'ideas', msg)
     addLog(s, idea.stage, 'ideas', `Received "${idea.title}".`)
+    enqueue(s, { v: 1, kind: 'handoff', scope: `idea:${idea.id}`, at: idea.updated, stage: idea.stage, memory: idea.memory ?? '', idea: ideaSnapshot(idea) })
   })
   if (msg) $.ui.toast(msg)
+  void flushOutbox($)
+}
+
+// "Yes" on a quick scan: the idea moves to the brief stage and the brief agent starts on it.
+async function briefIdea($: any, ideaId: string, stages: Stage[]): Promise<void> {
+  await promote($, ideaId, stages)
+  const s = await loadStore($)
+  const i = s.ideas.find(x => x.id === ideaId)
+  if (i && i.stage === 'brief') await startIdeaJob($, ideaId, 'brief', '')
 }
 
 async function addIdea($: any, raw: string): Promise<void> {
   const title = raw.trim()
   if (!title) return
+  let newId = ''
   await mutate($, s => {
     const now = new Date().toISOString()
-    s.ideas.push(newIdea(title.slice(0, 120), title.length > 120 ? title : '', 'own', null, now, s.ideas.length))
+    const idea = newIdea(title.slice(0, 120), title.length > 120 ? title : '', 'own', null, now, s.ideas.length)
+    s.ideas.push(idea)
+    newId = idea.id
     addLog(s, 'prevalid', 'ideas', `Added your idea "${title.slice(0, 60)}".`)
+    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: now, stage: idea.stage, idea: ideaSnapshot(idea) })
   })
+  if (newId) void startIdeaJob($, newId, 'scan', '')
 }
 
 async function addKnowledge($: any, stageId: string, raw: string): Promise<void> {
@@ -587,7 +854,16 @@ async function sendMessage($: any, stageId: string, raw: string): Promise<void> 
   }
   const summary = t0.summary
   const history = recentHistory(t0.messages, HISTORY_CHARS)
-  const prompt = buildPrompt(stage, data.updated, s0.instructions[stageId] ?? [], summary, history, text, !!stage.extra_tabs?.some(t => t.id === 'knowledge'))
+  const prompt = buildPrompt(
+    stage,
+    data.updated,
+    s0.instructions[stageId] ?? [],
+    summary,
+    history,
+    text,
+    !!stage.extra_tabs?.some(t => t.id === 'knowledge'),
+    stageContext(data, s0, stageId),
+  )
   await mutate($, s => {
     const t = threadOf(s, stageId)
     t.messages.push({ role: 'user', text, at: new Date().toISOString() })
@@ -599,6 +875,7 @@ async function sendMessage($: any, stageId: string, raw: string): Promise<void> 
     await mutate($, s => {
       const t = threadOf(s, stageId)
       t.busy = { agentId: String(started.agentId), at: new Date().toISOString() }
+      s.jobs[String(started.agentId)] = { kind: 'stage', scope: stageId, purpose: 'chat' }
       addLog(s, stageId, 'agent', `Agent started (${String(started.agentId).slice(0, 8)}).`)
     })
   } catch (err: any) {
@@ -615,10 +892,15 @@ async function sendMessage($: any, stageId: string, raw: string): Promise<void> 
 
 async function onAgentDone($: any, agentId: string, answer: string, reason: string): Promise<void> {
   const s0 = await loadStore($)
-  const stageId = Object.keys(s0.threads).find(k => s0.threads[k]?.busy?.agentId === agentId)
+  const job = s0.jobs[agentId]
+  if (job && job.kind === 'idea') return onIdeaDone($, agentId, job, answer, reason)
+  const stageId = job ? job.scope : Object.keys(s0.threads).find(k => s0.threads[k]?.busy?.agentId === agentId)
   if (!stageId) return
   let shouldRoll = false
+  let said = ''
+  let asked = ''
   await mutate($, s => {
+    delete s.jobs[agentId]
     const t = threadOf(s, stageId)
     t.busy = null
     const now = new Date().toISOString()
@@ -631,7 +913,9 @@ async function onAgentDone($: any, agentId: string, answer: string, reason: stri
     const ex2 = extractTagged(ex1.clean, KNOWLEDGE_TAG)
     const clean = ex2.clean
     const found = ex1.found
-    t.messages.push({ role: 'assistant', text: clean || '(empty answer)', at: now })
+    asked = [...t.messages].reverse().find(m => m.role === 'user')?.text ?? ''
+    said = clean || '(empty answer)'
+    t.messages.push({ role: 'assistant', text: said, at: now })
     addLog(s, stageId, 'agent', `Agent answered (${clean.length} chars).`)
     if (found.length > 0) {
       const list = s.instructions[stageId] ?? []
@@ -653,6 +937,16 @@ async function onAgentDone($: any, agentId: string, answer: string, reason: stri
     }
     shouldRoll = needsRollover(t)
   })
+  if (said) {
+    const old = (await loadStore($)).memory[stageId]?.text ?? ''
+    const memText = await rewriteMemory($, `the "${stageId}" stage`, old, asked, said)
+    const at = new Date().toISOString()
+    await mutate($, s => {
+      s.memory[stageId] = { text: memText, at }
+      enqueue(s, { v: 1, kind: 'exchange', scope: stageId, at, stage: stageId, user: asked, answer: said, purpose: 'chat', memory: memText })
+    })
+    void flushOutbox($)
+  }
   if (shouldRoll) await rollover($, stageId, 'chat got long')
 }
 
@@ -668,6 +962,8 @@ export const register: Register = on => {
     void ensureSeed($)
     void fetchLive($)
     void fetchReceipts($)
+    void restoreMemory($).then(() => flushOutbox($))
+    $.clock.every(60 * 1000, () => void flushOutbox($))
     $.clock.every(FETCH_MS, () => void fetchLive($))
     $.clock.every(FETCH_MS, () => void fetchReceipts($))
     $.clock.every(REDRAW_MS, () => void update($, rev, n => n + 1))
@@ -759,8 +1055,9 @@ export const register: Register = on => {
         </Box>
       )
     }
-    const { Box, Text, Button, Input } = $.ui.resolve(e)
+    const { Box, Text, Button, Input, Svg } = $.ui.resolve(e) as any
     const data = await load($)
+    const ver = await loadVersion($)
     const sel = await read($, selected)
     const rawTab = await read($, tab)
     const openList = await read($, openIds)
@@ -799,11 +1096,13 @@ export const register: Register = on => {
     /* header */
     const header = (
       <Box flexDirection="column">
-        <Box gap={1}>
+        <Box gap={1} alignItems="center">
+          {Svg ? <Svg source={ICON_SVG} alt="Roblox Radar" width={28} height={28} /> : null}
           <Text bold color={CLAY}>
-            ▣ Roblox Radar
+            {Svg ? 'Roblox Radar' : '▣ Roblox Radar'}
           </Text>
           <Text color={MUTED}>pipeline control</Text>
+          <Text bold color={SKY}>{`v${ver}`}</Text>
         </Box>
         <Text color={MUTED}>
           {live && !('error' in live)
@@ -816,6 +1115,11 @@ export const register: Register = on => {
             : rcp.ok
               ? `Receipts: ${receipts.length} read from Drive at ${rcp.at.slice(11, 16)} UTC, newest ${receipts[0] ? `${receipts[0].task_key} ${receipts[0].finished_utc.slice(0, 16).replace('T', ' ')} UTC` : 'none yet'}.`
               : `Receipts: Drive check failed (${rcp.error}). Showing ${receipts.length} read earlier.`}
+        </Text>
+        <Text color={memError ? AMBER : store.outbox.length > 0 ? MUTED : OLIVE}>
+          {memError
+            ? `Memory: ${store.memSaved} saved to Drive, ${store.outbox.length} waiting. Last error: ${memError}`
+            : `Memory: ${store.memSaved} events saved to Drive${store.outbox.length > 0 ? `, ${store.outbox.length} waiting` : ''}${store.restoredAt ? '' : ', checking Drive for earlier memory'}.`}
         </Text>
         <Box gap={2}>
           <Text color={OLIVE}>● OK</Text>
@@ -834,7 +1138,7 @@ export const register: Register = on => {
     const registry = data.stages.find(s => s.id === 'registro')
     const rows: Stage[][] = []
     for (let i = 0; i < flowStages.length; i += perRow) rows.push(flowStages.slice(i, i + perRow))
-    const rowNotes = ['chosen theme, pre-validated', 'full doc approved, prototype ready for test']
+    const rowNotes = ['brief approved, proto_id born', 'prototype built and named, ready for art']
     const rowWidth = perRow * nodeW + (perRow - 1) * 3
     const nodeOf = (s: Stage) => {
       const tone = toneOf(s)
@@ -995,6 +1299,9 @@ export const register: Register = on => {
         saveHook: (r, it) => saveHook($, r, it),
         setStatus: (id, st) => setStatus($, id, st),
         promote: id => promote($, id, data.stages),
+        scanIdea: id => startIdeaJob($, id, 'scan', ''),
+        ideaSay: (id, v) => startIdeaJob($, id, 'chat', v),
+        briefIdea: id => briefIdea($, id, data.stages),
         addIdea: v => addIdea($, v),
         addKnowledge: (sid, v) => addKnowledge($, sid, v),
         removeKnowledge: (sid, id) => removeKnowledge($, sid, id),

@@ -19,7 +19,15 @@ export type Idea = {
   created: string
   updated: string
   history: IdeaStep[]
+  // The card's own conversation, the quick scan verdict and the idea's memory file travel with the idea.
+  messages?: Msg[]
+  busy?: Busy | null
+  scan?: { level: string; at: string } | null
+  memory?: string
 }
+export type MemoryNote = { text: string; at: string }
+export type Outgoing = { title: string; content: string; at: string }
+export type Job = { kind: 'stage' | 'idea'; scope: string; purpose: 'chat' | 'scan' | 'brief' }
 export type KnowledgeKind = 'principle' | 'technique' | 'pattern' | 'pitfall' | 'result'
 export type Knowledge = { id: string; kind: KnowledgeKind; text: string; source: string; tag: string; at: string }
 export type Store = {
@@ -30,6 +38,12 @@ export type Store = {
   ideas: Idea[]
   knowledge: Record<string, Knowledge[]>
   seeded: boolean
+  // Memory: one note per stage, events waiting to be written to Drive, running agents, restore marker.
+  memory: Record<string, MemoryNote>
+  outbox: Outgoing[]
+  memSaved: number
+  restoredAt: string | null
+  jobs: Record<string, Job>
 }
 
 // The ladder an idea climbs. Each step is a stage id.
@@ -46,7 +60,7 @@ export const STALE_BUSY_MS = 10 * 60 * 1000
 export const INSTRUCTION_TAG = 'INSTRUCTION:'
 
 export function emptyStore(): Store {
-  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false }
+  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false, memory: {}, outbox: [], memSaved: 0, restoredAt: null, jobs: {} }
 }
 
 export function newThread(n: number, summary: string, now: string): Thread {
@@ -91,6 +105,7 @@ export function buildPrompt(
   history: readonly Msg[],
   userText: string,
   hasKnowledge = false,
+  context: readonly string[] = [],
 ): string {
   const lines: string[] = [
     `You are the stage agent for the "${stage.name}" stage (id ${stage.id}) of the Roblox Radar pipeline, working with Lucas Nogueira (Ritz Deli Games) through a panel. Reply in English, even when he writes in Portuguese. Be direct, no flattery, no em dashes, no emoji.`,
@@ -100,6 +115,7 @@ export function buildPrompt(
   if (instructions.length > 0) {
     lines.push('Standing instructions for this stage (always obey):', ...instructions.map(i => `- ${i}`))
   }
+  if (context.length > 0) lines.push(...context)
   if (summary) lines.push('Summary of the earlier chat on this stage:', summary)
   if (history.length > 0) {
     lines.push('Recent messages:', ...history.map(m => `${m.role === 'user' ? 'Lucas' : 'Agent'}: ${m.text}`))

@@ -145,37 +145,15 @@
    ]
   },
   {
-   "id": "escolha",
-   "name": "Theme pick",
-   "sub": "you pick from Slack",
-   "gate": true,
-   "desc": "You read the themes the advisor posts to Slack #roblox_trends_2 and pick one to take to the pre-validation. No email.",
-   "inputs": "Slack #roblox_trends_2",
-   "outputs": "Chosen theme",
-   "build": "built",
-   "build_note": "Slack post is live. The pick is manual.",
-   "owner_chat": "Central",
-   "trigger_ids": [],
-   "status_doc": "",
-   "docs": [],
-   "skills": [],
-   "pendencies": [],
-   "no_task_note": "Manual stage, no automated task.",
-   "flag": null,
-   "checked_at": null,
-   "gate_note": "You pick the theme.",
-   "extra_tabs": []
-  },
-  {
    "id": "prevalid",
    "name": "Pre-validation",
    "sub": "quick scan, yes or no",
    "gate": true,
    "desc": "Quick scan of a chosen theme or idea: potential, one-line wedge and a yes, no or adjust call, before any brief is written.",
-   "inputs": "Theme picked on Monday or a raw idea",
+   "inputs": "Themes from the advisor (Slack #roblox_trends_2 and the Reports tab) and your own ideas",
    "outputs": "Class STRONG, PROMISING, WEAK or KILL, wedge, and a yes, no or adjust decision",
    "build": "partial",
-   "build_note": "The new validator has never run on a real idea.",
+   "build_note": "Each idea card runs a quick scan when it arrives and has its own chat. Not yet run on a real idea.",
    "owner_chat": "Phase 2",
    "trigger_ids": [
     "trig_011f2k8V3a5eatSfj31MhbX4"
@@ -212,7 +190,7 @@
    "no_task_note": "",
    "flag": null,
    "checked_at": null,
-   "gate_note": "You decide yes or no.",
+   "gate_note": "You pick which ideas go on. Each card gets a quick scan; Yes starts the 2-page brief.",
    "extra_tabs": [
     {
      "id": "ideas",

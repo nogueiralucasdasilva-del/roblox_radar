@@ -1,6 +1,6 @@
 import type { Report, ReportItem, SourceStatus, SourcesFile, ReportsFile, Stage } from '../types'
 import { AMBER, CLAY, FG, LINE, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY, BG } from './theme'
-import { KNOWLEDGE_KINDS, clip, ideasAt, nextStageOf, stepFor } from './model'
+import { KNOWLEDGE_KINDS, STALE_BUSY_MS, clip, ideasAt, nextStageOf, stepFor } from './model'
 import type { Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
 import type { Outcome, Receipt } from './receipts'
@@ -25,6 +25,9 @@ export type Ctx = {
   saveHook: (report: Report, item: ReportItem) => unknown
   setStatus: (ideaId: string, status: IdeaStatus) => unknown
   promote: (ideaId: string) => unknown
+  scanIdea: (ideaId: string) => unknown
+  ideaSay: (ideaId: string, text: string) => unknown
+  briefIdea: (ideaId: string) => unknown
   addIdea: (title: string) => unknown
   addKnowledge: (stageId: string, raw: string) => unknown
   removeKnowledge: (stageId: string, id: string) => unknown
@@ -41,6 +44,7 @@ const STATUS_META: Record<SourceStatus, { glyph: string; color: string; label: s
 const IDEA_COLOR: Record<IdeaStatus, string> = { pending: AMBER, promising: OLIVE, rejected: RUST }
 const IDEA_LABEL: Record<IdeaStatus, string> = { pending: 'PENDING', promising: 'PROMISING', rejected: 'REJECTED' }
 const VERDICT_COLOR: Record<string, string> = { PASS: OLIVE, MAYBE: AMBER, REJECT: RUST, HOOK: SKY }
+const POTENTIAL_COLOR: Record<string, string> = { HIGH: OLIVE, MEDIUM: AMBER, LOW: RUST }
 const KIND_COLOR: Record<KnowledgeKind, string> = { principle: CLAY, technique: OLIVE, pattern: SKY, pitfall: RUST, result: AMBER }
 
 export function ago(iso: string | null, now: number): string {
@@ -287,6 +291,8 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
               {chip(x, IDEA_LABEL[status], IDEA_COLOR[status], `st-${i.id}`)}
               {!here ? chip(x, `MOVED TO ${nameOf(x.stages, i.stage).toUpperCase()}`, SKY, `mv-${i.id}`) : null}
               {i.proto_id ? chip(x, i.proto_id, CLAY, `pid-${i.id}`) : null}
+              {i.scan ? chip(x, `POTENTIAL ${i.scan.level}`, POTENTIAL_COLOR[i.scan.level] ?? SKY, `pot-${i.id}`) : null}
+              {busyOf(i, x.now) ? <Text color={CLAY}>agent working...</Text> : null}
               <Text color={MUTED}>{i.origin === 'advisor' ? 'from the advisor' : 'your idea'}</Text>
             </Box>
             {isOpen ? (
@@ -298,14 +304,21 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                   {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
                 </Text>
                 {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
+                {ideaChat(x, i, here)}
                 <Box gap={1} flexWrap="wrap">
                   {here ? (
                     <Box gap={1} flexWrap="wrap">
+                      {stage.id === 'prevalid' && i.scan && status !== 'rejected' ? (
+                        <Button key={`yes-${i.id}`} label="Yes, write the 2-page brief" onPress={() => x.briefIdea(i.id)} />
+                      ) : null}
                       <Button key={`s-pr-${i.id}`} label="Promising" onPress={() => x.setStatus(i.id, 'promising')} />
                       <Button key={`s-pe-${i.id}`} label={status === 'rejected' ? 'Reopen as pending' : 'Pending'} onPress={() => x.setStatus(i.id, 'pending')} />
-                      <Button key={`s-re-${i.id}`} label="Reject" onPress={() => x.setStatus(i.id, 'rejected')} />
-                      {nextId && status !== 'rejected' ? (
+                      <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.scan ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
+                      {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.scan) ? (
                         <Button key={`pro-${i.id}`} label={`Promote to ${nameOf(x.stages, nextId)}`} onPress={() => x.promote(i.id)} />
+                      ) : null}
+                      {stage.id === 'prevalid' && !i.scan && !busyOf(i, x.now) ? (
+                        <Button key={`scan-${i.id}`} label="Run the quick scan" onPress={() => x.scanIdea(i.id)} />
                       ) : null}
                     </Box>
                   ) : (
@@ -317,6 +330,52 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
           </Box>
         )
       })}
+    </Box>
+  )
+}
+
+function busyOf(i: Idea, now: number): boolean {
+  return !!i.busy && now - Date.parse(i.busy.at) < STALE_BUSY_MS
+}
+
+// The conversation inside an idea card. The quick scan lands here as the first answer.
+function ideaChat(x: Ctx, i: Idea, here: boolean) {
+  const { Box, Text, Input } = x.C
+  const msgs = (i.messages ?? []).slice(-8)
+  return (
+    <Box flexDirection="column" gap={1}>
+      {msgs.map((m, n) => {
+        if (m.role === 'system') {
+          return (
+            <Text key={`im-${i.id}-${n}`} color={MUTED}>
+              {clip(m.text, 300)}
+            </Text>
+          )
+        }
+        const isUser = m.role === 'user'
+        return (
+          <Box key={`im-${i.id}-${n}`} flexDirection="column" paddingX={1} marginLeft={isUser ? 6 : 0} marginRight={isUser ? 0 : 6}>
+            <Text bold color={isUser ? MUTED : CLAY}>
+              {isUser ? 'You' : '✻ Idea agent'}
+            </Text>
+            <Text color={FG}>{clip(m.text, 3000)}</Text>
+          </Box>
+        )
+      })}
+      {busyOf(i, x.now) ? <Text color={CLAY}>The idea agent is working. The answer lands here.</Text> : null}
+      {here ? (
+        <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
+          <Input
+            key={`idea-chat-${i.id}`}
+            placeholder="Talk about this idea: ask, push back, or adjust it"
+            rows={2}
+            submitLabel="send"
+            onSubmit={(v: string) => {
+              if (v.trim()) void x.ideaSay(i.id, v.trim())
+            }}
+          />
+        </Box>
+      ) : null}
     </Box>
   )
 }
