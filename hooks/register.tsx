@@ -512,6 +512,9 @@ async function onIdeaDone($: any, agentId: string, job: Job, answer: string, rea
 const chatBusy = new Set<string>()
 type PendingChat = { key: string; kind: 'idea' | 'stage'; scope: string; title: string; prompt: string; background: string }
 const pendingChats = new Map<string, PendingChat>()
+let lastPending: string | null = null
+// What Lucas types after clicking a card whose conversation does not exist yet.
+const OPEN_WORDS = ['abrir chat', 'abre o chat', 'abrir o chat', 'abre chat', 'open chat', 'abrir', 'abre']
 const CHAT_MARK = /\[radar:((?:idea|stage):[^\]]+)\]/
 
 // The main chat started a conversation for a pending request: tie it to its card or stage.
@@ -630,11 +633,19 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
     // A new conversation is started by Lucas's own message: the panel writes the request in the message box,
     // he presses Enter, and the main chat starts the conversation (the app asks him to approve it).
     pendingChats.set(key, { key, kind, scope, title, prompt, background })
+    lastPending = key
     const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
-    const filled: any = await $.prompt.fill({ text: request })
-    if (filled && filled.isFilled === false) throw new Error(`Could not write in the message box (${String(filled.refusal ?? 'unknown')}). Type this there and press Enter: ${request}`)
-    chatError[key] = 'Press Enter in the message box to start this chat. The app may ask you to approve it.'
+    let filled = false
+    try {
+      const r: any = await $.prompt.fill({ text: request })
+      filled = !!(r && r.isFilled)
+    } catch {
+      filled = false
+    }
+    chatError[key] = filled
+      ? 'Press Enter in the message box to start this chat. The app may ask you to approve it.'
+      : 'Now type "abrir chat" in the message box and press Enter. The app may ask you to approve it.'
   } catch (err: any) {
     chatError[key] = String((err && err.message) || err).slice(0, 700)
   } finally {
@@ -1262,7 +1273,8 @@ export const register: Register = on => {
 
   on('prompt.submit', async ($, e, next) => {
     const mk = e.text.match(CHAT_MARK)
-    const pending = mk && mk[1] ? pendingChats.get(mk[1]) : undefined
+    const typed = e.text.trim().toLowerCase().replace(/[.!]+$/, '')
+    const pending = mk && mk[1] ? pendingChats.get(mk[1]) : OPEN_WORDS.includes(typed) && lastPending ? pendingChats.get(lastPending) : undefined
     if (pending) {
       const ctx = [
         `ROBLOX RADAR PANEL: Lucas asked to open the conversation "${pending.title}". Do exactly this and nothing else:`,
