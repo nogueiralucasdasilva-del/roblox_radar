@@ -3,7 +3,7 @@ import type { Register } from 'claude-code'
 
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
-import { ago, ideasView, knowledgeView, receiptsView, registryView, reportsView, sourcesView } from './views'
+import { ago, chatPanel, ideasView, knowledgeView, receiptsView, registryView, reportsView, sourcesView } from './views'
 import type { Ctx } from './views'
 import {
   HISTORY_CHARS,
@@ -45,6 +45,8 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
+import { ideaBackground, ideaChatTitle, ideaOpening, parseLink, parseSessionId, stageBackground, stageChatTitle, stageOpening } from './chats'
+import type { ChatLink } from './model'
 import {
   RECEIPT_DAYS,
   RECEIPT_FOLDER_ID,
@@ -504,6 +506,196 @@ async function onIdeaDone($: any, agentId: string, job: Job, answer: string, rea
   void flushOutbox($)
 }
 
+/* ---------- real chats: one app conversation per idea card and per stage ---------- */
+// Nothing here starts on its own: a conversation is started only when Lucas clicks, and the app asks him to approve it.
+
+const chatBusy = new Set<string>()
+const chatError: Record<string, string> = {}
+let syncBusy = false
+const GROUP_NAME = 'Roblox Radar'
+
+// Calls one of the desktop app's own tools (ccd_*) through the normal permission check.
+async function ccdCall($: any, server: string, tool: string, args: Record<string, unknown>): Promise<string> {
+  const name = `mcp__${server}__${tool}`
+  const r: any = await $.tool.call({ tool: name, ...args })
+  if (r && r.deny) throw new Error(`${name} denied: ${String(r.deny).slice(0, 300)}`)
+  if (r && r.isError) throw new Error(`${name} failed: ${textOf(r).slice(0, 300)}`)
+  return textOf(r)
+}
+
+function hashText(t: string): number {
+  let h = 5381
+  for (let i = 0; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) | 0
+  return h
+}
+
+// The potential the chat settled on last; the template line of the opening ("HIGH, MEDIUM or LOW") is skipped.
+function lastPotential(text: string): string | null {
+  let found: string | null = null
+  for (const m of text.matchAll(/potential\s*:\s*\**\s*(high|medium|low)\b(?!\s*,\s*medium or)/gi)) {
+    if (m[1]) found = m[1].toUpperCase()
+  }
+  return found
+}
+
+async function showChat($: any, chat: ChatLink): Promise<void> {
+  for (const target of ['split', 'window']) {
+    try {
+      await ccdCall($, 'ccd_window', 'open_session_in', { session_id: chat.id, target })
+      return
+    } catch {
+      // try the next way to show it
+    }
+  }
+  $.ui.toast(`Open "${chat.title}" from the sidebar, in the ${GROUP_NAME} group.`)
+}
+
+// Files a new conversation under the Roblox Radar sidebar group, so the Radar chats never mix with the rest.
+async function fileInGroup($: any, sessionId: string): Promise<void> {
+  try {
+    const listed: any = jsonOf(await ccdCall($, 'ccd_sidebar', 'list_groups', {}))
+    const groups: any[] = Array.isArray(listed) ? listed : Array.isArray(listed?.groups) ? listed.groups : []
+    let gid: string | undefined = groups.find(g => g && g.name === GROUP_NAME)?.id
+    if (!gid) {
+      const made: any = jsonOf(await ccdCall($, 'ccd_sidebar', 'create_group', { name: GROUP_NAME }))
+      gid = typeof made === 'string' ? made : (made?.id ?? made?.group_id)
+    }
+    if (gid) await ccdCall($, 'ccd_sidebar', 'move_sessions', { session_ids: [sessionId], group_id: gid })
+  } catch {
+    // grouping is tidy-up only
+  }
+}
+
+// Opens the conversation of an idea card or a stage. The first click starts it (the app asks to approve);
+// every later click reopens the same one.
+async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<void> {
+  const key = `${kind}:${scope}`
+  if (chatBusy.has(key)) return
+  chatBusy.add(key)
+  await update($, rev, n => n + 1)
+  try {
+    const data = await load($)
+    const s0 = await loadStore($)
+    if (!data) throw new Error('Could not read the stage data.')
+    const existing = kind === 'idea' ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
+    if (existing) {
+      await showChat($, existing)
+      void syncChats($)
+      return
+    }
+    let title = ''
+    let prompt = ''
+    let background = ''
+    let logStage = scope
+    if (kind === 'idea') {
+      const idea = s0.ideas.find(i => i.id === scope)
+      if (!idea) throw new Error('Idea not found.')
+      title = ideaChatTitle(idea)
+      prompt = ideaOpening(idea, idea.stage === 'prevalid' && !idea.scan)
+      background = ideaBackground()
+      logStage = idea.stage
+    } else {
+      const stage = data.stages.find(x => x.id === scope)
+      if (!stage) throw new Error('Stage not found.')
+      title = stageChatTitle(stage)
+      prompt = stageOpening(stage, data.updated, stageContext(data, s0, scope))
+      background = stageBackground()
+    }
+    const raw = await ccdCall($, 'ccd_session', 'start_session', { initiation: 'user_asked', title, prompt, background, context: 'fresh', use_worktree: false })
+    const id = parseSessionId(raw)
+    if (!id) throw new Error(`The app did not return a session id. It said: ${raw.slice(0, 300)}`)
+    let link: string | null = null
+    try {
+      link = parseLink(await ccdCall($, 'ccd_session_mgmt', 'get_session', { session_id: id }))
+    } catch {
+      // the link is a convenience
+    }
+    const chat: ChatLink = { id, title, link, at: new Date().toISOString(), syncedAt: null, seen: 0 }
+    await mutate($, s => {
+      if (kind === 'idea') {
+        const i = s.ideas.find(x => x.id === scope)
+        if (i) i.chat = chat
+      } else {
+        s.stageChats[scope] = chat
+      }
+      addLog(s, logStage, 'chat', `Chat started: ${title}.`)
+    })
+    delete chatError[key]
+    await fileInGroup($, id)
+    await showChat($, chat)
+  } catch (err: any) {
+    chatError[key] = String((err && err.message) || err).slice(0, 700)
+  } finally {
+    chatBusy.delete(key)
+    await update($, rev, n => n + 1)
+  }
+}
+
+// "Yes" on a card: the idea moves to the brief stage and its own chat is asked to write the brief.
+async function ideaYes($: any, ideaId: string, stages: Stage[]): Promise<void> {
+  const s0 = await loadStore($)
+  const chat = s0.ideas.find(x => x.id === ideaId)?.chat
+  await promote($, ideaId, stages)
+  if (!chat) return
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  try {
+    await ccdCall($, 'ccd_session_mgmt', 'send_message', {
+      session_id: chat.id,
+      message: `Yes. Write the full 2-page concept brief now as a Google Doc with the roblox-concept-validator skill. Put the proto_id ${i?.proto_id ?? '(none yet)'} in the title. Concept only, never loop design. Reply with the doc link, then three lines: the fantasy, the wedge, the main risk.`,
+    })
+    await showChat($, chat)
+  } catch (err: any) {
+    chatError[`idea:${ideaId}`] = `Could not send the yes to the chat, type it there: ${String((err && err.message) || err).slice(0, 400)}`
+    await update($, rev, n => n + 1)
+  }
+}
+
+// Reads the linked conversations that changed and files them as memory: the note of the idea or stage, and the
+// transcript as a new file in Drive. Read only on the app side.
+async function syncChats($: any): Promise<void> {
+  if (syncBusy) return
+  syncBusy = true
+  try {
+    const s0 = await loadStore($)
+    const targets: { kind: 'idea' | 'stage'; scope: string; chat: ChatLink; label: string; old: string }[] = []
+    for (const i of s0.ideas) if (i.chat) targets.push({ kind: 'idea', scope: i.id, chat: i.chat, label: `the idea "${i.title}"`, old: i.memory ?? '' })
+    for (const [sid, chat] of Object.entries(s0.stageChats)) targets.push({ kind: 'stage', scope: sid, chat, label: `the "${sid}" stage`, old: s0.memory[sid]?.text ?? '' })
+    for (const t of targets.slice(0, 20)) {
+      let text = ''
+      try {
+        text = await ccdCall($, 'ccd_session_mgmt', 'list_events', { session_id: t.chat.id, limit: 40 })
+      } catch {
+        continue
+      }
+      const h = hashText(text)
+      if (h === t.chat.seen) continue
+      const tail = text.slice(-8000)
+      const memText = await rewriteMemory($, t.label, t.old, '(the conversation continued; transcript tail below)', tail)
+      const at = new Date().toISOString()
+      const level = t.kind === 'idea' ? lastPotential(text) : null
+      await mutate($, s => {
+        if (t.kind === 'idea') {
+          const i = s.ideas.find(x => x.id === t.scope)
+          if (!i || !i.chat) return
+          i.memory = memText
+          if (level) i.scan = { level, at }
+          i.chat = { ...i.chat, seen: h, syncedAt: at }
+          enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at, stage: i.stage, user: 'transcript', answer: tail, purpose: 'chat', memory: memText, idea: ideaSnapshot(i) })
+        } else {
+          const c = s.stageChats[t.scope]
+          if (!c) return
+          s.memory[t.scope] = { text: memText, at }
+          s.stageChats[t.scope] = { ...c, seen: h, syncedAt: at }
+          enqueue(s, { v: 1, kind: 'exchange', scope: t.scope, at, stage: t.scope, user: 'transcript', answer: tail, purpose: 'chat', memory: memText })
+        }
+      })
+    }
+  } finally {
+    syncBusy = false
+  }
+  void flushOutbox($)
+}
+
 async function fetchReceipts($: any): Promise<void> {
   if (rcpBusy) return
   rcpBusy = true
@@ -693,7 +885,6 @@ async function sendItem($: any, report: Report, si: number, ii: number): Promise
     addLog(s, 'prevalid', 'ideas', `Received "${item.title}" from the advisor report of ${report.date}.`)
   })
   $.ui.toast(`Sent to pre-validation: ${item.title}`)
-  if (newId) void startIdeaJob($, newId, 'scan', '')
 }
 
 async function saveHook($: any, report: Report, item: ReportItem): Promise<void> {
@@ -757,7 +948,6 @@ async function addIdea($: any, raw: string): Promise<void> {
     addLog(s, 'prevalid', 'ideas', `Added your idea "${title.slice(0, 60)}".`)
     enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: now, stage: idea.stage, idea: ideaSnapshot(idea) })
   })
-  if (newId) void startIdeaJob($, newId, 'scan', '')
 }
 
 async function addKnowledge($: any, stageId: string, raw: string): Promise<void> {
@@ -1014,6 +1204,7 @@ export const register: Register = on => {
     void fetchReceipts($)
     void restoreMemory($).then(() => flushOutbox($))
     $.clock.every(60 * 1000, () => void flushOutbox($))
+    $.clock.every(5 * 60 * 1000, () => void syncChats($))
     $.clock.every(FETCH_MS, () => void fetchLive($))
     $.clock.every(FETCH_MS, () => void fetchReceipts($))
     $.clock.every(REDRAW_MS, () => void update($, rev, n => n + 1))
@@ -1029,6 +1220,7 @@ export const register: Register = on => {
 
   on('command.run', { command: 'panel' }, async $ => {
     await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
+    void syncChats($)
     void fetchLive($)
     void fetchReceipts($)
     return { text: 'Roblox Radar panel opened.' }
@@ -1116,7 +1308,7 @@ export const register: Register = on => {
         </Box>
       )
     }
-    const { Box, Text, Button, Input, Svg } = $.ui.resolve(e) as any
+    const { Box, Text, Button, Input, Svg, Link } = $.ui.resolve(e) as any
     const data = await load($)
     const ver = await loadVersion($)
     const sel = await read($, selected)
@@ -1344,7 +1536,7 @@ export const register: Register = on => {
         </Box>
       )
       const vctx: Ctx = {
-        C: { Box, Text, Button, Input },
+        C: { Box, Text, Button, Input, Link },
         columns,
         now: Date.now(),
         store,
@@ -1363,6 +1555,10 @@ export const register: Register = on => {
         scanIdea: id => startIdeaJob($, id, 'scan', ''),
         ideaSay: (id, v) => startIdeaJob($, id, 'chat', v),
         briefIdea: id => briefIdea($, id, data.stages),
+        openChat: (kind, scope) => openChat($, kind, scope),
+        ideaYes: id => ideaYes($, id, data.stages),
+        chatError: key => chatError[key] ?? null,
+        chatBusy: key => chatBusy.has(key),
         addIdea: v => addIdea($, v),
         addKnowledge: (sid, v) => addKnowledge($, sid, v),
         removeKnowledge: (sid, id) => removeKnowledge($, sid, id),
@@ -1384,64 +1580,9 @@ export const register: Register = on => {
           </Box>
         )
       } else if (activeTab === 'chat') {
-        const msgs: Msg[] = thread ? thread.messages.slice(-10) : []
-        const isBusy = !!(thread && thread.busy && !isBusyStale(thread, Date.now()))
         body = (
-          <Box flexDirection="column" paddingX={1} gap={1}>
-            {msgs.length === 0 ? (
-              <Text color={MUTED}>
-                This chat knows the {current.name} stage: its description, pending items, skills and docs. Ask a question or tell it what to change.
-              </Text>
-            ) : null}
-            {msgs.map(m => {
-              if (m.role === 'system') {
-                return (
-                  <Box key={`m-${m.at}`} gap={1}>
-                    <Text color={MUTED}>{clip(m.text, 600)}</Text>
-                    {m.moveTo ? (
-                      <Button
-                        key={`move-${m.at}`}
-                        label="Open that chat"
-                        onPress={() => Promise.all([update($, selected, () => m.moveTo ?? null), update($, tab, () => 'chat')])}
-                      />
-                    ) : null}
-                  </Box>
-                )
-              }
-              const isUser = m.role === 'user'
-              return (
-                <Box
-                  key={`m-${m.at}`}
-                  flexDirection="column"
-                  paddingX={1}
-                  backgroundColor={isUser ? USER_BG : undefined}
-                  marginLeft={isUser ? 6 : 0}
-                  marginRight={isUser ? 0 : 6}
-                >
-                  <Text bold color={isUser ? MUTED : CLAY}>
-                    {isUser ? 'You' : '✻ Stage agent'}
-                  </Text>
-                  <Text color={FG}>{clip(m.text, 1800)}</Text>
-                </Box>
-              )
-            })}
-            {isBusy ? <Text color={CLAY}>Stage agent is working...</Text> : null}
-            <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
-              <Input
-                key={`chat-${current.id}`}
-                placeholder={`Message the ${current.name} agent`}
-                rows={2}
-                submitLabel="send"
-                onSubmit={(v: string) => void sendMessage($, current.id, v)}
-              />
-            </Box>
-            <Box gap={2}>
-              <Text color={MUTED}>
-                Chat #{thread ? thread.n : 1}, {thread ? thread.messages.filter(m => m.role !== 'system').length : 0} messages
-                {thread && thread.summary ? ', earlier chats summarized' : ''}
-              </Text>
-              <Button key="new-chat" label="New chat" onPress={() => rollover($, current.id, 'started by you')} />
-            </Box>
+          <Box flexDirection="column" paddingX={1}>
+            {chatPanel(vctx, 'stage', current.id, store.stageChats[current.id] ?? null, store.memory[current.id]?.text ?? '', `Chat with the ${current.name} stage`)}
           </Box>
         )
       } else if (activeTab === 'overview') {

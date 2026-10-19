@@ -24,7 +24,10 @@ export type Idea = {
   busy?: Busy | null
   scan?: { level: string; at: string } | null
   memory?: string
+  chat?: ChatLink | null
 }
+// A real app conversation tied to an idea card or a stage. `seen` is how much of its transcript the panel already filed.
+export type ChatLink = { id: string; title: string; link: string | null; at: string; syncedAt: string | null; seen: number }
 export type MemoryNote = { text: string; at: string }
 export type Outgoing = { title: string; content: string; at: string }
 export type Job = { kind: 'stage' | 'idea'; scope: string; purpose: 'chat' | 'scan' | 'brief' }
@@ -44,6 +47,7 @@ export type Store = {
   memSaved: number
   restoredAt: string | null
   jobs: Record<string, Job>
+  stageChats: Record<string, ChatLink>
 }
 
 // The ladder an idea climbs. Each step is a stage id.
@@ -60,7 +64,7 @@ export const STALE_BUSY_MS = 10 * 60 * 1000
 export const INSTRUCTION_TAG = 'INSTRUCTION:'
 
 export function emptyStore(): Store {
-  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false, memory: {}, outbox: [], memSaved: 0, restoredAt: null, jobs: {} }
+  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false, memory: {}, outbox: [], memSaved: 0, restoredAt: null, jobs: {}, stageChats: {} }
 }
 
 export function newThread(n: number, summary: string, now: string): Thread {

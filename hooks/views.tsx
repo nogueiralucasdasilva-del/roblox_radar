@@ -1,12 +1,12 @@
 import type { Report, ReportItem, SourceStatus, SourcesFile, ReportsFile, Stage } from '../types'
 import { AMBER, CLAY, FG, LINE, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY, BG } from './theme'
 import { KNOWLEDGE_KINDS, STALE_BUSY_MS, clip, ideasAt, nextStageOf, stepFor } from './model'
-import type { Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
+import type { ChatLink, Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
 import type { Outcome, Receipt } from './receipts'
 
 // Components come from $.ui.resolve(e) at render time.
-export type Components = { Box: any; Text: any; Button: any; Input: any }
+export type Components = { Box: any; Text: any; Button: any; Input: any; Link?: any }
 
 export type Ctx = {
   C: Components
@@ -28,6 +28,10 @@ export type Ctx = {
   scanIdea: (ideaId: string) => unknown
   ideaSay: (ideaId: string, text: string) => unknown
   briefIdea: (ideaId: string) => unknown
+  openChat: (kind: 'idea' | 'stage', scope: string) => unknown
+  ideaYes: (ideaId: string) => unknown
+  chatError: (key: string) => string | null
+  chatBusy: (key: string) => boolean
   addIdea: (title: string) => unknown
   addKnowledge: (stageId: string, raw: string) => unknown
   removeKnowledge: (stageId: string, id: string) => unknown
@@ -304,22 +308,20 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                   {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
                 </Text>
                 {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
-                {ideaChat(x, i, here)}
+                {chatPanel(x, 'idea', i.id, i.chat ?? null, i.memory ?? '', stage.id === 'prevalid' && !i.scan ? 'Open chat and run the quick scan' : 'Open chat')}
                 <Box gap={1} flexWrap="wrap">
                   {here ? (
                     <Box gap={1} flexWrap="wrap">
-                      {stage.id === 'prevalid' && i.scan && status !== 'rejected' ? (
-                        <Button key={`yes-${i.id}`} label="Yes, write the 2-page brief" onPress={() => x.briefIdea(i.id)} />
+                      {stage.id === 'prevalid' && i.chat && status !== 'rejected' ? (
+                        <Button key={`yes-${i.id}`} label="Yes, write the 2-page brief" onPress={() => x.ideaYes(i.id)} />
                       ) : null}
                       <Button key={`s-pr-${i.id}`} label="Promising" onPress={() => x.setStatus(i.id, 'promising')} />
                       <Button key={`s-pe-${i.id}`} label={status === 'rejected' ? 'Reopen as pending' : 'Pending'} onPress={() => x.setStatus(i.id, 'pending')} />
-                      <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.scan ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
-                      {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.scan) ? (
+                      <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.chat ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
+                      {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.chat) ? (
                         <Button key={`pro-${i.id}`} label={`Promote to ${nameOf(x.stages, nextId)}`} onPress={() => x.promote(i.id)} />
                       ) : null}
-                      {stage.id === 'prevalid' && !i.scan && !busyOf(i, x.now) ? (
-                        <Button key={`scan-${i.id}`} label="Run the quick scan" onPress={() => x.scanIdea(i.id)} />
-                      ) : null}
+
                     </Box>
                   ) : (
                     <Button key={`go-${i.id}`} label={`Open in ${nameOf(x.stages, i.stage)}`} onPress={() => x.go(i.stage)} />
@@ -374,6 +376,46 @@ function ideaChat(x: Ctx, i: Idea, here: boolean) {
               if (v.trim()) void x.ideaSay(i.id, v.trim())
             }}
           />
+        </Box>
+      ) : null}
+    </Box>
+  )
+}
+
+// The link between the panel and a real app conversation: open or start it, and show what the panel filed from it.
+export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: ChatLink | null, memory: string, startLabel: string) {
+  const { Box, Text, Button, Link } = x.C
+  const key = `${kind}:${scope}`
+  const err = x.chatError(key)
+  const busy = x.chatBusy(key)
+  return (
+    <Box flexDirection="column" gap={1}>
+      <Box gap={1} flexWrap="wrap">
+        {chat ? (
+          <Button key={`chat-open-${key}`} label="Open chat" onPress={() => x.openChat(kind, scope)} />
+        ) : (
+          <Button key={`chat-start-${key}`} label={startLabel} onPress={() => x.openChat(kind, scope)} />
+        )}
+        {busy ? <Text color={CLAY}>opening...</Text> : null}
+        {chat ? <Text color={MUTED}>{`${chat.title}, started ${chat.at.slice(0, 10)}${chat.syncedAt ? `, read ${ago(chat.syncedAt, x.now)}` : ''}`}</Text> : null}
+        {chat && chat.link && Link ? (
+          <Link key={`chat-link-${key}`} href={chat.link} label="link" />
+        ) : null}
+      </Box>
+      {!chat ? (
+        <Text color={MUTED}>
+          {kind === 'idea'
+            ? 'This card gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click starts it and the app asks you to approve; later clicks reopen the same one beside the panel.'
+            : 'This stage gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click starts it and the app asks you to approve; later clicks reopen the same one beside the panel.'}
+        </Text>
+      ) : null}
+      {err ? <Text color={AMBER}>{err}</Text> : null}
+      {memory ? (
+        <Box flexDirection="column">
+          <Text bold color={FG}>
+            Memory
+          </Text>
+          <Text color={MUTED}>{clip(memory, 1200)}</Text>
         </Box>
       ) : null}
     </Box>
