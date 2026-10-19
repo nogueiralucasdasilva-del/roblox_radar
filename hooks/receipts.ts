@@ -37,7 +37,7 @@ const isIso = (v: unknown): v is string => typeof v === 'string' && Number.isFin
 // A Google Doc read does not return the doc body alone. The Drive connector wraps it as
 // {"fileContent": "...", "title": ..., "viewUrl": ...}, and the doc text is Markdown, so punctuation
 // comes back escaped (receipt\_version, \[ \], \#, \!). Undo both before parsing the JSON.
-const MD_ESCAPED = /\\([_\[\]#!*()<>\-.+|~`{}=&])/g
+const MD_ESCAPED = /\\([\\_\[\]#!*()<>\-.+|~`{}=&])/g
 
 export function unwrapDoc(text: string): string {
   let body = text
