@@ -136,19 +136,57 @@ let rcpBusy = false
 // File ids are immutable (a receipt is never edited), so a parsed receipt is cached for good. null = unreadable file.
 const rcpCache = new Map<string, Receipt | null>()
 
+// The session lists the tools it really has, so ask it instead of guessing spellings.
+const DRIVE_TOOL_RE: Record<string, RegExp> = {
+  search_files: /__(search_files|search|drive_search|list_files)$/i,
+  read_file_content: /__(read_file_content|read_file|get_file_content|get_file)$/i,
+}
+const discovered: Record<string, string> = {}
+let visibleMcp = ''
+
+async function discoverDrive($: any, tool: string): Promise<string | null> {
+  if (discovered[tool]) return discovered[tool] as string
+  try {
+    const list: { name: string; mcp: boolean }[] = await $.tool.list()
+    const mcpNames = list.filter(t => t.mcp).map(t => t.name)
+    const servers = new Set<string>()
+    for (const n of mcpNames) {
+      const m = /^mcp__(.+?)__/.exec(n)
+      if (m && m[1]) servers.add(m[1])
+    }
+    visibleMcp = servers.size > 0 ? `MCP tools visible here come from: ${[...servers].join(', ')}.` : 'No MCP tools are visible to the panel in this session.'
+    const re = DRIVE_TOOL_RE[tool]
+    const hit = re ? mcpNames.find(n => /drive/i.test(n) && re.test(n)) : undefined
+    if (hit) discovered[tool] = hit
+    return hit ?? null
+  } catch {
+    return null
+  }
+}
+
 async function driveCall($: any, tool: string, args: Record<string, unknown>): Promise<string> {
+  const errors: string[] = []
+  const found = await discoverDrive($, tool)
+  if (found) {
+    try {
+      const r: any = await $.tool.call({ tool: found, ...args })
+      if (r && r.deny) errors.push(`${found}: denied ${String(r.deny).slice(0, 80)}`)
+      else if (r && r.isError) errors.push(`${found}: error ${textOf(r).slice(0, 120)}`)
+      else return textOf(r)
+    } catch (err: any) {
+      errors.push(`${found}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 120)}`)
+    }
+  }
   const all: DriveHow[] = [
     ...DRIVE_PREFIXES.map((prefix): DriveHow => ({ kind: 'tool', prefix })),
     ...DRIVE_SERVERS.map((server): DriveHow => ({ kind: 'mcp', server })),
   ]
-  const attempts = driveHow ? [driveHow] : all
-  const errors: string[] = []
-  for (const how of attempts) {
+  for (const how of driveHow ? [driveHow] : all) {
     const label = how.kind === 'tool' ? `${how.prefix}${tool}` : `mcp "${how.server}"`
     try {
       const r: any = how.kind === 'tool' ? await $.tool.call({ tool: `${how.prefix}${tool}`, ...args }) : await $.mcp.call(how.server, tool, args)
       if (r && r.deny) {
-        errors.push(`${label}: denied ${String(r.deny).slice(0, 60)}`)
+        errors.push(`${label}: denied`)
         continue
       }
       if (r && r.isError) {
@@ -157,13 +195,13 @@ async function driveCall($: any, tool: string, args: Record<string, unknown>): P
       }
       driveHow = how
       return textOf(r)
-    } catch (err: any) {
-      errors.push(`${label}: ${String((err && err.message) || err).replace(/^radar-panel: /, '').slice(0, 90)}`)
+    } catch {
+      errors.push(label)
     }
   }
   driveHow = null
-  // Every spelling failed: keep each reason so the panel can show which names were tried and why they failed.
-  throw new Error(errors.join(' | ') || 'no Google Drive connector answered')
+  // Nothing answered: say what the session does have, so the panel shows the real cause.
+  throw new Error(`Google Drive is not reachable from this session. ${visibleMcp} ${errors.length > 0 && found ? errors.join(' | ') : ''}`.trim())
 }
 
 async function fetchReceipts($: any): Promise<void> {
