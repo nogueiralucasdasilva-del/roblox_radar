@@ -405,8 +405,8 @@ export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: C
       {!chat ? (
         <Text color={MUTED}>
           {kind === 'idea'
-            ? 'This card gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click starts it and the app asks you to approve; later clicks reopen the same one beside the panel.'
-            : 'This stage gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click starts it and the app asks you to approve; later clicks reopen the same one beside the panel.'}
+            ? 'This card gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click writes the request in the message box: press Enter and approve. Later clicks reopen the same conversation beside the panel.'
+            : 'This stage gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click writes the request in the message box: press Enter and approve. Later clicks reopen the same conversation beside the panel.'}
         </Text>
       ) : null}
       {err ? <Text color={AMBER}>{err}</Text> : null}

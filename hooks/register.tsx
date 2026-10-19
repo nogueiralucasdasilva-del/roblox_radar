@@ -510,6 +510,32 @@ async function onIdeaDone($: any, agentId: string, job: Job, answer: string, rea
 // Nothing here starts on its own: a conversation is started only when Lucas clicks, and the app asks him to approve it.
 
 const chatBusy = new Set<string>()
+type PendingChat = { key: string; kind: 'idea' | 'stage'; scope: string; title: string; prompt: string; background: string }
+const pendingChats = new Map<string, PendingChat>()
+const CHAT_MARK = /\[radar:((?:idea|stage):[^\]]+)\]/
+
+// The main chat started a conversation for a pending request: tie it to its card or stage.
+async function saveStartedChat($: any, p: PendingChat, id: string): Promise<void> {
+  let link: string | null = null
+  try {
+    link = parseLink(await ccdCall($, 'ccd_session_mgmt', 'get_session', { session_id: id }))
+  } catch {
+    // the link is a convenience
+  }
+  const chat: ChatLink = { id, title: p.title, link, at: new Date().toISOString(), syncedAt: null, seen: 0 }
+  await mutate($, s => {
+    if (p.kind === 'idea') {
+      const i = s.ideas.find(x => x.id === p.scope)
+      if (i) i.chat = chat
+      addLog(s, i ? i.stage : 'prevalid', 'chat', `Chat started: ${p.title}.`)
+    } else {
+      s.stageChats[p.scope] = chat
+      addLog(s, p.scope, 'chat', `Chat started: ${p.title}.`)
+    }
+  })
+  pendingChats.delete(p.key)
+  delete chatError[p.key]
+}
 const chatError: Record<string, string> = {}
 let syncBusy = false
 const GROUP_NAME = 'Roblox Radar'
@@ -601,28 +627,14 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
       prompt = stageOpening(stage, data.updated, stageContext(data, s0, scope))
       background = stageBackground()
     }
-    const raw = await ccdCall($, 'ccd_session', 'start_session', { initiation: 'user_asked', title, prompt, background, context: 'fresh', use_worktree: false })
-    const id = parseSessionId(raw)
-    if (!id) throw new Error(`The app did not return a session id. It said: ${raw.slice(0, 300)}`)
-    let link: string | null = null
-    try {
-      link = parseLink(await ccdCall($, 'ccd_session_mgmt', 'get_session', { session_id: id }))
-    } catch {
-      // the link is a convenience
-    }
-    const chat: ChatLink = { id, title, link, at: new Date().toISOString(), syncedAt: null, seen: 0 }
-    await mutate($, s => {
-      if (kind === 'idea') {
-        const i = s.ideas.find(x => x.id === scope)
-        if (i) i.chat = chat
-      } else {
-        s.stageChats[scope] = chat
-      }
-      addLog(s, logStage, 'chat', `Chat started: ${title}.`)
-    })
-    delete chatError[key]
-    await fileInGroup($, id)
-    await showChat($, chat)
+    // A new conversation is started by Lucas's own message: the panel writes the request in the message box,
+    // he presses Enter, and the main chat starts the conversation (the app asks him to approve it).
+    pendingChats.set(key, { key, kind, scope, title, prompt, background })
+    const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
+    const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
+    const filled: any = await $.prompt.fill({ text: request })
+    if (filled && filled.isFilled === false) throw new Error(`Could not write in the message box (${String(filled.refusal ?? 'unknown')}). Type this there and press Enter: ${request}`)
+    chatError[key] = 'Press Enter in the message box to start this chat. The app may ask you to approve it.'
   } catch (err: any) {
     chatError[key] = String((err && err.message) || err).slice(0, 700)
   } finally {
@@ -631,23 +643,14 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
   }
 }
 
-// "Yes" on a card: the idea moves to the brief stage and its own chat is asked to write the brief.
+// "Yes" on a card: the idea moves to the brief stage and its own chat opens, where Lucas confirms the brief.
 async function ideaYes($: any, ideaId: string, stages: Stage[]): Promise<void> {
-  const s0 = await loadStore($)
-  const chat = s0.ideas.find(x => x.id === ideaId)?.chat
+  const chat = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat
   await promote($, ideaId, stages)
   if (!chat) return
-  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
-  try {
-    await ccdCall($, 'ccd_session_mgmt', 'send_message', {
-      session_id: chat.id,
-      message: `Yes. Write the full 2-page concept brief now as a Google Doc with the roblox-concept-validator skill. Put the proto_id ${i?.proto_id ?? '(none yet)'} in the title. Concept only, never loop design. Reply with the doc link, then three lines: the fantasy, the wedge, the main risk.`,
-    })
-    await showChat($, chat)
-  } catch (err: any) {
-    chatError[`idea:${ideaId}`] = `Could not send the yes to the chat, type it there: ${String((err && err.message) || err).slice(0, 400)}`
-    await update($, rev, n => n + 1)
-  }
+  chatError[`idea:${ideaId}`] = 'Moved to the 2-page brief. Type "yes" in its chat and it writes the brief.'
+  await showChat($, chat)
+  await update($, rev, n => n + 1)
 }
 
 // Reads the linked conversations that changed and files them as memory: the note of the idea or stage, and the
@@ -1243,7 +1246,35 @@ export const register: Register = on => {
 
   // Plain-text selector that works where slash commands and clicks do not: "#brief how are we?".
   // The focused stage rides along as hidden context in the main chat.
+  // Watch the main chat start a Radar conversation and keep its id on the card or stage.
+  on('tool.call', { tool: /^mcp__ccd_session__start_session$/ }, async ($: any, e: any, next: any) => {
+    const r: any = await next(e)
+    try {
+      const title = String((e as any).title ?? '')
+      const p = [...pendingChats.values()].find(x => x.title === title)
+      const id = p ? parseSessionId(textOf(r)) : null
+      if (p && id) await saveStartedChat($, p, id)
+    } catch {
+      // the conversation still exists; the next click can only start another one
+    }
+    return r
+  })
+
   on('prompt.submit', async ($, e, next) => {
+    const mk = e.text.match(CHAT_MARK)
+    const pending = mk && mk[1] ? pendingChats.get(mk[1]) : undefined
+    if (pending) {
+      const ctx = [
+        `ROBLOX RADAR PANEL: Lucas asked to open the conversation "${pending.title}". Do exactly this and nothing else:`,
+        `1. Call mcp__ccd_session__start_session with initiation "user_asked", context "fresh", use_worktree false, title ${JSON.stringify(pending.title)}, and the prompt and background below, verbatim.`,
+        '2. Call mcp__ccd_window__open_session_in with the new session id and target "split".',
+        '3. File it in the sidebar group "Roblox Radar" with the ccd_sidebar tools: list_groups, create_group only if that group does not exist, then move_sessions.',
+        '4. Reply in one short line in Portuguese saying the chat is open.',
+        `PROMPT:\n${pending.prompt}`,
+        `BACKGROUND:\n${pending.background}`,
+      ].join('\n\n')
+      return next({ ...e, context: [...(e.context ?? []), ctx] })
+    }
     const origin: any = (e as any).origin
     if (origin && origin.kind === 'plugin' && origin.name === PLUGIN_NAME && e.text.startsWith('[Roblox Radar panel:')) {
       currentMain = mainQueue.shift() ?? null
