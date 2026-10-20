@@ -30,6 +30,7 @@ export type Ctx = {
   briefIdea: (ideaId: string) => unknown
   openChat: (kind: 'idea' | 'stage', scope: string) => unknown
   ideaYes: (ideaId: string) => unknown
+  removeIdea: (ideaId: string) => unknown
   chatError: (key: string) => string | null
   chatBusy: (key: string) => boolean
   addIdea: (title: string) => unknown
@@ -318,6 +319,9 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                       <Button key={`s-pr-${i.id}`} label="Promising" onPress={() => x.setStatus(i.id, 'promising')} />
                       <Button key={`s-pe-${i.id}`} label={status === 'rejected' ? 'Reopen as pending' : 'Pending'} onPress={() => x.setStatus(i.id, 'pending')} />
                       <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.chat ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
+                      {i.origin === 'own' && !i.chat && !i.proto_id ? (
+                        <Button key={`del-${i.id}`} label="Delete" onPress={() => x.removeIdea(i.id)} />
+                      ) : null}
                       {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.chat) ? (
                         <Button key={`pro-${i.id}`} label={`Promote to ${nameOf(x.stages, nextId)}`} onPress={() => x.promote(i.id)} />
                       ) : null}
@@ -405,8 +409,8 @@ export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: C
       {!chat ? (
         <Text color={MUTED}>
           {kind === 'idea'
-            ? 'This card gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click writes the request in the message box: press Enter and approve. Later clicks reopen the same conversation beside the panel.'
-            : 'This stage gets its own conversation in the app, filed in the Roblox Radar sidebar group. The first click writes the request in the message box: press Enter and approve. Later clicks reopen the same conversation beside the panel.'}
+            ? 'This card gets its own conversation in the app, in the Roblox Radar sidebar group. Click the button: the conversation is created and opens beside the panel (approve if the app asks). Later clicks reopen the same one.'
+            : 'This stage gets its own conversation in the app, in the Roblox Radar sidebar group. Click the button: the conversation is created and opens beside the panel (approve if the app asks). Later clicks reopen the same one.'}
         </Text>
       ) : null}
       {err ? <Text color={AMBER}>{err}</Text> : null}

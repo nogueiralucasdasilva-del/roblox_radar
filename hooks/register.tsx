@@ -636,16 +636,17 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
     lastPending = key
     const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
-    let filled = false
+    // The click sends the request as a message of the main chat, so the app judges a real request.
+    let sent = false
     try {
-      const r: any = await $.prompt.fill({ text: request })
-      filled = !!(r && r.isFilled)
+      const r: any = await $.prompt.submit({ text: request })
+      sent = !(r && r.drop)
     } catch {
-      filled = false
+      sent = false
     }
-    chatError[key] = filled
-      ? 'Press Enter in the message box to start this chat. The app may ask you to approve it.'
-      : 'Now type "abrir chat" in the message box and press Enter. The app may ask you to approve it.'
+    chatError[key] = sent
+      ? 'Starting the chat in the main conversation. If the app asks, approve it.'
+      : 'Could not start it from here. Type "abrir chat" in the Claude message box at the bottom of the window (not in the panel) and press Enter.'
   } catch (err: any) {
     chatError[key] = String((err && err.message) || err).slice(0, 700)
   } finally {
@@ -950,9 +951,21 @@ async function briefIdea($: any, ideaId: string, stages: Stage[]): Promise<void>
   if (i && i.stage === 'brief') await startIdeaJob($, ideaId, 'brief', '')
 }
 
+async function removeIdea($: any, ideaId: string): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    s.ideas = s.ideas.filter(x => x.id !== ideaId)
+    if (i) addLog(s, i.stage, 'ideas', `Deleted "${i.title}".`)
+  })
+}
+
 async function addIdea($: any, raw: string): Promise<void> {
   const title = raw.trim()
   if (!title) return
+  if (OPEN_WORDS.includes(title.toLowerCase().replace(/[.!]+$/, ''))) {
+    $.ui.toast('That box adds ideas. Use the Open chat button on a card instead.')
+    return
+  }
   let newId = ''
   await mutate($, s => {
     const now = new Date().toISOString()
@@ -1600,6 +1613,7 @@ export const register: Register = on => {
         briefIdea: id => briefIdea($, id, data.stages),
         openChat: (kind, scope) => openChat($, kind, scope),
         ideaYes: id => ideaYes($, id, data.stages),
+        removeIdea: id => removeIdea($, id),
         chatError: key => chatError[key] ?? null,
         chatBusy: key => chatBusy.has(key),
         addIdea: v => addIdea($, v),
