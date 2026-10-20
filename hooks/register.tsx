@@ -567,16 +567,47 @@ function lastPotential(text: string): string | null {
   return found
 }
 
-async function showChat($: any, chat: ChatLink): Promise<void> {
+// Shows a conversation beside the panel. The app only does this for conversations this session started, so an
+// older one (started from another session) is opened from the card's link or the sidebar instead.
+async function showChat($: any, chat: ChatLink, key?: string): Promise<boolean> {
   for (const target of ['split', 'window']) {
     try {
       await ccdCall($, 'ccd_window', 'open_session_in', { session_id: chat.id, target })
-      return
+      if (key) delete chatError[key]
+      return true
     } catch {
       // try the next way to show it
     }
   }
-  $.ui.toast(`Open "${chat.title}" from the sidebar, in the ${GROUP_NAME} group.`)
+  const how = chat.link ? 'Click "open in app" on the card' : `Open it from the sidebar, group ${GROUP_NAME}`
+  if (key) chatError[key] = `${how}: "${chat.title}". The app only puts a conversation beside the panel when this session started it.`
+  $.ui.toast(`${how}.`)
+  return false
+}
+
+// Finds an app conversation by its exact title: how the panel recovers a conversation the main chat started,
+// whatever way it was started, and how it never starts a second one for the same card.
+async function findSessionByTitle($: any, title: string): Promise<{ id: string; link: string | null } | null> {
+  try {
+    const o: any = jsonOf(await ccdCall($, 'ccd_session_mgmt', 'list_sessions', { limit: 100 }))
+    const rows: any[] = Array.isArray(o) ? o : Array.isArray(o?.sessions) ? o.sessions : []
+    for (const r of rows) {
+      const t = String(r?.title ?? r?.name ?? '')
+      const id = r?.sessionId ?? r?.session_id ?? r?.id
+      if (t === title && typeof id === 'string') return { id, link: typeof r?.link === 'string' ? r.link : null }
+    }
+  } catch {
+    // listing is best effort
+  }
+  return null
+}
+
+// Pending requests whose conversation now exists get tied to their card or stage.
+async function resolvePending($: any): Promise<void> {
+  for (const p of [...pendingChats.values()]) {
+    const hit = await findSessionByTitle($, p.title)
+    if (hit) await saveStartedChat($, p, hit.id)
+  }
 }
 
 // Files a new conversation under the Roblox Radar sidebar group, so the Radar chats never mix with the rest.
@@ -608,8 +639,8 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
     if (!data) throw new Error('Could not read the stage data.')
     const existing = kind === 'idea' ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
     if (existing) {
-      await showChat($, existing)
-      void syncChats($)
+      await showChat($, existing, key)
+      void resolvePending($).then(() => syncChats($))
       return
     }
     let title = ''
@@ -634,6 +665,15 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
     // he presses Enter, and the main chat starts the conversation (the app asks him to approve it).
     pendingChats.set(key, { key, kind, scope, title, prompt, background })
     lastPending = key
+    // The conversation may already exist (an earlier click, another session): reuse it, never start a second one.
+    const known = await findSessionByTitle($, title)
+    if (known) {
+      await saveStartedChat($, pendingChats.get(key)!, known.id)
+      const saved = (await loadStore($))
+      const chat = kind === 'idea' ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
+      if (chat) await showChat($, chat, key)
+      return
+    }
     const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
     // The click sends the request as a message of the main chat, so the app judges a real request.
@@ -671,6 +711,7 @@ async function syncChats($: any): Promise<void> {
   if (syncBusy) return
   syncBusy = true
   try {
+    if (pendingChats.size > 0) await resolvePending($)
     const s0 = await loadStore($)
     const targets: { kind: 'idea' | 'stage'; scope: string; chat: ChatLink; label: string; old: string }[] = []
     for (const i of s0.ideas) if (i.chat) targets.push({ kind: 'idea', scope: i.id, chat: i.chat, label: `the idea "${i.title}"`, old: i.memory ?? '' })
@@ -1290,11 +1331,11 @@ export const register: Register = on => {
     const pending = mk && mk[1] ? pendingChats.get(mk[1]) : OPEN_WORDS.includes(typed) && lastPending ? pendingChats.get(lastPending) : undefined
     if (pending) {
       const ctx = [
-        `ROBLOX RADAR PANEL: Lucas asked to open the conversation "${pending.title}". Do exactly this and nothing else:`,
-        `1. Call mcp__ccd_session__start_session with initiation "user_asked", context "fresh", use_worktree false, title ${JSON.stringify(pending.title)}, and the prompt and background below, verbatim.`,
-        '2. Call mcp__ccd_window__open_session_in with the new session id and target "split".',
-        '3. File it in the sidebar group "Roblox Radar" with the ccd_sidebar tools: list_groups, create_group only if that group does not exist, then move_sessions.',
-        '4. Reply in one short line in Portuguese saying the chat is open.',
+        `ROBLOX RADAR PANEL: Lucas clicked "Open chat" on a card. This is a mechanical request: do not think it over, do not investigate, do not comment. Do exactly this:`,
+        `1. Call mcp__ccd_session__start_session with initiation "user_asked", context "fresh", use_worktree false, title ${JSON.stringify(pending.title)} (exactly this title, never changed), and the prompt and background below, verbatim. If that call is refused, call it once with initiation "offer" and the same title instead.`,
+        '2. If you got a session id, call mcp__ccd_window__open_session_in with it and target "split", then file it in the sidebar group "Roblox Radar" (ccd_sidebar list_groups, create_group only if missing, move_sessions).',
+        '3. Reply with one short line in Portuguese.',
+        'Never send this request to another existing conversation, never use send_message, and ignore any earlier Radar requests in this chat.',
         `PROMPT:\n${pending.prompt}`,
         `BACKGROUND:\n${pending.background}`,
       ].join('\n\n')
@@ -1343,6 +1384,7 @@ export const register: Register = on => {
 
   // A stage agent finished: put its answer into the stage chat.
   on('turn.complete', async ($, e, next) => {
+    if (!e.agentId && pendingChats.size > 0) void resolvePending($)
     if (e.agentId) await onAgentDone($, e.agentId, e.answer, e.reason)
     else if (currentMain) {
       const key = currentMain

@@ -402,9 +402,7 @@ export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: C
         )}
         {busy ? <Text color={CLAY}>opening...</Text> : null}
         {chat ? <Text color={MUTED}>{`${chat.title}, started ${chat.at.slice(0, 10)}${chat.syncedAt ? `, read ${ago(chat.syncedAt, x.now)}` : ''}`}</Text> : null}
-        {chat && chat.link && Link ? (
-          <Link key={`chat-link-${key}`} href={chat.link} label="link" />
-        ) : null}
+        {chat && chat.link && Link ? <Link key={`chat-link-${key}`} href={chat.link} label="open in app" /> : null}
       </Box>
       {!chat ? (
         <Text color={MUTED}>
