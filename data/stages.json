@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-19",
+ "updated": "2026-10-21",
  "note": "Snapshot recorded by checks on 2026-10-18 and 2026-10-19, not read live by the mod. An empty checked_at means never checked live.",
  "stages": [
   {
@@ -270,11 +270,11 @@
    "name": "Template match",
    "sub": "pick and slots",
    "gate": true,
-   "desc": "Matches the brief to a template in the library and defines the variation slots and the uniqueness rule.",
+   "desc": "Matches the brief to a template from the library and defines the variation slots. The library is the Drive folder roblox_radar_templates: one Google Doc per template, read by the panel on its own.",
    "inputs": "Validated brief",
    "outputs": "Chosen template and variation slots",
    "build": "not_built",
-   "build_note": "No template built yet.",
+   "build_note": "Template library folder ready in Drive. No template doc yet.",
    "owner_chat": "to create",
    "trigger_ids": [],
    "status_doc": "",
@@ -313,6 +313,10 @@
    "checked_at": null,
    "gate_note": "You validate the template match.",
    "extra_tabs": [
+    {
+     "id": "templates",
+     "label": "Templates"
+    },
     {
      "id": "protos",
      "label": "Prototypes"
@@ -697,6 +701,29 @@
      "label": "Registry"
     }
    ]
+  },
+  {
+   "id": "auditor",
+   "name": "Auditor",
+   "sub": "daily review of every stage",
+   "gate": false,
+   "desc": "Daily scheduled review: reads runs, receipts, status files, conversations and briefs, checks them against the project rules and writes audit_report with findings and up to 5 improvement proposals. It changes nothing itself; you approve each proposal.",
+   "inputs": "Runs, receipts, status files, memory folder, briefs",
+   "outputs": "audit_report in roblox_radar_status, receipt auditor",
+   "build": "built",
+   "build_note": "Runs daily at 18:47 UTC since 2026-10-21.",
+   "owner_chat": "Central",
+   "trigger_ids": [
+    "trig_018QkKA12N9TCxxHQt5EWE6G"
+   ],
+   "status_doc": "audit_report",
+   "docs": [],
+   "skills": [],
+   "pendencies": [],
+   "no_task_note": "",
+   "flag": null,
+   "checked_at": null,
+   "extra_tabs": []
   }
  ]
 }
