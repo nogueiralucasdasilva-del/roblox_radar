@@ -26,6 +26,7 @@ export type Idea = {
   memory?: string
   chat?: ChatLink | null
   template?: { id: string; name: string; family: string; at: string } | null
+  lastAction?: { stage: string; label: string; at: string } | null
 }
 // A real app conversation tied to an idea card or a stage. `seen` is how much of its transcript the panel already filed.
 export type ChatLink = { id: string; title: string; link: string | null; at: string; syncedAt: string | null; seen: number }

@@ -45,6 +45,7 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
+import { actionFor } from './actions'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
 import type { Template } from './templates'
 import { ideaBackground, ideaChatTitle, ideaOpening, parseLink, parseSessionId, stageBackground, stageChatTitle, stageOpening } from './chats'
@@ -57,6 +58,7 @@ import {
   mergeReports,
   parseReceipt,
   receiptsFor,
+  isLate,
   reportsFromReceipts,
   sourcesFromReceipt,
   stageHealth,
@@ -630,7 +632,7 @@ async function fileInGroup($: any, sessionId: string): Promise<void> {
 
 // Opens the conversation of an idea card or a stage. The first click starts it (the app asks to approve);
 // every later click reopens the same one.
-async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<void> {
+async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: string): Promise<void> {
   const key = `${kind}:${scope}`
   if (chatBusy.has(key)) return
   chatBusy.add(key)
@@ -653,7 +655,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
       const idea = s0.ideas.find(i => i.id === scope)
       if (!idea) throw new Error('Idea not found.')
       title = ideaChatTitle(idea)
-      prompt = ideaOpening(idea, idea.stage === 'prevalid' && !idea.scan)
+      prompt = ideaOpening(idea, !task && idea.stage === 'prevalid' && !idea.scan, task)
       background = ideaBackground()
       logStage = idea.stage
     } else {
@@ -695,6 +697,58 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string): Promise<
     chatBusy.delete(key)
     await update($, rev, n => n + 1)
   }
+}
+
+// The main action of the card's stage: sent straight to the idea's conversation (started first when it does
+// not exist yet), then the conversation opens beside the panel.
+async function runAction($: any, ideaId: string): Promise<void> {
+  const key = `idea:${ideaId}`
+  const s0 = await loadStore($)
+  const i = s0.ideas.find(x => x.id === ideaId)
+  const a = i ? actionFor(i.stage) : null
+  if (!i || !a) return
+  const blocked = a.needs ? a.needs(i) : null
+  if (blocked) {
+    chatError[key] = blocked
+    await update($, rev, n => n + 1)
+    return
+  }
+  const text = a.prompt(i, {
+    knowledge: s0.knowledge[i.stage] ?? [],
+    templateLink: i.template ? `https://docs.google.com/document/d/${i.template.id}` : null,
+  })
+  await mutate($, s => {
+    const x = s.ideas.find(y => y.id === ideaId)
+    if (!x) return
+    x.lastAction = { stage: x.stage, label: a.label, at: new Date().toISOString() }
+    addLog(s, x.stage, 'ideas', `${a.label}: requested for "${x.title}".`)
+  })
+  let chat = i.chat ?? null
+  if (!chat) {
+    const hit = await findSessionByTitle($, ideaChatTitle(i))
+    if (hit) {
+      const p: PendingChat = { key, kind: 'idea', scope: ideaId, title: ideaChatTitle(i), prompt: '', background: '' }
+      await saveStartedChat($, p, hit.id)
+      chat = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat ?? null
+    }
+  }
+  if (!chat) {
+    // First time: the conversation is started with this action as its first task.
+    await openChat($, 'idea', ideaId, text)
+    return
+  }
+  let sent = false
+  try {
+    const r: any = await $.session.send({ to: { sessionId: chat.id }, text })
+    sent = !!(r && r.isDelivered)
+  } catch {
+    sent = false
+  }
+  const shown = await showChat($, chat)
+  chatError[key] = sent
+    ? `${a.done}${shown ? '' : ' Open it from "open in app" or the Roblox Radar group in the sidebar.'}`
+    : `Could not send it to the chat. Open the chat and type: ${a.label.toLowerCase()}.`
+  await update($, rev, n => n + 1)
 }
 
 // "Yes" on a card: the idea moves to the brief stage and its own chat opens, where Lucas confirms the brief.
@@ -810,6 +864,18 @@ async function fetchTemplates($: any): Promise<void> {
   } finally {
     tplBusy = false
     await update($, rev, n => n + 1)
+  }
+}
+
+// "Run now" on a stage's scheduled task: asked of the main chat, which fires it.
+async function runTask($: any, triggerId: string): Promise<void> {
+  try {
+    await $.prompt.submit({
+      text: `Run the Roblox Radar scheduled task ${triggerId} now with the fire_trigger tool, then reply with one short line in Portuguese. Do nothing else.`,
+    })
+    $.ui.toast('Asked the main chat to run the task now.')
+  } catch {
+    $.ui.toast('Could not ask the main chat. Run it from the scheduled tasks list.')
   }
 }
 
@@ -1135,8 +1201,17 @@ function findStage(data: Data, query: string): Stage | undefined {
 
 type Tone = { label: string; color: string; glyph: string }
 
+// A stage with receipts takes its colour from what its runs said (late counts as attention). The data file's
+// flags and pendencies only colour stages that have no receipts yet.
 function toneOf(s: Stage): Tone {
   if (s.build === 'not_built') return { label: 'NOT BUILT', color: SAND, glyph: '○' }
+  const list = rcp ? rcp.receipts : []
+  if (STAGES_WITH_RECEIPTS.includes(s.id) && receiptsFor(list, s.id).length > 0) {
+    const h = stageHealth(list, s.id, Date.now()).level
+    if (h === 2) return { label: 'ERROR', color: RUST, glyph: '●' }
+    if (h === 1) return { label: 'ATTENTION', color: AMBER, glyph: '●' }
+    return { label: 'OK', color: OLIVE, glyph: '●' }
+  }
   const lv = liveOf(s).level
   if ((s.flag && s.flag.level === 'err') || lv === 2) return { label: 'ERROR', color: RUST, glyph: '●' }
   if (s.build === 'partial' || s.flag || lv === 1) return { label: 'ATTENTION', color: AMBER, glyph: '●' }
@@ -1587,8 +1662,11 @@ export const register: Register = on => {
       const open = openCount(s)
       const isSel = s.id === sel
       const n = flowStages.findIndex(x => x.id === s.id) + 1
-      const lastR = STAGES_WITH_RECEIPTS.includes(s.id) ? stageHealth(receipts, s.id, Date.now()).last : null
-      const lastColor = !lastR ? MUTED : lastR.outcome === 'ok' ? OLIVE : lastR.outcome === 'failed' ? RUST : AMBER
+      // The stage's own task first; the daily status summary only when the stage has nothing else.
+      const ownR = STAGES_WITH_RECEIPTS.includes(s.id) ? receiptsFor(receipts, s.id) : []
+      const lastR = ownR.find(r => !r.task_key.startsWith('status_')) ?? ownR[0] ?? null
+      const lateR = !!lastR && isLate(lastR, Date.now())
+      const lastColor = !lastR ? MUTED : lastR.outcome === 'failed' ? RUST : lastR.outcome !== 'ok' || lateR ? AMBER : OLIVE
       return (
         <Box
           key={`node-${s.id}`}
@@ -1610,7 +1688,7 @@ export const register: Register = on => {
             </Text>
           </Button>
           <Text color={isSel ? FG : MUTED}>{clip(s.sub, nodeW - 4)}</Text>
-          {lastR ? <Text color={lastColor}>{clip(`${lastR.task_key} ${ago(lastR.finished_utc, Date.now())}`, nodeW - 4)}</Text> : null}
+          {lastR ? <Text color={lastColor}>{clip(`${lastR.task_key} ${ago(lastR.finished_utc, Date.now())}${lateR ? ', late' : ''}`, nodeW - 4)}</Text> : null}
           <Text bold={isSel} color={tone.color}>
             {tone.glyph} {tone.label}
             {open > 0 ? `  ${open} open` : ''}
@@ -1772,6 +1850,8 @@ export const register: Register = on => {
         briefIdea: id => briefIdea($, id, data.stages),
         openChat: (kind, scope) => openChat($, kind, scope),
         ideaYes: id => ideaYes($, id, data.stages),
+        runAction: id => runAction($, id),
+        runTask: tid => runTask($, tid),
         templates: tpl ? { at: tpl.at, ok: tpl.ok, error: tpl.error, list: tpl.list } : null,
         chooseTemplate: (ideaId, tid) => chooseTemplate($, ideaId, tid),
         refreshTemplates: () => fetchTemplates($),
@@ -1844,6 +1924,14 @@ export const register: Register = on => {
         body = (
           <Box flexDirection="column" paddingX={1}>
             {current.trigger_ids.length === 0 ? <Text color={MUTED}>{current.no_task_note || 'No automated task.'}</Text> : null}
+            {current.trigger_ids.length > 0 ? (
+              <Box gap={1} flexWrap="wrap">
+                {current.trigger_ids.map(tid => {
+                  const entry = live && !('error' in live) ? live.byId[tid] : undefined
+                  return <Button key={`run-${tid}`} label={`Run now: ${entry ? entry.name.replace(/^Radar Roblox: /, '') : tid}`} onPress={() => runTask($, tid)} />
+                })}
+              </Box>
+            ) : null}
             {lines.map(l => (
               <Text key={l} dimColor>
                 {l}

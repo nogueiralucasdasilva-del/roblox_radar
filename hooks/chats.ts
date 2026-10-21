@@ -22,7 +22,7 @@ export function ideaBackground(): string {
   return `Roblox Radar is Lucas Nogueira's (Ritz Deli Games) pipeline that turns cultural trend signals into Roblox game prototypes: collection, screening, pre-validation, 2-page brief, template match, full doc, build, title, thumbnail, publish, metrics. This conversation belongs to one idea card in the Radar panel. The panel keeps the idea's memory in the Drive folder roblox_radar_memory (id ${MEMORY_FOLDER_ID}) and reads this conversation to update it.`
 }
 
-export function ideaOpening(i: Idea, scan: boolean): string {
+export function ideaOpening(i: Idea, scan: boolean, task?: string): string {
   const lines = [
     `This is the chat for the idea "${i.title}" in the Roblox Radar pipeline. Lucas will come back to this same conversation every time he opens the card. ${STYLE}`,
     `Idea: ${ideaFacts(i)}`,
@@ -44,6 +44,8 @@ To move up to the next level: the one change to the hook that would raise the po
 Should I write the full brief (2 pages, Google Doc)? Yes, No, or Adjust the idea first.`,
       'After that, keep talking with Lucas about this idea. If he says yes, write the full 2-page brief as a Google Doc with the roblox-concept-validator skill and give him the link.',
     )
+  } else if (task) {
+    lines.push(`Lucas clicked the main action of the "${i.stage}" stage on the card. Do it now:\n${task}`)
   } else {
     lines.push('Say in two lines where this idea stands, then wait for Lucas.')
   }

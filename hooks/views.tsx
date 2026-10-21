@@ -4,6 +4,7 @@ import { KNOWLEDGE_KINDS, STALE_BUSY_MS, clip, ideasAt, nextStageOf, stepFor } f
 import type { ChatLink, Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
 import type { Template } from './templates'
+import { actionFor } from './actions'
 import type { Outcome, Receipt } from './receipts'
 
 // Components come from $.ui.resolve(e) at render time.
@@ -32,6 +33,8 @@ export type Ctx = {
   openChat: (kind: 'idea' | 'stage', scope: string) => unknown
   ideaYes: (ideaId: string) => unknown
   removeIdea: (ideaId: string) => unknown
+  runAction: (ideaId: string) => unknown
+  runTask: (triggerId: string) => unknown
   templates: { at: string; ok: boolean; error?: string; list: Template[] } | null
   chooseTemplate: (ideaId: string, templateId: string | null) => unknown
   refreshTemplates: () => unknown
@@ -314,6 +317,7 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                   {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
                 </Text>
                 {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
+                {here && status !== 'rejected' ? actionRow(x, i) : null}
                 {stage.id === 'template' && here ? templateChooser(x, i) : null}
                 {chatPanel(x, 'idea', i.id, i.chat ?? null, i.memory ?? '', stage.id === 'prevalid' && !i.scan ? 'Open chat and run the quick scan' : 'Open chat')}
                 <Box gap={1} flexWrap="wrap">
@@ -325,7 +329,7 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                       <Button key={`s-pr-${i.id}`} label="Promising" onPress={() => x.setStatus(i.id, 'promising')} />
                       <Button key={`s-pe-${i.id}`} label={status === 'rejected' ? 'Reopen as pending' : 'Pending'} onPress={() => x.setStatus(i.id, 'pending')} />
                       <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.chat ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
-                      {i.origin === 'own' && !i.chat && !i.proto_id ? (
+                      {i.origin === 'own' && !i.proto_id ? (
                         <Button key={`del-${i.id}`} label="Delete" onPress={() => x.removeIdea(i.id)} />
                       ) : null}
                       {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.chat) ? (
@@ -426,6 +430,26 @@ export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: C
           <Text color={MUTED}>{clip(memory, 1200)}</Text>
         </Box>
       ) : null}
+    </Box>
+  )
+}
+
+// The main action of the card's stage, highlighted, with what was last asked.
+function actionRow(x: Ctx, i: Idea) {
+  const { Box, Text, Button } = x.C
+  const a = actionFor(i.stage)
+  if (!a || (i.stage === 'prevalid' && i.scan)) return null
+  const blocked = a.needs ? a.needs(i) : null
+  const last = i.lastAction && i.lastAction.stage === i.stage ? i.lastAction : null
+  return (
+    <Box gap={1} flexWrap="wrap">
+      <Button key={`act-${i.id}`} onPress={() => x.runAction(i.id)}>
+        <Text bold color={BG} backgroundColor={blocked ? SAND : NEON}>
+          {` ▶ ${a.label} `}
+        </Text>
+      </Button>
+      {blocked ? <Text color={AMBER}>{blocked}</Text> : null}
+      {last ? <Text color={MUTED}>{`asked ${ago(last.at, x.now)}`}</Text> : null}
     </Box>
   )
 }
