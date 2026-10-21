@@ -3,6 +3,7 @@ import { AMBER, CLAY, FG, LINE, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY, BG }
 import { KNOWLEDGE_KINDS, STALE_BUSY_MS, clip, ideasAt, nextStageOf, stepFor } from './model'
 import type { ChatLink, Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
+import type { Template } from './templates'
 import type { Outcome, Receipt } from './receipts'
 
 // Components come from $.ui.resolve(e) at render time.
@@ -31,6 +32,9 @@ export type Ctx = {
   openChat: (kind: 'idea' | 'stage', scope: string) => unknown
   ideaYes: (ideaId: string) => unknown
   removeIdea: (ideaId: string) => unknown
+  templates: { at: string; ok: boolean; error?: string; list: Template[] } | null
+  chooseTemplate: (ideaId: string, templateId: string | null) => unknown
+  refreshTemplates: () => unknown
   chatError: (key: string) => string | null
   chatBusy: (key: string) => boolean
   addIdea: (title: string) => unknown
@@ -297,6 +301,7 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
               {!here ? chip(x, `MOVED TO ${nameOf(x.stages, i.stage).toUpperCase()}`, SKY, `mv-${i.id}`) : null}
               {i.proto_id ? chip(x, i.proto_id, CLAY, `pid-${i.id}`) : null}
               {i.scan ? chip(x, `POTENTIAL ${i.scan.level}`, POTENTIAL_COLOR[i.scan.level] ?? SKY, `pot-${i.id}`) : null}
+              {i.template ? chip(x, `TEMPLATE ${i.template.name.toUpperCase()}`, SKY, `tpl-${i.id}`) : null}
               {busyOf(i, x.now) ? <Text color={CLAY}>agent working...</Text> : null}
               <Text color={MUTED}>{i.origin === 'advisor' ? 'from the advisor' : 'your idea'}</Text>
             </Box>
@@ -309,6 +314,7 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                   {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
                 </Text>
                 {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
+                {stage.id === 'template' && here ? templateChooser(x, i) : null}
                 {chatPanel(x, 'idea', i.id, i.chat ?? null, i.memory ?? '', stage.id === 'prevalid' && !i.scan ? 'Open chat and run the quick scan' : 'Open chat')}
                 <Box gap={1} flexWrap="wrap">
                   {here ? (
@@ -420,6 +426,69 @@ export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: C
           <Text color={MUTED}>{clip(memory, 1200)}</Text>
         </Box>
       ) : null}
+    </Box>
+  )
+}
+
+// Picks the template of an idea in the Template match stage, from the Drive library.
+function templateChooser(x: Ctx, i: Idea) {
+  const { Box, Text, Button } = x.C
+  const list = x.templates ? x.templates.list : []
+  return (
+    <Box flexDirection="column">
+      <Text bold color={FG}>
+        Template
+      </Text>
+      {list.length === 0 ? <Text color={MUTED}>No template doc in the library yet. Add one to the Drive folder roblox_radar_templates.</Text> : null}
+      <Box gap={1} flexWrap="wrap">
+        {list.map(t => {
+          const isOn = i.template?.id === t.id
+          return (
+            <Button key={`pick-${i.id}-${t.id}`} onPress={() => x.chooseTemplate(i.id, isOn ? null : t.id)}>
+              <Text bold={isOn} color={isOn ? BG : t.status === 'ready' ? FG : MUTED} backgroundColor={isOn ? NEON : undefined}>
+                {` ${isOn ? '● ' : ''}${t.name}${t.status === 'draft' ? ' (draft)' : ''} `}
+              </Text>
+            </Button>
+          )
+        })}
+      </Box>
+    </Box>
+  )
+}
+
+/* ---------- Template library (Drive) ---------- */
+
+export function templatesView(x: Ctx) {
+  const { Box, Text, Button, Link } = x.C
+  const t = x.templates
+  return (
+    <Box flexDirection="column" gap={1}>
+      <Text color={FG}>
+        The template library is the Drive folder roblox_radar_templates. Each Google Doc whose title starts with template_ is one template; a new or edited doc appears here on its own.
+      </Text>
+      <Box gap={2}>
+        <Text color={t ? (t.ok ? OLIVE : AMBER) : MUTED}>
+          {!t ? 'Reading Drive...' : t.ok ? `${t.list.length} template(s), read at ${t.at.slice(11, 16)} UTC.` : `Drive read failed: ${t.error ?? 'unknown'}`}
+        </Text>
+        <Button key="tpl-refresh" label="Read again" onPress={() => x.refreshTemplates()} />
+      </Box>
+      {t && t.list.length === 0 ? <Text color={MUTED}>No template yet. The first one is written in the central chat and saved here.</Text> : null}
+      {(t ? t.list : []).map(tp => {
+        const used = x.store.ideas.filter(i => i.template?.id === tp.id).length
+        return (
+          <Box key={`tp-${tp.id}`} flexDirection="column" borderStyle="round" borderColor={tp.status === 'ready' ? OLIVE : LINE} backgroundColor={PANEL} paddingX={1}>
+            <Box gap={1} flexWrap="wrap">
+              <Text bold color={FG}>
+                {tp.name}
+              </Text>
+              {chip(x, tp.status.toUpperCase(), tp.status === 'ready' ? OLIVE : AMBER, `tps-${tp.id}`)}
+              <Text color={MUTED}>{`family ${tp.family}${used > 0 ? `, used by ${used} idea(s)` : ''}`}</Text>
+              {tp.link && Link ? <Link key={`tpl-link-${tp.id}`} href={tp.link} label="open doc" /> : null}
+            </Box>
+            {tp.summary ? <Text color={FG}>{tp.summary}</Text> : null}
+          </Box>
+        )
+      })}
     </Box>
   )
 }

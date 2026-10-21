@@ -154,7 +154,7 @@ export function stagesOf(r: Receipt): string[] {
   return TASK_STAGES[r.task_key] ?? (r.stage && r.stage !== 'status' ? [r.stage] : [])
 }
 
-export const STAGES_WITH_RECEIPTS = ['coleta', 'triagem', 'prevalid']
+export const STAGES_WITH_RECEIPTS = ['coleta', 'triagem', 'prevalid', 'auditor']
 
 export function receiptsFor(list: readonly Receipt[], stageId: string): Receipt[] {
   return list.filter(r => stagesOf(r).includes(stageId)).sort((a, b) => b.finished_utc.localeCompare(a.finished_utc))

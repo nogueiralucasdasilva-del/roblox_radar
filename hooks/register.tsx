@@ -3,7 +3,7 @@ import type { Register } from 'claude-code'
 
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
-import { ago, chatPanel, ideasView, knowledgeView, receiptsView, registryView, reportsView, sourcesView } from './views'
+import { ago, chatPanel, templatesView, ideasView, knowledgeView, receiptsView, registryView, reportsView, sourcesView } from './views'
 import type { Ctx } from './views'
 import {
   HISTORY_CHARS,
@@ -45,6 +45,8 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
+import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
+import type { Template } from './templates'
 import { ideaBackground, ideaChatTitle, ideaOpening, parseLink, parseSessionId, stageBackground, stageChatTitle, stageOpening } from './chats'
 import type { ChatLink } from './model'
 import {
@@ -700,7 +702,18 @@ async function ideaYes($: any, ideaId: string, stages: Stage[]): Promise<void> {
   const chat = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat
   await promote($, ideaId, stages)
   if (!chat) return
-  chatError[`idea:${ideaId}`] = 'Moved to the 2-page brief. Type "yes" in its chat and it writes the brief.'
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  let sent = false
+  try {
+    const r: any = await $.session.send({
+      to: { sessionId: chat.id },
+      text: `Yes. Write the full 2-page concept brief now as a Google Doc with the roblox-concept-validator skill. Put the proto_id ${i?.proto_id ?? '(none yet)'} in the title. Concept only, never loop design. Reply with the doc link, then three lines: the fantasy, the wedge, the main risk.`,
+    })
+    sent = !!(r && r.isDelivered)
+  } catch {
+    sent = false
+  }
+  chatError[`idea:${ideaId}`] = sent ? 'Moved to the 2-page brief. Its chat is writing the brief now.' : 'Moved to the 2-page brief. Type "yes" in its chat and it writes the brief.'
   await showChat($, chat)
   await update($, rev, n => n + 1)
 }
@@ -748,6 +761,80 @@ async function syncChats($: any): Promise<void> {
     }
   } finally {
     syncBusy = false
+  }
+  void flushOutbox($)
+}
+
+/* ---------- template library (Drive) ---------- */
+
+type TState = { at: string; ok: boolean; error?: string; list: Template[] }
+let tpl: TState | null = null
+let tplBusy = false
+const tplCache = new Map<string, Template>()
+
+// Lists the template docs in the Drive folder and reads only the new or edited ones.
+async function fetchTemplates($: any): Promise<void> {
+  if (tplBusy) return
+  tplBusy = true
+  const at = new Date().toISOString()
+  try {
+    const o: any = jsonOf(
+      await driveCall($, 'search_files', {
+        query: `parentId = '${TEMPLATE_FOLDER_ID}' and title contains '${TEMPLATE_PREFIX}'`,
+        pageSize: 100,
+        excludeContentSnippets: true,
+      }),
+    )
+    const files: any[] = (Array.isArray(o?.files) ? o.files : []).filter(
+      (f: any) => f && typeof f.id === 'string' && String(f.title ?? '').startsWith(TEMPLATE_PREFIX) && !f.trashed,
+    )
+    const list: Template[] = []
+    for (const f of files) {
+      const cached = tplCache.get(f.id)
+      if (cached && cached.modified === f.modifiedTime) {
+        list.push(cached)
+        continue
+      }
+      try {
+        const t = parseTemplate(await driveCall($, 'read_file_content', { fileId: f.id }), f)
+        tplCache.set(f.id, t)
+        list.push(t)
+      } catch {
+        // an unreadable doc is skipped this cycle
+      }
+    }
+    list.sort((a, b) => (a.status === b.status ? a.name.localeCompare(b.name) : a.status === 'ready' ? -1 : 1))
+    tpl = { at, ok: true, list }
+  } catch (err: any) {
+    tpl = { at, ok: false, error: String((err && err.message) || err).slice(0, 400), list: tpl ? tpl.list : [] }
+  } finally {
+    tplBusy = false
+    await update($, rev, n => n + 1)
+  }
+}
+
+async function chooseTemplate($: any, ideaId: string, templateId: string | null): Promise<void> {
+  const t = templateId ? (tpl?.list ?? []).find(x => x.id === templateId) : null
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const now = new Date().toISOString()
+    i.template = t ? { id: t.id, name: t.name, family: t.family, at: now } : null
+    i.updated = now
+    addLog(s, i.stage, 'ideas', t ? `"${i.title}" uses the template ${t.name}.` : `Template cleared on "${i.title}".`)
+    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${i.id}`, at: now, stage: i.stage, idea: ideaSnapshot(i) })
+  })
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  // The idea's own conversation learns the choice right away, without a hop through the main chat.
+  if (t && i && i.chat) {
+    try {
+      await $.session.send({
+        to: { sessionId: i.chat.id },
+        text: `Lucas picked the template "${t.name}" (family ${t.family}) for this idea. Its doc: ${t.link ?? `https://docs.google.com/document/d/${t.id}`}. Read it when you work on the next stage.`,
+      })
+    } catch {
+      // the template is on the card either way
+    }
   }
   void flushOutbox($)
 }
@@ -1270,11 +1357,13 @@ export const register: Register = on => {
     void ensureSeed($)
     void fetchLive($)
     void fetchReceipts($)
+    void fetchTemplates($)
     void restoreMemory($).then(() => flushOutbox($))
     $.clock.every(60 * 1000, () => void flushOutbox($))
     $.clock.every(5 * 60 * 1000, () => void syncChats($))
     $.clock.every(FETCH_MS, () => void fetchLive($))
     $.clock.every(FETCH_MS, () => void fetchReceipts($))
+    $.clock.every(FETCH_MS, () => void fetchTemplates($))
     $.clock.every(REDRAW_MS, () => void update($, rev, n => n + 1))
     return next(e)
   })
@@ -1425,6 +1514,7 @@ export const register: Register = on => {
     if (!store.seeded) void ensureSeed($)
     // First draw of a session that did not fire session.start: read the receipts once.
     if (!rcp && !rcpBusy) void fetchReceipts($)
+    if (!tpl && !tplBusy) void fetchTemplates($)
     const snapSources = await loadSources($)
     const snapReports = await loadReports($)
     const receipts: Receipt[] = rcp ? rcp.receipts : []
@@ -1479,14 +1569,15 @@ export const register: Register = on => {
           <Text color={SAND}>○ NOT BUILT</Text>
           <Text color={FG}>◆ your call</Text>
           <Text color={MUTED}>{totalOpen} open items</Text>
-          <Button key="refresh" label="Refresh live status" onPress={() => Promise.all([fetchLive($), fetchReceipts($)])} />
+          <Button key="refresh" label="Refresh live status" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($)])} />
         </Box>
       </Box>
     )
 
     /* flow map: rows of clickable nodes joined by arrows, registry bar, learning loop */
-    const flowStages = data.stages.filter(s => s.id !== 'registro')
+    const flowStages = data.stages.filter(s => s.id !== 'registro' && s.id !== 'auditor')
     const registry = data.stages.find(s => s.id === 'registro')
+    const auditor = data.stages.find(s => s.id === 'auditor')
     const rows: Stage[][] = []
     for (let i = 0; i < flowStages.length; i += perRow) rows.push(flowStages.slice(i, i + perRow))
     const rowNotes = ['brief approved, proto_id born', 'prototype built and named, ready for art']
@@ -1579,6 +1670,31 @@ export const register: Register = on => {
             </Text>
           </Box>
         ) : null}
+        {auditor ? (
+          <Box
+            key="auditor-bar"
+            borderStyle={auditor.id === sel ? 'double' : 'round'}
+            borderColor={auditor.id === sel ? NEON : toneOf(auditor).color}
+            backgroundColor={auditor.id === sel ? NEON_BG : PANEL}
+            paddingX={1}
+            gap={1}
+          >
+            <Button key={`stage-${auditor.id}`} onPress={() => select(auditor.id)}>
+              <Text bold color={auditor.id === sel ? NEON : FG}>
+                Auditor
+              </Text>
+            </Button>
+            <Text color={MUTED}>{auditor.sub}</Text>
+            {(() => {
+              const last = stageHealth(receipts, 'auditor', Date.now()).last
+              return last ? (
+                <Text color={last.outcome === 'ok' ? OLIVE : last.outcome === 'failed' ? RUST : AMBER}>{`${clip(last.summary, 90)} (${ago(last.finished_utc, Date.now())})`}</Text>
+              ) : (
+                <Text color={MUTED}>no audit yet</Text>
+              )
+            })()}
+          </Box>
+        ) : null}
         <Text color={SKY}>↺ learning feeds back: screening weights, validator, templates, listing, thresholds</Text>
       </Box>
     )
@@ -1619,6 +1735,7 @@ export const register: Register = on => {
         if (id === 'receipts') return ` (${receiptsFor(receipts, current.id).length})`
         if (id === 'knowledge') return ` (${(store.knowledge[current.id] ?? []).length})`
         if (id === 'registry') return ` (${store.ideas.filter(i => i.proto_id).length})`
+        if (id === 'templates') return ` (${tpl ? tpl.list.length : 0})`
         return ''
       }
       const tabBar = (
@@ -1655,6 +1772,9 @@ export const register: Register = on => {
         briefIdea: id => briefIdea($, id, data.stages),
         openChat: (kind, scope) => openChat($, kind, scope),
         ideaYes: id => ideaYes($, id, data.stages),
+        templates: tpl ? { at: tpl.at, ok: tpl.ok, error: tpl.error, list: tpl.list } : null,
+        chooseTemplate: (ideaId, tid) => chooseTemplate($, ideaId, tid),
+        refreshTemplates: () => fetchTemplates($),
         removeIdea: id => removeIdea($, id),
         chatError: key => chatError[key] ?? null,
         chatBusy: key => chatBusy.has(key),
@@ -1670,6 +1790,7 @@ export const register: Register = on => {
       else if (activeTab === 'protos') extra = ideasView(vctx, current, false)
       else if (activeTab === 'knowledge') extra = knowledgeView(vctx, current)
       else if (activeTab === 'registry') extra = registryView(vctx)
+      else if (activeTab === 'templates') extra = templatesView(vctx)
 
       let body
       if (extra) {
@@ -1816,7 +1937,7 @@ export const register: Register = on => {
     const nextStage = idx >= 0 && idx < data.stages.length - 1 ? data.stages[idx + 1] : undefined
     const numOf = (id: string): string => {
       const n = flowStages.findIndex(x => x.id === id) + 1
-      return n > 0 ? String(n) : 'R'
+      return n > 0 ? String(n) : id === 'auditor' ? 'AU' : 'R'
     }
     const cTone = toneOf(current)
     const topBar = (

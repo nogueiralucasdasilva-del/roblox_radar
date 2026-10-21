@@ -71,6 +71,7 @@ export function ideaFacts(i: Idea): string {
     status: i.status,
     proto_id: i.proto_id,
     potential: i.scan?.level ?? null,
+    template: i.template ? { name: i.template.name, family: i.template.family, doc: `https://docs.google.com/document/d/${i.template.id}` } : null,
     path: i.history,
   })
 }
