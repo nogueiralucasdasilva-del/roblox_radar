@@ -34,6 +34,8 @@ export type Ctx = {
   ideaYes: (ideaId: string) => unknown
   removeIdea: (ideaId: string) => unknown
   runAction: (ideaId: string) => unknown
+  createAllChats: () => unknown
+  batchNote: () => string
   runTask: (triggerId: string) => unknown
   templates: { at: string; ok: boolean; error?: string; list: Template[] } | null
   chooseTemplate: (ideaId: string, templateId: string | null) => unknown
@@ -253,6 +255,10 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
           ? 'Every idea you explored, from the advisor reports and your own. Open a card to set its status or move it on.'
           : 'Ideas that reached this stage, each with its proto_id. Open a card to set its status or move it on.'}
       </Text>
+      <Box gap={1} flexWrap="wrap">
+        <Button key="create-all-chats" label="Create chats for all ideas" onPress={() => x.createAllChats()} />
+        <Text color={MUTED}>{x.batchNote() || 'One wait for every card without a chat; after that every card opens instantly.'}</Text>
+      </Box>
       <Box gap={2}>
         {(['pending', 'promising', 'rejected'] as IdeaStatus[]).map(k => (
           <Text key={`ic-${k}`} bold color={IDEA_COLOR[k]}>

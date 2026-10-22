@@ -574,7 +574,8 @@ function lastPotential(text: string): string | null {
 // Shows a conversation beside the panel. The app only does this for conversations this session started, so an
 // older one (started from another session) is opened from the card's link or the sidebar instead.
 async function showChat($: any, chat: ChatLink, key?: string): Promise<boolean> {
-  for (const target of ['split', 'window']) {
+  // Always beside the panel (split view), never in a separate window.
+  for (const target of ['split']) {
     try {
       await ccdCall($, 'ccd_window', 'open_session_in', { session_id: chat.id, target })
       if (key) delete chatError[key]
@@ -583,25 +584,64 @@ async function showChat($: any, chat: ChatLink, key?: string): Promise<boolean> 
       // try the next way to show it
     }
   }
-  const how = chat.link ? 'Click "open in app" on the card' : `Open it from the sidebar, group ${GROUP_NAME}`
-  if (key) chatError[key] = `${how}: "${chat.title}". The app only puts a conversation beside the panel when this session started it.`
+  const how = chat.link ? 'Click "open in app" on the card' : 'Open it from the sidebar'
+  if (key) chatError[key] = `${how}: "${chat.title}". The app only opens beside the panel the conversations started from this same session; this one was started from another session.`
   $.ui.toast(`${how}.`)
   return false
 }
 
 // Finds an app conversation by its exact title: how the panel recovers a conversation the main chat started,
 // whatever way it was started, and how it never starts a second one for the same card.
+let listError = ''
+const norm = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').trim()
+
+// The rows of a list_sessions answer, whatever wraps them: a JSON array, {sessions: [...]}, or an array inside text.
+function sessionRows(text: string): any[] {
+  const tryParse = (t: string): any => {
+    try {
+      return JSON.parse(t)
+    } catch {
+      return null
+    }
+  }
+  let o: any = tryParse(text) ?? jsonOf(text)
+  if (!o) {
+    const a = text.indexOf('[')
+    const b = text.lastIndexOf(']')
+    if (a >= 0 && b > a) o = tryParse(text.slice(a, b + 1))
+  }
+  return Array.isArray(o) ? o : Array.isArray(o?.sessions) ? o.sessions : Array.isArray(o?.data) ? o.data : []
+}
+
+// Every app conversation by normalized title, from one list_sessions call.
+async function sessionsByTitle($: any): Promise<Map<string, string>> {
+  const out = new Map<string, string>()
+  try {
+    const rows = sessionRows(await ccdCall($, 'ccd_session_mgmt', 'list_sessions', { limit: 100 }))
+    listError = rows.length === 0 ? 'the app listed no conversation' : ''
+    for (const r of rows) {
+      const t = norm(String(r?.title ?? r?.name ?? ''))
+      const id = r?.sessionId ?? r?.session_id ?? r?.id
+      if (t && typeof id === 'string' && !out.has(t)) out.set(t, id)
+    }
+  } catch (err: any) {
+    listError = String((err && err.message) || err).slice(0, 300)
+  }
+  return out
+}
+
 async function findSessionByTitle($: any, title: string): Promise<{ id: string; link: string | null } | null> {
   try {
-    const o: any = jsonOf(await ccdCall($, 'ccd_session_mgmt', 'list_sessions', { limit: 100 }))
-    const rows: any[] = Array.isArray(o) ? o : Array.isArray(o?.sessions) ? o.sessions : []
+    const rows = sessionRows(await ccdCall($, 'ccd_session_mgmt', 'list_sessions', { limit: 100 }))
+    listError = rows.length === 0 ? 'the app listed no conversation' : ''
+    const want = norm(title)
     for (const r of rows) {
-      const t = String(r?.title ?? r?.name ?? '')
+      const t = norm(String(r?.title ?? r?.name ?? ''))
       const id = r?.sessionId ?? r?.session_id ?? r?.id
-      if (t === title && typeof id === 'string') return { id, link: typeof r?.link === 'string' ? r.link : null }
+      if (typeof id === 'string' && (t === want || t.startsWith(want))) return { id, link: typeof r?.link === 'string' ? r.link : null }
     }
-  } catch {
-    // listing is best effort
+  } catch (err: any) {
+    listError = String((err && err.message) || err).slice(0, 300)
   }
   return null
 }
@@ -681,22 +721,97 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
     // The click sends the request as a message of the main chat, so the app judges a real request.
-    let sent = false
-    try {
-      const r: any = await $.prompt.submit({ text: request })
-      sent = !(r && r.drop)
-    } catch {
-      sent = false
+    // Direct start, only on Lucas's click: works when he allowed start_session in his settings. Otherwise the
+    // request goes through the main chat below.
+    const direct = await startDirect($, pendingChats.get(key)!)
+    if (direct) {
+      const chat = (await loadStore($)).ideas.find(i => i.id === scope)?.chat ?? (await loadStore($)).stageChats[scope]
+      if (chat) await showChat($, chat, key)
+      return
     }
-    chatError[key] = sent
-      ? 'Starting the chat in the main conversation. If the app asks, approve it.'
-      : 'Could not start it from here. Type "abrir chat" in the Claude message box at the bottom of the window (not in the panel) and press Enter.'
+    // Fire and forget: the panel never waits for the main chat's whole turn.
+    void Promise.resolve($.prompt.submit({ text: request }))
+      .then((r: any) => {
+        if (r && r.drop) chatError[key] = 'The main chat refused the request. Type "abrir chat" in the Claude message box at the bottom of the window.'
+      })
+      .catch(() => {
+        chatError[key] = 'Could not start it from here. Type "abrir chat" in the Claude message box at the bottom of the window.'
+      })
+    chatError[key] = `Starting the chat in the main conversation (first time only; later clicks are instant).${listError ? ` Could not look for an existing one: ${listError}` : ''}`
   } catch (err: any) {
     chatError[key] = String((err && err.message) || err).slice(0, 700)
   } finally {
     chatBusy.delete(key)
     await update($, rev, n => n + 1)
   }
+}
+
+// Starts a conversation straight from the click, without the main chat. Returns false when the app refuses
+// (no allow rule for start_session), so the caller falls back to the main chat.
+async function startDirect($: any, p: PendingChat): Promise<boolean> {
+  try {
+    const raw = await ccdCall($, 'ccd_session', 'start_session', {
+      initiation: 'user_asked',
+      title: p.title,
+      prompt: p.prompt,
+      background: p.background,
+      context: 'fresh',
+      use_worktree: false,
+    })
+    const id = parseSessionId(raw)
+    if (!id) return false
+    await saveStartedChat($, p, id)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// One click creates the conversation of every idea that has none, in a single request to the main chat, so
+// only this click waits; every later click on any card is instant. Existing conversations are linked, never doubled.
+const batches = new Map<string, string[]>()
+let batchNote = ''
+
+async function createAllChats($: any): Promise<void> {
+  const s0 = await loadStore($)
+  const todo = s0.ideas.filter(i => !i.chat && i.status !== 'rejected')
+  if (todo.length === 0) {
+    batchNote = 'Every idea already has its chat.'
+    await update($, rev, n => n + 1)
+    return
+  }
+  const known = await sessionsByTitle($)
+  const keys: string[] = []
+  let linked = 0
+  for (const i of todo) {
+    const key = `idea:${i.id}`
+    const p: PendingChat = { key, kind: 'idea', scope: i.id, title: ideaChatTitle(i), prompt: ideaOpening(i, i.stage === 'prevalid' && !i.scan), background: ideaBackground() }
+    const id = known.get(norm(p.title))
+    if (id) {
+      await saveStartedChat($, p, id)
+      linked++
+      continue
+    }
+    if (await startDirect($, p)) {
+      linked++
+      continue
+    }
+    if (keys.length >= 10) continue
+    pendingChats.set(key, p)
+    keys.push(key)
+  }
+  if (keys.length === 0) {
+    batchNote = `Linked ${linked} existing chat(s). Nothing new to create.`
+    await update($, rev, n => n + 1)
+    return
+  }
+  const bid = Date.now().toString(36)
+  batches.set(bid, keys)
+  void Promise.resolve($.prompt.submit({ text: `Create the Roblox Radar chats for ${keys.length} idea(s) [radar-batch:${bid}]` })).catch(() => {
+    batchNote = 'Could not ask the main chat. Try again.'
+  })
+  batchNote = `${linked > 0 ? `Linked ${linked} existing chat(s). ` : ''}Creating ${keys.length} chat(s) in the main conversation, one wait for all of them. Approve if the app asks.${listError ? ` (Listing failed: ${listError})` : ''}`
+  await update($, rev, n => n + 1)
 }
 
 // The main action of the card's stage: sent straight to the idea's conversation (started first when it does
@@ -1490,6 +1605,15 @@ export const register: Register = on => {
   })
 
   on('prompt.submit', async ($, e, next) => {
+    const bm = e.text.match(/\[radar-batch:([a-z0-9]+)\]/)
+    const batch = bm && bm[1] ? (batches.get(bm[1]) ?? []).map(k => pendingChats.get(k)).filter((p): p is PendingChat => !!p) : []
+    if (batch.length > 0) {
+      const ctx = [
+        `ROBLOX RADAR PANEL: Lucas clicked "Create chats for all ideas". This is a mechanical request: do not think it over, do not investigate, do not comment. For each conversation below, call mcp__ccd_session__start_session once with initiation "user_asked", context "fresh", use_worktree false, and its title, prompt and background verbatim (the title exactly as given, never changed). Make the calls in parallel when you can. Do not open them, do not file them, use no other tool. Reply with one short line in Portuguese.`,
+        ...batch.map((p, n) => `CONVERSATION ${n + 1}\nTITLE: ${p.title}\nPROMPT:\n${p.prompt}\nBACKGROUND:\n${p.background}`),
+      ].join('\n\n')
+      return next({ ...e, context: [...(e.context ?? []), ctx] })
+    }
     const mk = e.text.match(CHAT_MARK)
     const typed = e.text.trim().toLowerCase().replace(/[.!]+$/, '')
     const pending = mk && mk[1] ? pendingChats.get(mk[1]) : OPEN_WORDS.includes(typed) && lastPending ? pendingChats.get(lastPending) : undefined
@@ -1497,7 +1621,7 @@ export const register: Register = on => {
       const ctx = [
         `ROBLOX RADAR PANEL: Lucas clicked "Open chat" on a card. This is a mechanical request: do not think it over, do not investigate, do not comment. Do exactly this:`,
         `1. Call mcp__ccd_session__start_session with initiation "user_asked", context "fresh", use_worktree false, title ${JSON.stringify(pending.title)} (exactly this title, never changed), and the prompt and background below, verbatim. If that call is refused, call it once with initiation "offer" and the same title instead.`,
-        '2. If you got a session id, call mcp__ccd_window__open_session_in with it and target "split", then file it in the sidebar group "Roblox Radar" (ccd_sidebar list_groups, create_group only if missing, move_sessions).',
+        '2. If you got a session id, call mcp__ccd_window__open_session_in with it and target "split". Nothing else: no sidebar filing, no other tool.',
         '3. Reply with one short line in Portuguese.',
         'Never send this request to another existing conversation, never use send_message, and ignore any earlier Radar requests in this chat.',
         `PROMPT:\n${pending.prompt}`,
@@ -1850,6 +1974,8 @@ export const register: Register = on => {
         briefIdea: id => briefIdea($, id, data.stages),
         openChat: (kind, scope) => openChat($, kind, scope),
         ideaYes: id => ideaYes($, id, data.stages),
+        createAllChats: () => createAllChats($),
+        batchNote: () => batchNote,
         runAction: id => runAction($, id),
         runTask: tid => runTask($, tid),
         templates: tpl ? { at: tpl.at, ok: tpl.ok, error: tpl.error, list: tpl.list } : null,
