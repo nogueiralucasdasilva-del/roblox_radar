@@ -255,10 +255,6 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
           ? 'Every idea you explored, from the advisor reports and your own. Open a card to set its status or move it on.'
           : 'Ideas that reached this stage, each with its proto_id. Open a card to set its status or move it on.'}
       </Text>
-      <Box gap={1} flexWrap="wrap">
-        <Button key="create-all-chats" label="Create chats for all ideas" onPress={() => x.createAllChats()} />
-        <Text color={MUTED}>{x.batchNote() || 'One wait for every card without a chat; after that every card opens instantly.'}</Text>
-      </Box>
       <Box gap={2}>
         {(['pending', 'promising', 'rejected'] as IdeaStatus[]).map(k => (
           <Text key={`ic-${k}`} bold color={IDEA_COLOR[k]}>
@@ -314,6 +310,7 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
               {busyOf(i, x.now) ? <Text color={CLAY}>agent working...</Text> : null}
               <Text color={MUTED}>{i.origin === 'advisor' ? 'from the advisor' : 'your idea'}</Text>
             </Box>
+            {here && status !== 'rejected' ? actionRow(x, i) : null}
             {isOpen ? (
               <Box flexDirection="column" gap={1} paddingTop={1}>
                 {i.note ? <Text color={FG}>{i.note}</Text> : null}
@@ -323,7 +320,6 @@ export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
                   {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
                 </Text>
                 {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
-                {here && status !== 'rejected' ? actionRow(x, i) : null}
                 {stage.id === 'template' && here ? templateChooser(x, i) : null}
                 {chatPanel(x, 'idea', i.id, i.chat ?? null, i.memory ?? '', stage.id === 'prevalid' && !i.scan ? 'Open chat and run the quick scan' : 'Open chat')}
                 <Box gap={1} flexWrap="wrap">
