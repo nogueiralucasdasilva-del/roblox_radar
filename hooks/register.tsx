@@ -1541,8 +1541,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'panel', description: 'Open the Roblox Radar panel' })
     await $.command.register({ name: 'stage', description: 'Focus a stage: /stage <name or id>, or /stage clear' })
-    const opened = await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
-    await note($, 'open_at_session_start', opened)
+    // The pane is not opened here: it belongs to Lucas, so only /panel opens it.
     await note($, 'surfaces_at_session_start', await $.session.surfaces())
     void ensureSeed($)
     void fetchLive($)
@@ -1559,8 +1558,7 @@ export const register: Register = on => {
   })
 
   on('session.attach', async ($, e, next) => {
-    const opened = await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
-    await note($, 'open_at_attach', opened)
+    // Reattaching a session does not reopen the pane either.
     await note($, 'surfaces_at_attach', await $.session.surfaces())
     return next(e)
   })
