@@ -90,6 +90,7 @@ const moreAtom = atom({ plugin: 'radar-panel', key: 'more' } as const, false)
 const archivedAtom = atom({ plugin: 'radar-panel', key: 'archived' } as const, false)
 const filterAtom = atom({ plugin: 'radar-panel', key: 'filter' } as const, null as string | null)
 const fstageAtom = atom({ plugin: 'radar-panel', key: 'fstage' } as const, null as string | null)
+const rtabAtom = atom({ plugin: 'radar-panel', key: 'rtab' } as const, 'coleta')
 const tabsAtom = atom({ plugin: 'radar-panel', key: 'tabs' } as const, {} as Record<string, string>)
 const openIds = atom({ plugin: 'radar-panel', key: 'open' } as const, [] as string[])
 
@@ -938,13 +939,13 @@ async function discardInbox($: any, id: string): Promise<void> {
   })
 }
 
-async function archiveProto($: any, ideaId: string, on: boolean): Promise<void> {
+async function archiveProto($: any, ideaId: string, archived: boolean): Promise<void> {
   await mutate($, s => {
     const i = s.ideas.find(x => x.id === ideaId)
     if (!i) return
     const now = new Date().toISOString()
-    archiveIdea(i, on, now)
-    addLog(s, i.stage, 'ideas', `${on ? 'Archived' : 'Unarchived'} ${i.proto_id}.`)
+    archiveIdea(i, archived, now)
+    addLog(s, i.stage, 'ideas', `${archived ? 'Archived' : 'Unarchived'} ${i.proto_id}.`)
     ideaEvent(s, i, now)
   })
   void flushOutbox($)
@@ -1928,6 +1929,41 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
+    try {
+      return await renderPane($, e)
+    } catch (err: any) {
+      void note($, 'render_error', String((err && err.stack) || err).slice(0, 800))
+      return errorPane($, e, err)
+    }
+  })
+}
+
+// Never leave Lucas with a blank pane: a drawing error shows its cause and a way back.
+function errorPane($: any, e: any, err: any) {
+  const { Box, Text, Button } = $.ui.resolve(e) as any
+  const reset = () =>
+    Promise.all([
+      update($, modeAtom, () => 'radar'),
+      update($, protoAtom, () => null),
+      update($, fstageAtom, () => null),
+      update($, filterAtom, () => null),
+      update($, moreAtom, () => false),
+      update($, tabsAtom, () => ({})),
+      update($, rtabAtom, () => 'coleta'),
+    ])
+  return (
+    <Box flexDirection="column" gap={1} paddingX={1} paddingY={1}>
+      <Text bold color={RUST}>The panel hit an error and could not draw this view.</Text>
+      <Text color={MUTED}>{String((err && err.message) || err).slice(0, 300)}</Text>
+      <Box gap={1}>
+        <Button key="err-radar" label="Back to Radar" onPress={reset} />
+        <Button key="err-retry" label="Try again" onPress={() => update($, rev, (n: number) => n + 1)} />
+      </Box>
+    </Box>
+  )
+}
+
+async function renderPane($: any, e: any) {
     await note($, 'last_render', { surface: e.surface, viewport: e.viewport ?? null })
     await read($, rev)
     if (e.surface === 'mobile' || e.surface === 'vscode') {
@@ -1942,7 +1978,9 @@ export const register: Register = on => {
     const data = await load($)
     const ver = await loadVersion($)
     const openList = await read($, openIds)
-    const mode = (await read($, modeAtom)) as 'radar' | 'factory'
+    const mode: 'radar' | 'factory' = (await read($, modeAtom)) === 'factory' ? 'factory' : 'radar'
+    const rtabRaw = await read($, rtabAtom)
+    const rtab = rtabRaw === 'triagem' || rtabRaw === 'inbox' ? rtabRaw : 'coleta'
     const protoSel = await read($, protoAtom)
     const moreOpen = await read($, moreAtom)
     const showArch = await read($, archivedAtom)
@@ -1984,27 +2022,32 @@ export const register: Register = on => {
       }
     }
 
-    /* header: one row with the mode switch, one status line with a click-to-expand detail */
+    /* header: title, the two main tabs, one status line with a click-to-expand detail */
     const statusOpen_ = await read($, statusOpen)
     const bad = (rcp && !rcp.ok) || !!memError
     const statusColor = bad ? AMBER : !rcp ? MUTED : OLIVE
     const statusLine = bad ? 'Drive or memory needs attention (click for detail)' : !rcp ? 'Reading Drive...' : 'Drive and memory OK'
+    const modeTab = (id: 'radar' | 'factory', label: string) => {
+      const on = mode === id
+      return (
+        <Button key={`mode-${id}`} onPress={() => setMode(id)}>
+          <Text bold color={on ? BG : FG} backgroundColor={on ? NEON : USER_BG}>{`  ${label}  `}</Text>
+        </Button>
+      )
+    }
+    const activeProtos = store.ideas.filter(i => i.status !== 'rejected').length
     const header = (
-      <Box flexDirection="column">
+      <Box flexDirection="column" gap={1}>
         <Box gap={2} alignItems="center" flexWrap="wrap">
           {Svg ? <Svg source={ICON_SVG} alt="Roblox Radar" width={28} height={28} /> : null}
           <Text bold color={CLAY}>
             {Svg ? 'Roblox Radar' : '▣ Roblox Radar'}
           </Text>
-          <Button key="mode-radar" onPress={() => setMode('radar')}>
-            <Text bold color={mode === 'radar' ? BG : FG} backgroundColor={mode === 'radar' ? NEON : PANEL}>{' Radar '}</Text>
-          </Button>
-          <Button key="mode-factory" onPress={() => setMode('factory')}>
-            <Text bold color={mode === 'factory' ? BG : FG} backgroundColor={mode === 'factory' ? NEON : PANEL}>{' Factory '}</Text>
-          </Button>
-          <Text bold color={SKY}>{`v${ver}`}</Text>
+          <Text color={MUTED}>{`v${ver}`}</Text>
         </Box>
-        <Box gap={2}>
+        <Box gap={2} flexWrap="wrap" alignItems="center">
+          {modeTab('radar', 'Radar')}
+          {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
           <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
             <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
             <Text color={MUTED}>{` ${statusLine}`}</Text>
@@ -2080,7 +2123,7 @@ export const register: Register = on => {
       registerResearch: (id, t) => registerResearch($, id, t),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       renameAbbr: (id, raw) => renameProtoAbbr($, id, raw),
-      archive: (id, on) => archiveProto($, id, on),
+      archive: (id, archived) => archiveProto($, id, archived),
     }
 
     /* the body of one tab of one stage */
@@ -2284,13 +2327,29 @@ export const register: Register = on => {
     const triagem = data.stages.find(s => s.id === 'triagem')
 
     if (mode === 'radar') {
+      const coletaTone = coleta ? toneOf(coleta) : null
+      const triagemTone = triagem ? toneOf(triagem) : null
+      const subTab = (id: 'coleta' | 'triagem' | 'inbox', label: string, dot?: string) => {
+        const on = rtab === id
+        return (
+          <Button key={`rtab-${id}`} onPress={() => update($, rtabAtom, () => id)}>
+            {dot ? <Text color={dot}>{'● '}</Text> : null}
+            <Text bold={on} underline={on} color={on ? NEON : FG}>{label}</Text>
+          </Button>
+        )
+      }
       return (
         <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
           {header}
           {factoryNoteBar(vctx)}
-          {coleta ? radarStageBox(coleta) : null}
-          {triagem ? radarStageBox(triagem) : null}
-          {inboxBox(vctx)}
+          <Box gap={3} paddingX={1} flexWrap="wrap">
+            {subTab('coleta', 'Collection', coletaTone?.color)}
+            {subTab('triagem', 'Advisor', triagemTone?.color)}
+            {subTab('inbox', store.inbox.length > 0 ? `Loose ideas (${store.inbox.length})` : 'Loose ideas')}
+          </Box>
+          {rtab === 'coleta' && coleta ? radarStageBox(coleta) : null}
+          {rtab === 'triagem' && triagem ? radarStageBox(triagem) : null}
+          {rtab === 'inbox' ? inboxBox(vctx) : null}
           {auditorBar}
           {skillsBlock}
         </Box>
@@ -2338,5 +2397,4 @@ export const register: Register = on => {
         {factoryView(vctx, moreFor)}
       </Box>
     )
-  })
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1
+
+Layout fix after the first look at the real screen.
+
+- Fixed: Factory showed a blank pane when there were prototypes (a box inside a button and text inside text are not allowed by the app). The prototype list is now built only from buttons and texts.
+- Radar now has sub-tabs: Collection, Advisor, Loose ideas (one at a time). The two main tabs, Radar and Factory, are real tabs with the active one highlighted and a count on Factory.
+- A drawing error no longer blanks the pane: it shows the cause with "Back to Radar" and "Try again".
+- Bad saved tab values (mode, sub-tab, stage, prototype) fall back to safe defaults.
+- New offline render smoke test (`npm run smoke`): renders Radar and Factory in 27 states (empty, with prototypes, every stage, archived, gates, old store shape, forced error) and checks the element tree.
+
 ## 0.7.0
 
 Radar and Factory, in the same pane.

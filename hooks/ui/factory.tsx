@@ -21,18 +21,17 @@ export function checkGlyph(i: Idea, st: string): { glyph: string; color: string 
   return { glyph: '○', color: SAND }
 }
 
-function checksRow(x: Ctx, i: Idea) {
+// One Text per stage, so it can sit inside a Button next to the other columns.
+function checkTexts(x: Ctx, i: Idea) {
   const { Text } = x.C
-  return (
-    <Text>
-      {IDEA_STAGES.map(st => {
-        const g = checkGlyph(i, st)
-        return (
-          <Text key={`ck-${i.id}-${st}`} color={g.color}>{`${g.glyph} `}</Text>
-        )
-      })}
-    </Text>
-  )
+  return IDEA_STAGES.map(st => {
+    const g = checkGlyph(i, st)
+    return (
+      <Text key={`ck-${i.id}-${st}`} color={g.color}>
+        {`${g.glyph} `}
+      </Text>
+    )
+  })
 }
 
 const pctText = (p: number | null) => (p === null ? '--' : `${p}%`)
@@ -61,26 +60,18 @@ function protoList(x: Ctx) {
         ))}
         <Button key="flt-arch" label={x.showArchived ? 'Hide archived' : 'Show archived'} onPress={() => x.toggleArchived()} />
       </Box>
-      <Box gap={1}>
-        <Text color={MUTED}>{'ID'.padEnd(16)}</Text>
-        <Text color={MUTED}>{'Name'.padEnd(22)}</Text>
-        <Text color={MUTED}>{'Pot.'.padEnd(5)}</Text>
-        <Text color={MUTED}>{'Stage'.padEnd(10)}</Text>
-        <Text color={MUTED}>{IDEA_STAGES.map(st => (SHORT[st] ?? st).slice(0, 1)).join(' ')}</Text>
-      </Box>
+      <Text color={MUTED}>{`${'ID'.padEnd(16)}${'Name'.padEnd(25)}${'Pot.'.padEnd(6)}${'Stage'.padEnd(11)}${IDEA_STAGES.map(st => (SHORT[st] ?? st).slice(0, 1)).join(' ')}`}</Text>
       {rows.length === 0 ? <Text color={MUTED}>No prototype yet. Send an idea to the Factory from Radar mode.</Text> : null}
       {rows.map(({ i, p }) => {
         const isSel = x.proto === i.id
         return (
           <Button key={`proto-${i.id}`} onPress={() => x.selectProto(i.id)}>
-            <Box gap={1}>
-              <Text bold color={isSel ? NEON : CLAY}>{clip(i.proto_id ?? '', 16).padEnd(16)}</Text>
-              <Text color={isArchived(i) ? SAND : FG}>{clip(i.title, 22).padEnd(22)}</Text>
-              <Text bold color={FG}>{pctText(p.pct).padEnd(5)}</Text>
-              <Text color={MUTED}>{(SHORT[i.stage] ?? i.stage).padEnd(10)}</Text>
-              {checksRow(x, i)}
-              {isArchived(i) ? <Text color={SAND}>archived</Text> : null}
-            </Box>
+            <Text bold color={isSel ? NEON : CLAY}>{`${clip(i.proto_id ?? '', 15).padEnd(16)}`}</Text>
+            <Text color={isArchived(i) ? SAND : FG}>{`${clip(i.title, 24).padEnd(25)}`}</Text>
+            <Text bold color={FG}>{pctText(p.pct).padEnd(6)}</Text>
+            <Text color={MUTED}>{(SHORT[i.stage] ?? i.stage).padEnd(11)}</Text>
+            {checkTexts(x, i)}
+            {isArchived(i) ? <Text color={SAND}>{' archived'}</Text> : null}
           </Button>
         )
       })}
@@ -405,7 +396,7 @@ export function factoryView(x: Ctx, moreBody: (stage: string) => any) {
     return (
       <Box flexDirection="column" gap={1}>
         {x.factoryNote ? <Text color={CLAY}>{x.factoryNote.text}</Text> : null}
-        <Text bold color={FG}>Prototypes</Text>
+        <Text bold color={FG}>{`Prototypes (${x.store.ideas.filter(i => !isArchived(i)).length})`}</Text>
         <Text color={MUTED}>Pick a prototype to work on it. Stage actions are off until you do.</Text>
         {protoList(x)}
       </Box>
