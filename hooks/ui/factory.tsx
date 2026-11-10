@@ -9,7 +9,7 @@ import { actionsFor } from '../prompts'
 import type { FAction } from '../prompts'
 import { splitItems } from '../outputs'
 import { SAFETY, bar, potential, safetyBlocked } from '../scoring'
-import { newest, skillFiles } from '../skills'
+import { newest } from '../skills'
 
 const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Template', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
 const GATE_COLOR: Record<string, string> = { PASS: OLIVE, 'PASS WITH RISKS': AMBER, BLOCK: RUST }
@@ -385,9 +385,8 @@ export function skillsRow(x: Ctx) {
         <Text color={MUTED}>
           {stages
             .map(s => {
-              const f = skillFiles(st, s).filter(() => true)
               const own = st.files[s] ?? []
-              return `${s}: ${own.length}${own.length > 0 ? ` (${newest(own).slice(0, 10)})` : ''}${f.length === own.length ? '' : ''}`
+              return `${s}: ${own.length}${own.length > 0 ? ` (${newest(own).slice(0, 10)})` : ''}`
             })
             .join('   ')}
           {`   _all: ${(st.files._all ?? []).length}${(st.files._all ?? []).length > 0 ? ` (${newest(st.files._all ?? []).slice(0, 10)})` : ''}`}

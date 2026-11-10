@@ -4,8 +4,8 @@
 // The chat itself reads the files: the panel never names an individual skill.
 import type { SkillRef } from './model'
 
-// Id of the Drive folder roblox_radar_skills. Empty until the folder is created (see CHANGELOG, /seed-skills).
-export const SKILLS_ROOT_ID = ''
+// Id of the Drive folder roblox_radar_skills. Created in 0.7.0; /seed-skills recreates missing folders and files without overwriting.
+export const SKILLS_ROOT_ID = '1XduWjErt3wDKfUz9mLOn5B-tTbgei0CN'
 export const SKILLS_ROOT_NAME = 'roblox_radar_skills'
 export const SHARED = '_all'
 export const SKILL_STAGES = ['coleta', 'triagem', 'prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
@@ -82,4 +82,52 @@ export function skillFiles(st: SkillsState | null, stageId: string): SkillRef[] 
 
 export function newest(files: readonly SkillRef[]): string {
   return files.reduce((m, f) => (f.modified > m ? f.modified : m), '')
+}
+
+// Initial skill files and where they live in Drive. src lists the places to look inside <plugin root>/seed/.
+export const SEED_MAP: { folder: string; name: string; src: string[] }[] = [
+  { folder: 'build', name: 'skill_roblox_mvp_build.md', src: ['roblox-mvp-build/SKILL.md', 'skill_roblox_mvp_build.md'] },
+  { folder: 'build', name: 'skill_roblox_3d_assets.md', src: ['roblox-3d-assets/SKILL.md', 'skill_roblox_3d_assets.md'] },
+  { folder: 'build', name: 'skill_roblox_ui_ux.md', src: ['roblox-ui-ux/SKILL.md', 'skill_roblox_ui_ux.md'] },
+  { folder: 'thumb', name: 'skill_roblox_thumbnail_ctr.md', src: ['roblox-thumbnail-ctr/SKILL.md', 'skill_roblox_thumbnail_ctr.md'] },
+  { folder: 'titulo', name: 'skill_roblox_title_craft.md', src: ['roblox-title-craft/SKILL.md', 'skill_roblox_title_craft.md'] },
+  { folder: SHARED, name: 'skill_roblox_principles_gate.md', src: ['roblox-principles-gate/SKILL.md', 'skill_roblox_principles_gate.md'] },
+  { folder: 'template', name: 'skill_template_reverse_engineering_schema.md', src: ['template/skill_template_reverse_engineering_schema.md', 'skill_template_reverse_engineering_schema.md'] },
+  { folder: SHARED, name: 'skill_scoring_rubric.md', src: ['_all/skill_scoring_rubric.md', 'skill_scoring_rubric.md'] },
+]
+
+// Creates the missing stage folders and the missing seed files. Never overwrites: a file whose title exists is skipped.
+export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPath: string) => Promise<string | null>): Promise<{ created: string[]; skipped: string[]; missing: string[] }> {
+  const out = { created: [] as string[], skipped: [] as string[], missing: [] as string[] }
+  const ids: Record<string, string> = {}
+  for (const f of await listChildren(drive, rootId, true)) ids[String(f.title ?? f.name ?? '')] = f.id
+  for (const name of [...SKILL_STAGES, SHARED]) {
+    if (ids[name]) continue
+    const made = parse(await drive('create_file', { title: name, parentId: rootId, contentMimeType: FOLDER_MIME }))
+    if (made && typeof made.id === 'string') {
+      ids[name] = made.id
+      out.created.push(`folder ${name}`)
+    }
+  }
+  for (const m of SEED_MAP) {
+    const folderId = ids[m.folder]
+    if (!folderId) continue
+    const have = await listChildren(drive, folderId, false)
+    if (have.some(f => String(f.title ?? f.name ?? '') === m.name)) {
+      out.skipped.push(m.name)
+      continue
+    }
+    let text: string | null = null
+    for (const src of m.src) {
+      text = await readSeed(src)
+      if (text) break
+    }
+    if (!text) {
+      out.missing.push(m.name)
+      continue
+    }
+    await drive('create_file', { title: m.name, parentId: folderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text })
+    out.created.push(m.name)
+  }
+  return out
 }

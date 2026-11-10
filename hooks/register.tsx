@@ -55,7 +55,7 @@ import { parseTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
-import { SKILLS_ROOT_ID, refreshSkills, skillFiles, skillFolders } from './skills'
+import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
 import type { Template } from './templates'
@@ -1767,6 +1767,7 @@ async function onAgentDone($: any, agentId: string, answer: string, reason: stri
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'panel', description: 'Open the Roblox Radar panel: /panel radar or /panel factory' })
+    await $.command.register({ name: 'seed-skills', description: 'Create the missing Drive skill folders and seed files (never overwrites)' })
     await $.command.register({ name: 'stage', description: 'Focus a stage: /stage <name or id>, or /stage clear' })
     // The pane is not opened here: it belongs to Lucas, so only /panel opens it.
     await note($, 'surfaces_at_session_start', await $.session.surfaces())
@@ -1803,6 +1804,26 @@ export const register: Register = on => {
     void fetchLive($)
     void fetchReceipts($)
     return { text: `Roblox Radar panel opened${arg === 'radar' || arg === 'factory' ? ` in ${arg} mode` : ''}.` }
+  })
+
+  on('command.run', { command: 'seed-skills' }, async $ => {
+    try {
+      const r = await seedSkills(
+        (tool, args) => driveCall($, tool, args),
+        SKILLS_ROOT_ID,
+        async rel => {
+          try {
+            return String(await $.fs.read(`${$.plugin.root}/seed/${rel}`))
+          } catch {
+            return null
+          }
+        },
+      )
+      void fetchSkills($)
+      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
+    } catch (err: any) {
+      return { text: `Skills seed failed: ${String((err && err.message) || err).slice(0, 300)}` }
+    }
   })
 
   on('command.run', { command: 'stage' }, async ($, e) => {

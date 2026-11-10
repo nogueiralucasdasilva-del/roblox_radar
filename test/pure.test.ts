@@ -207,3 +207,25 @@ test('advancing moves one stage up and keeps the proto ID; ensureProto fills old
   ensureProto(old)
   assert.deepEqual(old.checks, {})
 })
+
+import { ACTIONS, buildActionPrompt, gatePrompt } from '../hooks/prompts'
+
+test('every action prompt tells the chat to read its Drive stage folder and _all, and its own example is not parsed as output', () => {
+  const s = emptyStore()
+  const i = createPrototype(s, { title: 'Truck', note: '', origin: 'own', from: null, now: NOW })
+  i.refs = '1. a'
+  i.research = 'r'
+  const ctx = { stageName: 'Stage', folders: { stage: 'FOLDER1', all: 'ALLID' }, criteria: ['demand'], knowledge: [], nextStage: 'brief', nextStageName: 'Brief' }
+  for (const a of ACTIONS) {
+    const { text } = buildActionPrompt(a, i, ctx)
+    assert.ok(text.includes('Read every file in both'), a.key)
+    assert.ok(text.includes('FOLDER1') && text.includes('ALLID'), a.key)
+    const p = parseTags(text)
+    assert.equal(p.outputs.length, 0, a.key)
+    assert.equal(p.gates.length, 0, a.key)
+    assert.ok(!text.includes(String.fromCharCode(0x2013)) && !text.includes(String.fromCharCode(0x2014)), a.key)
+  }
+  const g = gatePrompt(i, 'Pre-validation', 'Brief', ctx)
+  assert.ok(g.includes('roblox-principles-gate'))
+  assert.equal(parseTags(g).gates.length, 0)
+})
