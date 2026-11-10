@@ -4,7 +4,7 @@ import type { Register } from 'claude-code'
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
-import { factoryView, skillsRow } from './ui/factory'
+import { checkGlyph, protoHeader, protoLine, protoList, skillsRow, stagePanel } from './ui/factory'
 import { factoryNoteBar, inboxBox } from './ui/radar'
 import type { Ctx } from './views'
 import {
@@ -24,6 +24,7 @@ import {
   setIdeaStatus,
   isBusyStale,
   nextStageOf,
+  IDEA_STAGES,
   needsRollover,
   newThread,
   recentHistory,
@@ -48,7 +49,7 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
-import { AUTO_OPEN_CHAT_ON_SEND, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, renameAbbr, resolveGates, sendInboxToFactory } from './factory'
+import { AUTO_OPEN_CHAT_ON_SEND, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, renameAbbr, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionPrompt, gatePrompt, researchMessage } from './prompts'
 import type { PromptCtx } from './prompts'
 import { parseTags, splitItems } from './outputs'
@@ -90,7 +91,7 @@ const moreAtom = atom({ plugin: 'radar-panel', key: 'more' } as const, false)
 const archivedAtom = atom({ plugin: 'radar-panel', key: 'archived' } as const, false)
 const filterAtom = atom({ plugin: 'radar-panel', key: 'filter' } as const, null as string | null)
 const fstageAtom = atom({ plugin: 'radar-panel', key: 'fstage' } as const, null as string | null)
-const rtabAtom = atom({ plugin: 'radar-panel', key: 'rtab' } as const, 'coleta')
+const rstageAtom = atom({ plugin: 'radar-panel', key: 'rstage' } as const, null as string | null)
 const tabsAtom = atom({ plugin: 'radar-panel', key: 'tabs' } as const, {} as Record<string, string>)
 const openIds = atom({ plugin: 'radar-panel', key: 'open' } as const, [] as string[])
 
@@ -1838,7 +1839,13 @@ export const register: Register = on => {
     const found = findStage(data, arg)
     if (!found) return { text: `Stage not found. Ids: ${data.stages.map(s => s.id).join(', ')}.` }
     await update($, selected, () => found.id)
-    await update($, fstageAtom, () => found.id)
+    if (found.group === 'radar') {
+      await update($, rstageAtom, () => found.id)
+      await update($, modeAtom, () => 'radar')
+    } else {
+      await update($, fstageAtom, () => found.id)
+      await update($, modeAtom, () => 'factory')
+    }
     return { text: `Stage in focus: ${found.name}.` }
   })
 
@@ -1949,7 +1956,7 @@ function errorPane($: any, e: any, err: any) {
       update($, filterAtom, () => null),
       update($, moreAtom, () => false),
       update($, tabsAtom, () => ({})),
-      update($, rtabAtom, () => 'coleta'),
+      update($, rstageAtom, () => null),
     ])
   return (
     <Box flexDirection="column" gap={1} paddingX={1} paddingY={1}>
@@ -1979,8 +1986,7 @@ async function renderPane($: any, e: any) {
     const ver = await loadVersion($)
     const openList = await read($, openIds)
     const mode: 'radar' | 'factory' = (await read($, modeAtom)) === 'factory' ? 'factory' : 'radar'
-    const rtabRaw = await read($, rtabAtom)
-    const rtab = rtabRaw === 'triagem' || rtabRaw === 'inbox' ? rtabRaw : 'coleta'
+    const rstageRaw = await read($, rstageAtom)
     const protoSel = await read($, protoAtom)
     const moreOpen = await read($, moreAtom)
     const showArch = await read($, archivedAtom)
@@ -2013,13 +2019,12 @@ async function renderPane($: any, e: any) {
 
     const setMode = (m: 'radar' | 'factory') => update($, modeAtom, () => m)
     const setFstage = (id: string) => Promise.all([update($, fstageAtom, () => id), update($, selected, () => id)])
+    const setRstage = (id: string | null) => update($, rstageAtom, () => id)
+    // Picking a prototype keeps you on the map of cards, now showing that prototype. Picking none goes back to the list.
     const selectProto = async (id: string | null) => {
       await update($, protoAtom, () => id)
-      if (id) {
-        const i = store.ideas.find(x => x.id === id)
-        await update($, fstageAtom, () => (i ? i.stage : null))
-        await setMode('factory')
-      }
+      await update($, fstageAtom, () => null)
+      if (id) await setMode('factory')
     }
 
     /* header: title, the two main tabs, one status line with a click-to-expand detail */
@@ -2283,7 +2288,7 @@ async function renderPane($: any, e: any) {
     )
 
     /* Radar mode: collection, screening and advisor, loose ideas, auditor bar */
-    const radarStageBox = (st: Stage) => {
+    const radarStageBody = (st: Stage) => {
       const tone = toneOf(st)
       const dflt = st.default_tab ?? 'overview'
       const mainLabel = (st.extra_tabs ?? []).find(t => t.id === dflt)?.label ?? 'Main'
@@ -2293,13 +2298,7 @@ async function renderPane($: any, e: any) {
       const active = tabsMap[st.id] && known.includes(tabsMap[st.id] as string) ? (tabsMap[st.id] as string) : dflt
       const shown = active === dflt || main.some(t => t.id === active) || moreOpen ? active : dflt
       return (
-        <Box key={`rbox-${st.id}`} flexDirection="column" gap={1} borderStyle="round" borderColor={tone.color} backgroundColor={PANEL} paddingX={1} paddingY={1}>
-          <Box gap={2} flexWrap="wrap" alignItems="center">
-            <Text bold color={NEON}>{st.name}</Text>
-            <Text bold color={tone.color}>{`${tone.glyph} ${tone.label}`}</Text>
-            <Text color={MUTED}>{st.sub}</Text>
-            {openChatButton(vctx, 'stage', st.id, store.stageChats[st.id] ?? null, () => openChat($, 'stage', st.id))}
-          </Box>
+        <Box key={`rbox-${st.id}`} flexDirection="column" gap={1} borderStyle="round" borderColor={tone.color} backgroundColor={PANEL} paddingY={1}>
           {tabBarOf(st.id, main, MORE_TABS, shown)}
           <Box flexDirection="column" paddingX={1}>
             {bodyFor(st, shown)}
@@ -2310,7 +2309,9 @@ async function renderPane($: any, e: any) {
     const auditor = data.stages.find(s => s.id === 'auditor')
     const auditorBar = auditor ? (
       <Box key="auditor-bar" borderStyle="round" borderColor={toneOf(auditor).color} backgroundColor={PANEL} paddingX={1} gap={1} flexWrap="wrap">
-        <Text bold color={FG}>Auditor</Text>
+        <Button key="stage-auditor" onPress={() => setRstage('auditor')}>
+          <Text bold color={rstageRaw === 'auditor' ? NEON : FG}>Auditor</Text>
+        </Button>
         <Text color={MUTED}>{auditor.sub}</Text>
         {(() => {
           const last = stageHealth(receipts, 'auditor', Date.now()).last
@@ -2326,37 +2327,6 @@ async function renderPane($: any, e: any) {
     const coleta = data.stages.find(s => s.id === 'coleta')
     const triagem = data.stages.find(s => s.id === 'triagem')
 
-    if (mode === 'radar') {
-      const coletaTone = coleta ? toneOf(coleta) : null
-      const triagemTone = triagem ? toneOf(triagem) : null
-      const subTab = (id: 'coleta' | 'triagem' | 'inbox', label: string, dot?: string) => {
-        const on = rtab === id
-        return (
-          <Button key={`rtab-${id}`} onPress={() => update($, rtabAtom, () => id)}>
-            {dot ? <Text color={dot}>{'● '}</Text> : null}
-            <Text bold={on} underline={on} color={on ? NEON : FG}>{label}</Text>
-          </Button>
-        )
-      }
-      return (
-        <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
-          {header}
-          {factoryNoteBar(vctx)}
-          <Box gap={3} paddingX={1} flexWrap="wrap">
-            {subTab('coleta', 'Collection', coletaTone?.color)}
-            {subTab('triagem', 'Advisor', triagemTone?.color)}
-            {subTab('inbox', store.inbox.length > 0 ? `Loose ideas (${store.inbox.length})` : 'Loose ideas')}
-          </Box>
-          {rtab === 'coleta' && coleta ? radarStageBox(coleta) : null}
-          {rtab === 'triagem' && triagem ? radarStageBox(triagem) : null}
-          {rtab === 'inbox' ? inboxBox(vctx) : null}
-          {auditorBar}
-          {skillsBlock}
-        </Box>
-      )
-    }
-
-    /* Factory mode: prototype list, or one prototype with its stages */
     const moreFor = (stageId: string) => {
       const st = data.stages.find(x => x.id === stageId)
       if (!st) return null
@@ -2391,10 +2361,263 @@ async function renderPane($: any, e: any) {
         </Box>
       )
     }
-    return (
+    /* ---- the map of numbered cards (as in 0.6.x) and the full screen view of one card ---- */
+    // As many cards per row as fit with room for a full stage name (about 34 columns each).
+    const perRow = Math.max(1, Math.min(4, Math.floor((columns - 1) / 37)))
+    const nodeW = Math.max(24, Math.min(60, Math.floor((columns - 4 - (perRow - 1) * 3) / perRow)))
+    type Card = { id: string; n: number; name: string; sub: string; lines: { text: string; color: string; bold?: boolean }[]; border: string; selected: boolean; onPress: () => unknown }
+    const cardNode = (c: Card) => (
+      <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
+        <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
+          <Text bold color={c.selected ? BG : FG} backgroundColor={c.selected ? NEON : CLAY}>
+            {` ${c.n} `}
+          </Text>
+          <Text bold color={c.selected ? NEON : FG}>
+            {` ${clip(c.name, nodeW - 9).padEnd(Math.max(0, nodeW - 9), ' ')}`}
+          </Text>
+        </Button>
+        <Text color={c.selected ? FG : MUTED}>{clip(c.sub, nodeW - 4)}</Text>
+        {c.lines.map((l, k) => (
+          <Text key={`cl-${c.id}-${k}`} bold={l.bold} color={l.color}>
+            {clip(l.text, nodeW - 4)}
+          </Text>
+        ))}
+      </Box>
+    )
+    // Rows of cards joined by arrows, snaking like the original flow map.
+    const flowMap = (cards: Card[]) => {
+      const rows: Card[][] = []
+      for (let i = 0; i < cards.length; i += perRow) rows.push(cards.slice(i, i + perRow))
+      const rowWidth = perRow * nodeW + (perRow - 1) * 3
+      return (
+        <Box flexDirection="column">
+          {rows.map((row, ri) => {
+            const back = ri % 2 === 1
+            const shown = back ? [...row].reverse() : row
+            return (
+              <Box key={`row-${ri}`} flexDirection="column">
+                <Box flexDirection="row" width={rowWidth}>
+                  {shown.map((c, i) => (
+                    <Box key={`cell-${c.id}`} flexDirection="row">
+                      {cardNode(c)}
+                      {i < shown.length - 1 ? (
+                        <Box flexDirection="column" justifyContent="center" paddingX={1}>
+                          <Text color={CLAY}>{back ? '←' : '→'}</Text>
+                        </Box>
+                      ) : null}
+                    </Box>
+                  ))}
+                </Box>
+                {ri < rows.length - 1 ? (
+                  <Box width={rowWidth} justifyContent={back ? 'flex-start' : 'flex-end'}>
+                    <Text color={CLAY}>{back ? '↓ ' : ' ↓'}</Text>
+                  </Box>
+                ) : null}
+              </Box>
+            )
+          })}
+        </Box>
+      )
+    }
+    // Full screen view: back to the map, previous and next card, the numbered stepper, then the card's own content.
+    const shell = (o: { ids: string[]; numOf: (id: string) => string; nameOf: (id: string) => string; current: string; go: (id: string) => unknown; back: () => unknown; title: any; body: any }) => {
+      const k = o.ids.indexOf(o.current)
+      const prev = k > 0 ? o.ids[k - 1] : undefined
+      const next = k >= 0 && k < o.ids.length - 1 ? o.ids[k + 1] : undefined
+      return (
+        <Box flexDirection="column" gap={1}>
+          <Box gap={2} flexWrap="wrap">
+            <Button key="back" label="← Pipeline" onPress={o.back} />
+            {prev ? <Button key="prev" label={`‹ ${o.nameOf(prev)}`} onPress={() => o.go(prev)} /> : null}
+            {next ? <Button key="next" label={`${o.nameOf(next)} ›`} onPress={() => o.go(next)} /> : null}
+          </Box>
+          <Box gap={1} flexWrap="wrap">
+            {o.ids.map(id => {
+              const here = id === o.current
+              return (
+                <Button key={`jump-${id}`} onPress={() => o.go(id)}>
+                  <Text bold color={here ? BG : FG} backgroundColor={here ? NEON : PANEL}>
+                    {` ${o.numOf(id)} `}
+                  </Text>
+                </Button>
+              )
+            })}
+          </Box>
+          {o.title}
+          {o.body}
+        </Box>
+      )
+    }
+    const titleRow = (num: string, name: string, sub: string, extra: any) => (
+      <Box gap={2} flexWrap="wrap" alignItems="center">
+        <Text bold color={BG} backgroundColor={NEON}>
+          {` ${num} `}
+        </Text>
+        <Text bold color={NEON}>
+          {name}
+        </Text>
+        <Text color={MUTED}>{sub}</Text>
+        {extra}
+      </Box>
+    )
+    const moreButton = (
+      <Button key="map-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+        <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
+      </Button>
+    )
+    const frame = (...children: any[]) => (
       <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
         {header}
-        {factoryView(vctx, moreFor)}
+        {children}
       </Box>
+    )
+
+    /* ---- Radar: collection, screening and advisor, loose ideas, auditor ---- */
+    if (mode === 'radar') {
+      const RADAR_IDS = ['coleta', 'triagem', 'inbox', 'auditor'].filter(id => id === 'inbox' || data.stages.some(s => s.id === id))
+      const rstage = rstageRaw && RADAR_IDS.includes(rstageRaw as string) ? (rstageRaw as string) : null
+      const rname = (id: string) => (id === 'inbox' ? 'Loose ideas' : (data.stages.find(s => s.id === id)?.name ?? id))
+      const rnum = (id: string) => (id === 'auditor' ? 'AU' : String(['coleta', 'triagem', 'inbox'].indexOf(id) + 1))
+      if (rstage) {
+        const st = data.stages.find(s => s.id === rstage)
+        const tone = st ? toneOf(st) : null
+        return frame(
+          shell({
+            ids: RADAR_IDS,
+            numOf: rnum,
+            nameOf: rname,
+            current: rstage,
+            go: id => setRstage(id),
+            back: () => setRstage(null),
+            title: titleRow(
+              rnum(rstage),
+              rname(rstage),
+              rstage === 'inbox' ? 'raw ideas, no proto ID and no chat yet' : (st?.sub ?? ''),
+              <Box gap={2} alignItems="center">
+                {tone ? <Text bold color={tone.color}>{`${tone.glyph} ${tone.label}`}</Text> : null}
+                {st && rstage !== 'inbox' ? openChatButton(vctx, 'stage', st.id, store.stageChats[st.id] ?? null, () => openChat($, 'stage', st.id)) : null}
+              </Box>,
+            ),
+            body: rstage === 'inbox' ? inboxBox(vctx) : st ? radarStageBody(st) : null,
+          }),
+          skillsBlock,
+        )
+      }
+      const stageCard = (id: 'coleta' | 'triagem'): Card | null => {
+        const st = data.stages.find(s => s.id === id)
+        if (!st) return null
+        const tone = toneOf(st)
+        const own = receiptsFor(receipts, id)
+        const lastR = own.find(r => !r.task_key.startsWith('status_')) ?? own[0] ?? null
+        const late = !!lastR && isLate(lastR, Date.now())
+        const lastColor = !lastR ? MUTED : lastR.outcome === 'failed' ? RUST : lastR.outcome !== 'ok' || late ? AMBER : OLIVE
+        const open = openCount(st)
+        return {
+          id,
+          n: id === 'coleta' ? 1 : 2,
+          name: st.name,
+          sub: st.sub,
+          lines: [
+            ...(lastR ? [{ text: `${lastR.task_key} ${ago(lastR.finished_utc, Date.now())}${late ? ', late' : ''}`, color: lastColor }] : []),
+            { text: `${tone.glyph} ${tone.label}${open > 0 ? `  ${open} open` : ''}`, color: tone.color, bold: true },
+          ],
+          border: tone.color,
+          selected: false,
+          onPress: () => setRstage(id),
+        }
+      }
+      const cards: Card[] = [
+        stageCard('coleta'),
+        stageCard('triagem'),
+        {
+          id: 'inbox',
+          n: 3,
+          name: 'Loose ideas',
+          sub: 'raw ideas, no chat yet',
+          lines: [{ text: `${store.inbox.length} waiting`, color: store.inbox.length > 0 ? CLAY : MUTED, bold: true }],
+          border: LINE,
+          selected: false,
+          onPress: () => setRstage('inbox'),
+        },
+      ].filter((c): c is Card => !!c)
+      return frame(factoryNoteBar(vctx), flowMap(cards), auditorBar, moreButton, skillsBlock)
+    }
+
+    /* ---- Factory: the same kind of cards, now about one selected prototype ---- */
+    const idea = protoSel ? store.ideas.find(i => i.id === protoSel) : undefined
+    const FIDS = IDEA_STAGES.filter(id => data.stages.some(s => s.id === id))
+    const fcur = fstage && FIDS.includes(fstage) ? fstage : null
+    const stageOf = (id: string) => data.stages.find(s => s.id === id)
+    const fnum = (id: string) => String(FIDS.indexOf(id) + 1)
+    const fname = (id: string) => stageOf(id)?.name ?? id
+    const goF = (id: string) => setFstage(id)
+    const backF = () => update($, fstageAtom, () => null)
+
+    if (fcur) {
+      const st = stageOf(fcur)
+      return frame(
+        shell({
+          ids: FIDS,
+          numOf: fnum,
+          nameOf: fname,
+          current: fcur,
+          go: goF,
+          back: backF,
+          title: <Text color={MUTED}>{st ? `${st.name}: ${st.sub}` : ''}</Text>,
+          body: idea ? (
+            <Box flexDirection="column" gap={1}>
+              {protoLine(vctx, idea)}
+              {stagePanel(vctx, idea, fcur)}
+            </Box>
+          ) : (
+            <Box flexDirection="column" gap={1}>
+              <Text color={AMBER}>Pick a prototype to work on this stage. Actions stay off until you do.</Text>
+              {protoList(vctx)}
+            </Box>
+          ),
+        }),
+        idea ? moreFor(fcur) : null,
+      )
+    }
+
+    const cardsF: Card[] = FIDS.map((id, k) => {
+      const s = stageOf(id) as Stage
+      if (idea) {
+        const g = checkGlyph(idea, id)
+        const reached = IDEA_STAGES.indexOf(id) <= IDEA_STAGES.indexOf(idea.stage)
+        const state = idea.checks?.[id] === 'done' ? 'DONE' : g.glyph === '◐' ? 'ASKED' : reached ? 'NOT STARTED' : 'NOT REACHED'
+        const last = latestOf(idea, id)
+        return {
+          id,
+          n: k + 1,
+          name: `${s.gate ? '◆ ' : ''}${s.name}`,
+          sub: s.sub,
+          lines: [
+            { text: `${g.glyph} ${state}${id === idea.stage ? '  ▶ here' : ''}`, color: g.color, bold: true },
+            ...(last ? [{ text: clip(last.doc ? last.doc.title : (last.content.split(String.fromCharCode(10))[0] ?? ''), 60), color: FG }] : []),
+          ],
+          border: g.color,
+          selected: id === idea.stage,
+          onPress: () => goF(id),
+        }
+      }
+      const here = store.ideas.filter(i => i.status !== 'rejected' && i.stage === id).length
+      return {
+        id,
+        n: k + 1,
+        name: `${s.gate ? '◆ ' : ''}${s.name}`,
+        sub: s.sub,
+        lines: [{ text: here > 0 ? `${here} prototype${here === 1 ? '' : 's'} here` : 'none here', color: here > 0 ? CLAY : MUTED, bold: here > 0 }],
+        border: LINE,
+        selected: false,
+        onPress: () => goF(id),
+      }
+    })
+    return frame(
+      factoryNoteBar(vctx),
+      idea ? protoHeader(vctx, idea) : protoList(vctx),
+      flowMap(cardsF),
+      moreButton,
+      skillsBlock,
     )
 }

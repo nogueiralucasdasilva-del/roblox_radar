@@ -38,7 +38,7 @@ const pctText = (p: number | null) => (p === null ? '--' : `${p}%`)
 
 /* ---------- prototype list ---------- */
 
-function protoList(x: Ctx) {
+export function protoList(x: Ctx) {
   const { Box, Text, Button } = x.C
   const cfg = x.scoring
   let list = x.store.ideas.filter(i => (x.showArchived ? true : !isArchived(i)))
@@ -48,6 +48,10 @@ function protoList(x: Ctx) {
     .sort((a, b) => (b.p.pct ?? -1) - (a.p.pct ?? -1) || b.i.updated.localeCompare(a.i.updated))
   return (
     <Box flexDirection="column" gap={1}>
+      <Box gap={2} flexWrap="wrap">
+        <Text bold color={FG}>{`Prototypes (${x.store.ideas.filter(i => !isArchived(i)).length})`}</Text>
+        <Text color={MUTED}>Pick one: the cards below then show its progress.</Text>
+      </Box>
       <Box gap={1} flexWrap="wrap">
         <Text color={MUTED}>Stage:</Text>
         <Button key="flt-all" onPress={() => x.setStageFilter(null)}>
@@ -104,14 +108,14 @@ function criteriaColumns(x: Ctx, i: Idea) {
   )
 }
 
-function protoHeader(x: Ctx, i: Idea) {
+export function protoHeader(x: Ctx, i: Idea) {
   const { Box, Text, Button, Input } = x.C
   const p = potential(i.scores, x.scoring)
   const blocked = safetyBlocked(i.scores, x.scoring)
   return (
     <Box flexDirection="column" gap={1} borderStyle="round" borderColor={CLAY} backgroundColor={PANEL} paddingX={1}>
       <Box gap={2} flexWrap="wrap" alignItems="center">
-        <Button key="back-list" label="← List" onPress={() => x.selectProto(null)} />
+        <Button key="back-list" label="Change prototype" onPress={() => x.selectProto(null)} />
         <Text bold color={CLAY}>{i.proto_id}</Text>
         <Text bold color={FG}>{i.title}</Text>
         <Text bold color={p.pct === null ? SAND : p.pct >= 70 ? OLIVE : p.pct >= 40 ? AMBER : RUST}>{`Potential ${pctText(p.pct)}`}</Text>
@@ -127,30 +131,27 @@ function protoHeader(x: Ctx, i: Idea) {
         </Box>
         <Button key={`arch-${i.id}`} label={isArchived(i) ? 'Unarchive' : 'Archive'} onPress={() => x.archive(i.id, !isArchived(i))} />
       </Box>
-      {criteriaColumns(x, i)}
-      <Text color={MUTED}>Confidence: l low, m medium, h high. Evidence: F fact, H hypothesis, V needs validation.</Text>
+      <Button key={`crit-${i.id}`} onPress={() => x.toggle(`crit:${i.id}`)}>
+        <Text color={SKY}>{x.open.includes(`crit:${i.id}`) ? '▾ Criteria' : '▸ Criteria'}</Text>
+      </Button>
+      {x.open.includes(`crit:${i.id}`) ? criteriaColumns(x, i) : null}
+      {x.open.includes(`crit:${i.id}`) ? <Text color={MUTED}>Confidence: l low, m medium, h high. Evidence: F fact, H hypothesis, V needs validation.</Text> : null}
     </Box>
   )
 }
 
-/* ---------- stepper ---------- */
+/* ---------- one line about the selected prototype, shown above a stage ---------- */
 
-function stepper(x: Ctx, i: Idea) {
+export function protoLine(x: Ctx, i: Idea) {
   const { Box, Text, Button } = x.C
-  const here = x.fstage ?? i.stage
+  const p = potential(i.scores, x.scoring)
   return (
-    <Box gap={1} flexWrap="wrap">
-      {IDEA_STAGES.map(st => {
-        const g = checkGlyph(i, st)
-        const sel = st === here
-        return (
-          <Button key={`step-${st}`} onPress={() => x.setFstage(st)}>
-            <Text bold={sel} color={sel ? BG : g.color} backgroundColor={sel ? NEON : PANEL}>
-              {` ${g.glyph} ${SHORT[st] ?? st}${st === i.stage ? ' ▶' : ''} `}
-            </Text>
-          </Button>
-        )
-      })}
+    <Box gap={2} flexWrap="wrap" alignItems="center">
+      <Text bold color={CLAY}>{i.proto_id}</Text>
+      <Text bold color={FG}>{clip(i.title, 40)}</Text>
+      <Text bold color={p.pct === null ? SAND : p.pct >= 70 ? OLIVE : p.pct >= 40 ? AMBER : RUST}>{`Potential ${pctText(p.pct)}`}</Text>
+      {safetyBlocked(i.scores, x.scoring) ? <Text bold color={RUST}>{'⚑ safety low'}</Text> : null}
+      <Button key="change-proto" label="Change prototype" onPress={() => x.selectProto(null)} />
     </Box>
   )
 }
@@ -318,7 +319,7 @@ function advanceRow(x: Ctx, i: Idea, stage: string) {
   )
 }
 
-function stagePanel(x: Ctx, i: Idea, stage: string) {
+export function stagePanel(x: Ctx, i: Idea, stage: string) {
   const { Box, Text, Button } = x.C
   const reached = IDEA_STAGES.indexOf(stage) <= IDEA_STAGES.indexOf(i.stage)
   const enabled = reached && !isArchived(i)
@@ -383,32 +384,6 @@ export function skillsRow(x: Ctx) {
           {`   _all: ${(st.files._all ?? []).length}${(st.files._all ?? []).length > 0 ? ` (${newest(st.files._all ?? []).slice(0, 10)})` : ''}`}
         </Text>
       ) : null}
-    </Box>
-  )
-}
-
-/* ---------- factory view ---------- */
-
-export function factoryView(x: Ctx, moreBody: (stage: string) => any) {
-  const { Box, Text } = x.C
-  const idea = x.proto ? x.store.ideas.find(i => i.id === x.proto) : undefined
-  if (!idea) {
-    return (
-      <Box flexDirection="column" gap={1}>
-        {x.factoryNote ? <Text color={CLAY}>{x.factoryNote.text}</Text> : null}
-        <Text bold color={FG}>{`Prototypes (${x.store.ideas.filter(i => !isArchived(i)).length})`}</Text>
-        <Text color={MUTED}>Pick a prototype to work on it. Stage actions are off until you do.</Text>
-        {protoList(x)}
-      </Box>
-    )
-  }
-  const stage = x.fstage && IDEA_STAGES.includes(x.fstage) ? x.fstage : idea.stage
-  return (
-    <Box flexDirection="column" gap={1}>
-      {protoHeader(x, idea)}
-      {stepper(x, idea)}
-      {stagePanel(x, idea, stage)}
-      {moreBody(stage)}
     </Box>
   )
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.2
+
+Back to the map of numbered cards, one map per mode.
+
+- Radar shows its cards: 1 Collection, 2 Screening and advisor, 3 Loose ideas, plus the Auditor bar. A card opens full screen (back to Pipeline, previous and next, numbered stepper), as in 0.6.x.
+- Factory shows the nine stage cards for the selected prototype (DONE, ASKED, NOT STARTED, NOT REACHED, the current stage marked, the latest output on the card). Without a selection it shows the prototype list and how many prototypes sit at each stage.
+- Cards are wider so stage names are not cut. The criteria bars start collapsed.
+- The sub-tab bar of 0.7.1 is removed.
+
 ## 0.7.1
 
 Layout fix after the first look at the real screen.
