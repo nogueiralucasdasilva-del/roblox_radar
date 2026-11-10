@@ -1,10 +1,11 @@
 {
   "name": "radar-panel-dev",
   "private": true,
+  "type": "module",
   "version": "0.7.0",
   "description": "Dev tooling only: unit tests for the pure modules and a typecheck of them. The mod itself needs no build.",
   "scripts": {
-    "test": "node --import ./test/register.mjs --test test/",
+    "test": "node --import ./test/register.mjs --test test/*.test.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {

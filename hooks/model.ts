@@ -27,7 +27,32 @@ export type Idea = {
   chat?: ChatLink | null
   template?: { id: string; name: string; family: string; at: string } | null
   lastAction?: { stage: string; label: string; at: string } | null
+  // Factory prototype fields (0.7.0). All optional so ideas saved by older builds still load.
+  abbr?: string
+  legacyProtoId?: string
+  checks?: Record<string, StageCheck>
+  askedAt?: Record<string, string>
+  requested?: Record<string, Requested>
+  scores?: ScoreEntry[]
+  outputs?: Record<string, Output[]>
+  template_mode?: 'library' | 'custom' | null
+  refs?: string
+  research?: string
+  gate?: Record<string, GateRecord>
+  gateAsked?: Record<string, string>
 }
+export type StageCheck = 'asked' | 'done'
+export type SkillRef = { name: string; modified: string }
+export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[] }
+export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string } }
+export type Confidence = 'low' | 'medium' | 'high'
+export type EvidenceTag = 'F' | 'H' | 'V'
+export type Criterion = { v: number; c: Confidence; e: string; t: EvidenceTag; stage: string }
+export type ScoreEntry = { at: string; stage: string; criteria: Record<string, Criterion>; h: string }
+export type GateVerdict = 'PASS' | 'PASS WITH RISKS' | 'BLOCK'
+export type GateRecord = { verdict: GateVerdict; reason: string; at: string; override?: boolean }
+// A raw idea in the Radar inbox: no proto ID and no chat until it is sent to the Factory.
+export type InboxIdea = { id: string; title: string; note: string; origin: 'advisor' | 'own'; from: string | null; created: string; chat?: ChatLink | null; memory?: string; scan?: { level: string; at: string } | null }
 // A real app conversation tied to an idea card or a stage. `seen` is how much of its transcript the panel already filed.
 export type ChatLink = { id: string; title: string; link: string | null; at: string; syncedAt: string | null; seen: number }
 export type MemoryNote = { text: string; at: string }
@@ -50,6 +75,10 @@ export type Store = {
   restoredAt: string | null
   jobs: Record<string, Job>
   stageChats: Record<string, ChatLink>
+  // Factory: never-reused prototype counter, the Radar inbox, and the one-time migration marker.
+  protoSeq: number
+  inbox: InboxIdea[]
+  migrated070: boolean
 }
 
 // The ladder an idea climbs. Each step is a stage id.
@@ -66,7 +95,7 @@ export const STALE_BUSY_MS = 10 * 60 * 1000
 export const INSTRUCTION_TAG = 'INSTRUCTION:'
 
 export function emptyStore(): Store {
-  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false, memory: {}, outbox: [], memSaved: 0, restoredAt: null, jobs: {}, stageChats: {} }
+  return { threads: {}, archive: {}, instructions: {}, log: {}, ideas: [], knowledge: {}, seeded: false, memory: {}, outbox: [], memSaved: 0, restoredAt: null, jobs: {}, stageChats: {}, protoSeq: 0, inbox: [], migrated070: false }
 }
 
 export function newThread(n: number, summary: string, now: string): Thread {

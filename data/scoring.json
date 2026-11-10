@@ -1,0 +1,16 @@
+{
+  "note": "Weights are hypotheses. Edit the numbers freely: the panel normalizes by the sum of the weights of the criteria that have a score. safety is not weighted: it is a gate.",
+  "weights": {
+    "demand": 14,
+    "timing": 12,
+    "whitespace": 12,
+    "clickability": 14,
+    "virality": 12,
+    "social_coplay": 10,
+    "core_loop": 8,
+    "retention": 8,
+    "feasibility": 6,
+    "monetization": 4
+  },
+  "safety_gate": 40
+}

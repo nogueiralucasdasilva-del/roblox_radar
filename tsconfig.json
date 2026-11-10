@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true
+  },
+  "include": ["hooks/model.ts", "hooks/factory.ts", "hooks/scoring.ts", "hooks/outputs.ts", "hooks/skills.ts", "hooks/prompts.ts", "types/index.d.ts", "test/*.ts"],
+  "exclude": ["node_modules"]
+}
