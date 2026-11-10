@@ -58,6 +58,6 @@ export type Data = { updated: string; note: string; stages: Stage[] }
 
 declare module 'claude-code' {
   interface PluginState {
-    'radar-panel': { selected: string | null; tab: string; rev: number; open: string[]; statusOpen: boolean; mode: string; proto: string | null; more: boolean; archived: boolean; filter: string | null; fstage: string | null; tabs: Record<string, string>; rstage: string | null }
+    'radar-panel': { selected: string | null; tab: string; rev: number; open: string[]; statusOpen: boolean; mode: string; proto: string | null; more: boolean; archived: boolean; protoMenu: boolean; fstage: string | null; tabs: Record<string, string>; rstage: string | null }
   }
 }

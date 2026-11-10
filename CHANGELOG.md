@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.3
+
+Layout in the order Lucas asked for.
+
+- Top to bottom: the name, the general status, two big highlighted buttons (Radar and Factory), the other buttons (Refresh, More), then the cards.
+- Radar and Factory cards share one look and sit one under the other, full width.
+- Factory: a drop-down menu to choose the proto ID, the potential readings right below it, then the nine stages one under the other, with a check on the stages that are done. The old prototype table and stage filter are gone. With no choice made, the prototype with the highest potential is shown.
+- The ABBR editor and Archive moved into a "Prototype settings" toggle.
+
 ## 0.7.2
 
 Back to the map of numbered cards, one map per mode.

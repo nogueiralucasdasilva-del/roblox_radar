@@ -1,5 +1,5 @@
 // Factory mode: prototype list, selected prototype header with potential score, stepper with checks, and one panel per stage.
-import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY } from '../theme'
+import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from '../theme'
 import { ago, chip, nameOf, openChatButton } from '../views'
 import type { Ctx } from '../views'
 import { IDEA_STAGES, clip, nextStageOf } from '../model'
@@ -36,50 +36,38 @@ function checkTexts(x: Ctx, i: Idea) {
 
 const pctText = (p: number | null) => (p === null ? '--' : `${p}%`)
 
-/* ---------- prototype list ---------- */
+/* ---------- prototype picker: a drop-down menu ---------- */
 
-export function protoList(x: Ctx) {
+export function protoPicker(x: Ctx, current: Idea | undefined) {
   const { Box, Text, Button } = x.C
   const cfg = x.scoring
-  let list = x.store.ideas.filter(i => (x.showArchived ? true : !isArchived(i)))
-  if (x.stageFilter) list = list.filter(i => i.stage === x.stageFilter)
-  const rows = list
+  const list = x.store.ideas
+    .filter(i => (x.showArchived ? true : !isArchived(i)))
     .map(i => ({ i, p: potential(i.scores, cfg) }))
     .sort((a, b) => (b.p.pct ?? -1) - (a.p.pct ?? -1) || b.i.updated.localeCompare(a.i.updated))
+  const label = current ? `${current.proto_id}  ${clip(current.title, 40)}` : 'Choose a prototype'
   return (
     <Box flexDirection="column" gap={1}>
-      <Box gap={2} flexWrap="wrap">
-        <Text bold color={FG}>{`Prototypes (${x.store.ideas.filter(i => !isArchived(i)).length})`}</Text>
-        <Text color={MUTED}>Pick one: the cards below then show its progress.</Text>
-      </Box>
-      <Box gap={1} flexWrap="wrap">
-        <Text color={MUTED}>Stage:</Text>
-        <Button key="flt-all" onPress={() => x.setStageFilter(null)}>
-          <Text bold={!x.stageFilter} color={!x.stageFilter ? NEON : MUTED}>All</Text>
+      <Box gap={2} alignItems="center" flexWrap="wrap">
+        <Text color={MUTED}>Prototype</Text>
+        <Button key="proto-menu" onPress={() => x.toggleProtoMenu()}>
+          <Text bold color={FG} backgroundColor={USER_BG}>{` ${label} ${x.protoMenu ? '▴' : '▾'} `}</Text>
         </Button>
-        {IDEA_STAGES.map(st => (
-          <Button key={`flt-${st}`} onPress={() => x.setStageFilter(x.stageFilter === st ? null : st)}>
-            <Text bold={x.stageFilter === st} color={x.stageFilter === st ? NEON : MUTED}>{SHORT[st] ?? st}</Text>
-          </Button>
-        ))}
-        <Button key="flt-arch" label={x.showArchived ? 'Hide archived' : 'Show archived'} onPress={() => x.toggleArchived()} />
       </Box>
-      <Text color={MUTED}>{`${'ID'.padEnd(16)}${'Name'.padEnd(25)}${'Pot.'.padEnd(6)}${'Stage'.padEnd(11)}${IDEA_STAGES.map(st => (SHORT[st] ?? st).slice(0, 1)).join(' ')}`}</Text>
-      {rows.length === 0 ? <Text color={MUTED}>No prototype yet. Send an idea to the Factory from Radar mode.</Text> : null}
-      {rows.map(({ i, p }) => {
-        const isSel = x.proto === i.id
-        return (
-          <Button key={`proto-${i.id}`} onPress={() => x.selectProto(i.id)}>
-            <Text bold color={isSel ? NEON : CLAY}>{`${clip(i.proto_id ?? '', 15).padEnd(16)}`}</Text>
-            <Text color={isArchived(i) ? SAND : FG}>{`${clip(i.title, 24).padEnd(25)}`}</Text>
-            <Text bold color={FG}>{pctText(p.pct).padEnd(6)}</Text>
-            <Text color={MUTED}>{(SHORT[i.stage] ?? i.stage).padEnd(11)}</Text>
-            {checkTexts(x, i)}
-            {isArchived(i) ? <Text color={SAND}>{' archived'}</Text> : null}
-          </Button>
-        )
-      })}
-      <Text color={MUTED}>{'● done   ◐ asked, waiting for the chat   ○ not started'}</Text>
+      {x.protoMenu ? (
+        <Box flexDirection="column" borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1}>
+          {list.length === 0 ? <Text color={MUTED}>No prototype yet. Send an idea to the Factory from Radar.</Text> : null}
+          {list.map(({ i, p }) => (
+            <Button key={`opt-${i.id}`} onPress={() => x.selectProto(i.id)}>
+              <Text bold color={current && current.id === i.id ? NEON : CLAY}>{`${clip(i.proto_id ?? '', 15).padEnd(16)}`}</Text>
+              <Text color={isArchived(i) ? SAND : FG}>{`${clip(i.title, 30).padEnd(31)}`}</Text>
+              <Text bold color={FG}>{pctText(p.pct).padEnd(6)}</Text>
+              <Text color={MUTED}>{`${SHORT[i.stage] ?? i.stage}${isArchived(i) ? '  archived' : ''}`}</Text>
+            </Button>
+          ))}
+          <Button key="proto-menu-archived" label={x.showArchived ? 'Hide archived' : 'Show archived'} onPress={() => x.toggleArchived()} />
+        </Box>
+      ) : null}
     </Box>
   )
 }
@@ -112,30 +100,30 @@ export function protoHeader(x: Ctx, i: Idea) {
   const { Box, Text, Button, Input } = x.C
   const p = potential(i.scores, x.scoring)
   const blocked = safetyBlocked(i.scores, x.scoring)
+  const settingsId = `settings:${i.id}`
   return (
-    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={CLAY} backgroundColor={PANEL} paddingX={1}>
+    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1}>
       <Box gap={2} flexWrap="wrap" alignItems="center">
-        <Button key="back-list" label="Change prototype" onPress={() => x.selectProto(null)} />
-        <Text bold color={CLAY}>{i.proto_id}</Text>
-        <Text bold color={FG}>{i.title}</Text>
         <Text bold color={p.pct === null ? SAND : p.pct >= 70 ? OLIVE : p.pct >= 40 ? AMBER : RUST}>{`Potential ${pctText(p.pct)}`}</Text>
         {p.delta !== null ? <Text color={p.delta >= 0 ? OLIVE : RUST}>{`${p.delta >= 0 ? '+' : ''}${p.delta} vs previous stage`}</Text> : null}
         <Text color={MUTED}>{`${p.scored}/${p.total} criteria scored`}</Text>
         {blocked ? <Text bold color={RUST}>{`⚑ SAFETY BELOW ${x.scoring.safety_gate}`}</Text> : null}
         {isArchived(i) ? <Text color={SAND}>ARCHIVED</Text> : null}
       </Box>
-      <Box gap={1} flexWrap="wrap" alignItems="center">
-        <Text color={MUTED}>{`ABBR ${i.abbr ?? ''}`}</Text>
-        <Box borderStyle="round" borderColor={LINE} paddingX={1}>
-          <Input key={`abbr-${i.id}`} placeholder="new ABBR, letters only, max 7" rows={1} submitLabel="set ABBR" onSubmit={(v: string) => void x.renameAbbr(i.id, v)} />
-        </Box>
-        <Button key={`arch-${i.id}`} label={isArchived(i) ? 'Unarchive' : 'Archive'} onPress={() => x.archive(i.id, !isArchived(i))} />
-      </Box>
-      <Button key={`crit-${i.id}`} onPress={() => x.toggle(`crit:${i.id}`)}>
-        <Text color={SKY}>{x.open.includes(`crit:${i.id}`) ? '▾ Criteria' : '▸ Criteria'}</Text>
+      {criteriaColumns(x, i)}
+      <Text color={MUTED}>Confidence: l low, m medium, h high. Evidence: F fact, H hypothesis, V needs validation.</Text>
+      <Button key={`set-${i.id}`} onPress={() => x.toggle(settingsId)}>
+        <Text color={SKY}>{x.open.includes(settingsId) ? '▾ Prototype settings' : '▸ Prototype settings'}</Text>
       </Button>
-      {x.open.includes(`crit:${i.id}`) ? criteriaColumns(x, i) : null}
-      {x.open.includes(`crit:${i.id}`) ? <Text color={MUTED}>Confidence: l low, m medium, h high. Evidence: F fact, H hypothesis, V needs validation.</Text> : null}
+      {x.open.includes(settingsId) ? (
+        <Box gap={1} flexWrap="wrap" alignItems="center">
+          <Text color={MUTED}>{`ABBR ${i.abbr ?? ''}`}</Text>
+          <Box borderStyle="round" borderColor={LINE} paddingX={1}>
+            <Input key={`abbr-${i.id}`} placeholder="new ABBR, letters only, max 7" rows={1} submitLabel="set ABBR" onSubmit={(v: string) => void x.renameAbbr(i.id, v)} />
+          </Box>
+          <Button key={`arch-${i.id}`} label={isArchived(i) ? 'Unarchive' : 'Archive'} onPress={() => x.archive(i.id, !isArchived(i))} />
+        </Box>
+      ) : null}
     </Box>
   )
 }
@@ -151,7 +139,7 @@ export function protoLine(x: Ctx, i: Idea) {
       <Text bold color={FG}>{clip(i.title, 40)}</Text>
       <Text bold color={p.pct === null ? SAND : p.pct >= 70 ? OLIVE : p.pct >= 40 ? AMBER : RUST}>{`Potential ${pctText(p.pct)}`}</Text>
       {safetyBlocked(i.scores, x.scoring) ? <Text bold color={RUST}>{'⚑ safety low'}</Text> : null}
-      <Button key="change-proto" label="Change prototype" onPress={() => x.selectProto(null)} />
+      <Button key="change-proto" label="Change prototype" onPress={() => x.changeProto()} />
     </Box>
   )
 }

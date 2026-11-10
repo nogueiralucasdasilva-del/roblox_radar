@@ -142,22 +142,27 @@ const reset = async () => {
 }
 
 const need = (...words) => (t, text) => words.filter(w => !text.includes(w)).map(w => `missing "${w}"`)
-await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[  Radar  ]', 'Factory', 'v0.7.2', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
+await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.7.3', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', '[Send to Factory]', '[Discard]', 'add-inbox', '[← Pipeline]'))
 await scenario('radar: auditor opens', async () => { await reset(); await setAtom('rstage', 'auditor') }, need('[← Pipeline]'))
 await scenario('radar: garbage values fall back to the map', async () => { await reset(); await setAtom('rstage', 'zzz'); await setAtom('mode', 'nope') }, need('[ 1  Radar and collection'))
 await scenario('radar: more open', async () => { await reset(); await setAtom('more', true) })
-await scenario('factory map, no prototype: list plus the nine stage cards', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory') }, need('Prototypes (2)', 'P002-MONSTER2', '[ 1  ◆ Pre-validation', '[ 2  ◆ 2-page brief', '[ 9  ◆ Metrics', 'prototype here', '[  Radar  ]'))
-await scenario('factory map, prototype selected: its header and its card states', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') }, need('P002-MONSTER2', 'Change prototype', 'DONE', 'ASKED', 'NOT REACHED', '▶ here', '[ 1  '))
-await scenario('factory map with no prototypes at all', async () => { await reset(); await setAtom('mode', 'factory') }, need('No prototype yet', '[ 1  ', '[  Radar  ]', 'none here'))
-await scenario('factory: list with prototypes', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory') }, need('P001-MONSTER1', 'P002-MONSTER2', '[  Radar  ]', 'Prototypes (2)'))
-await scenario('factory: list archived + filter', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('archived', true); await setAtom('filter', 'thumb') })
+await scenario('factory: order is title, status, big tabs, buttons, then picker, potential and stacked stages', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory') }, (t, text) => {
+  const order = ['Roblox Radar', 'Drive', '[        RADAR        ]', '[        FACTORY (2)        ]', '[Refresh]', '[More ▸]', 'Prototype', 'Potential', '[ 1  ◆ Pre-validation', '[ 2  ◆ 2-page brief', '[ 9  ◆ Metrics']
+  const at = order.map(w => text.indexOf(w))
+  const probs = order.filter((w, k) => at[k] < 0).map(w => `missing "${w}"`)
+  for (let k = 1; k < at.length; k++) if (at[k] >= 0 && at[k - 1] >= 0 && at[k] < at[k - 1]) probs.push(`"${order[k]}" appears before "${order[k - 1]}"`)
+  return probs
+})
+await scenario('factory: a stage that happened has a check', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') }, (t, text) => (text.includes('✔') ? [] : ['no check on a done stage']))
+await scenario('factory: drop-down menu lists the prototypes', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('protoMenu', true) }, need('P001-MONSTER1', 'P002-MONSTER2', 'Show archived', '▴'))
+await scenario('factory: no prototypes at all', async () => { await reset(); await setAtom('mode', 'factory') }, need('Choose a prototype', '[ 1  ', 'none here', '[        RADAR        ]'))
+await scenario('factory: stage opened with no prototype says so', async () => { await reset(); await setAtom('mode', 'factory'); await setAtom('fstage', 'brief') }, need('No prototype yet', '[← Pipeline]'))
 for (const st of ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']) {
   await scenario(`factory: stage ${st} full screen for prototype 2`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', st) }, need('[← Pipeline]', 'Change prototype', 'Open chat'))
 }
-await scenario('factory: stage opened with no prototype asks to pick one', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('fstage', 'brief') }, need('Pick a prototype', 'P001-MONSTER1', '[← Pipeline]'))
 await scenario('factory: proto 3 archived thumb', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p3'); await setAtom('fstage', 'thumb') })
 await scenario('factory: template custom + library', async () => {
   await reset()

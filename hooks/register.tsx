@@ -4,7 +4,7 @@ import type { Register } from 'claude-code'
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
-import { checkGlyph, protoHeader, protoLine, protoList, skillsRow, stagePanel } from './ui/factory'
+import { checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
 import { factoryNoteBar, inboxBox } from './ui/radar'
 import type { Ctx } from './views'
 import {
@@ -54,7 +54,7 @@ import { actionByKey, buildActionPrompt, gatePrompt, researchMessage } from './p
 import type { PromptCtx } from './prompts'
 import { parseTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
-import { DEFAULT_SCORING, parseScoring, safetyBlocked } from './scoring'
+import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
 import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders } from './skills'
 import type { SkillsState } from './skills'
@@ -89,7 +89,7 @@ const modeAtom = atom({ plugin: 'radar-panel', key: 'mode' } as const, 'radar')
 const protoAtom = atom({ plugin: 'radar-panel', key: 'proto' } as const, null as string | null)
 const moreAtom = atom({ plugin: 'radar-panel', key: 'more' } as const, false)
 const archivedAtom = atom({ plugin: 'radar-panel', key: 'archived' } as const, false)
-const filterAtom = atom({ plugin: 'radar-panel', key: 'filter' } as const, null as string | null)
+const protoMenuAtom = atom({ plugin: 'radar-panel', key: 'protoMenu' } as const, false)
 const fstageAtom = atom({ plugin: 'radar-panel', key: 'fstage' } as const, null as string | null)
 const rstageAtom = atom({ plugin: 'radar-panel', key: 'rstage' } as const, null as string | null)
 const tabsAtom = atom({ plugin: 'radar-panel', key: 'tabs' } as const, {} as Record<string, string>)
@@ -1953,7 +1953,7 @@ function errorPane($: any, e: any, err: any) {
       update($, modeAtom, () => 'radar'),
       update($, protoAtom, () => null),
       update($, fstageAtom, () => null),
-      update($, filterAtom, () => null),
+      update($, protoMenuAtom, () => false),
       update($, moreAtom, () => false),
       update($, tabsAtom, () => ({})),
       update($, rstageAtom, () => null),
@@ -1990,7 +1990,7 @@ async function renderPane($: any, e: any) {
     const protoSel = await read($, protoAtom)
     const moreOpen = await read($, moreAtom)
     const showArch = await read($, archivedAtom)
-    const stageFilter = await read($, filterAtom)
+    const protoMenuOpen = (await read($, protoMenuAtom)) === true
     const fstage = await read($, fstageAtom)
     const tabsMap = (await read($, tabsAtom)) as Record<string, string>
 
@@ -2024,6 +2024,7 @@ async function renderPane($: any, e: any) {
     const selectProto = async (id: string | null) => {
       await update($, protoAtom, () => id)
       await update($, fstageAtom, () => null)
+      await update($, protoMenuAtom, () => false)
       if (id) await setMode('factory')
     }
 
@@ -2036,7 +2037,7 @@ async function renderPane($: any, e: any) {
       const on = mode === id
       return (
         <Button key={`mode-${id}`} onPress={() => setMode(id)}>
-          <Text bold color={on ? BG : FG} backgroundColor={on ? NEON : USER_BG}>{`  ${label}  `}</Text>
+          <Text bold color={on ? BG : FG} backgroundColor={on ? NEON : USER_BG}>{`        ${label.toUpperCase()}        `}</Text>
         </Button>
       )
     }
@@ -2050,15 +2051,10 @@ async function renderPane($: any, e: any) {
           </Text>
           <Text color={MUTED}>{`v${ver}`}</Text>
         </Box>
-        <Box gap={2} flexWrap="wrap" alignItems="center">
-          {modeTab('radar', 'Radar')}
-          {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
-          <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
-            <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
-            <Text color={MUTED}>{` ${statusLine}`}</Text>
-          </Button>
-          <Button key="refresh" label="Refresh" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)])} />
-        </Box>
+        <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
+          <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
+          <Text color={MUTED}>{` ${statusLine}`}</Text>
+        </Button>
         {statusOpen_ ? (
           <Box flexDirection="column" paddingLeft={2}>
             <Text color={rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED}>
@@ -2076,9 +2072,25 @@ async function renderPane($: any, e: any) {
             <Text color={MUTED}>{`Stage descriptions come from the data file (${data.updated}).`}</Text>
           </Box>
         ) : null}
+        <Box gap={2} flexWrap="wrap">
+          {modeTab('radar', 'Radar')}
+          {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
+        </Box>
+        <Box gap={2} flexWrap="wrap">
+          <Button key="refresh" label="Refresh" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)])} />
+          <Button key="map-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+            <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
+          </Button>
+        </Box>
       </Box>
     )
 
+    // The chosen prototype; with no valid choice, the active one with the highest potential (so the cards always mean something).
+    const activeIdeas = store.ideas.filter(i => i.status !== 'rejected')
+    const chosenIdea = protoSel ? store.ideas.find(i => i.id === protoSel) : undefined
+    const defaultIdea = [...activeIdeas].sort((a, b) => (potential(b.scores, scoringCfg).pct ?? -1) - (potential(a.scores, scoringCfg).pct ?? -1) || b.updated.localeCompare(a.updated))[0]
+    const currentIdea = chosenIdea ?? defaultIdea
+    const effectiveId = currentIdea ? currentIdea.id : null
     const vctx: Ctx = {
       C: { Box, Text, Button, Input, Link },
       columns,
@@ -2110,11 +2122,12 @@ async function renderPane($: any, e: any) {
       discardInbox: id => discardInbox($, id),
       factoryNote,
       selectProto,
-      proto: protoSel,
+      proto: effectiveId,
       showArchived: showArch,
       toggleArchived: () => update($, archivedAtom, (v: boolean) => !v),
-      stageFilter,
-      setStageFilter: id => update($, filterAtom, () => id),
+      protoMenu: protoMenuOpen,
+      toggleProtoMenu: () => update($, protoMenuAtom, (v: boolean) => !v),
+      changeProto: () => Promise.all([update($, fstageAtom, () => null), update($, protoMenuAtom, () => true), setMode('factory')]),
       fstage,
       setFstage: id => setFstage(id),
       openProtoChat: (id, st) => openProtoChat($, id, st),
@@ -2362,10 +2375,10 @@ async function renderPane($: any, e: any) {
       )
     }
     /* ---- the map of numbered cards (as in 0.6.x) and the full screen view of one card ---- */
-    // As many cards per row as fit with room for a full stage name (about 34 columns each).
-    const perRow = Math.max(1, Math.min(4, Math.floor((columns - 1) / 37)))
-    const nodeW = Math.max(24, Math.min(60, Math.floor((columns - 4 - (perRow - 1) * 3) / perRow)))
-    type Card = { id: string; n: number; name: string; sub: string; lines: { text: string; color: string; bold?: boolean }[]; border: string; selected: boolean; onPress: () => unknown }
+    // One card per row, full width, the same look in Radar and in the Factory.
+    const perRow = 1
+    const nodeW = Math.max(30, Math.min(110, columns - 4))
+    type Card = { id: string; n: number; name: string; sub: string; lines: { text: string; color: string; bold?: boolean }[]; border: string; selected: boolean; done?: boolean; onPress: () => unknown }
     const cardNode = (c: Card) => (
       <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
         <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
@@ -2373,8 +2386,13 @@ async function renderPane($: any, e: any) {
             {` ${c.n} `}
           </Text>
           <Text bold color={c.selected ? NEON : FG}>
-            {` ${clip(c.name, nodeW - 9).padEnd(Math.max(0, nodeW - 9), ' ')}`}
+            {` ${clip(c.name, nodeW - 12)}`}
           </Text>
+          {c.done ? (
+            <Text bold color={OLIVE}>
+              {'  ✔'}
+            </Text>
+          ) : null}
         </Button>
         <Text color={c.selected ? FG : MUTED}>{clip(c.sub, nodeW - 4)}</Text>
         {c.lines.map((l, k) => (
@@ -2384,41 +2402,7 @@ async function renderPane($: any, e: any) {
         ))}
       </Box>
     )
-    // Rows of cards joined by arrows, snaking like the original flow map.
-    const flowMap = (cards: Card[]) => {
-      const rows: Card[][] = []
-      for (let i = 0; i < cards.length; i += perRow) rows.push(cards.slice(i, i + perRow))
-      const rowWidth = perRow * nodeW + (perRow - 1) * 3
-      return (
-        <Box flexDirection="column">
-          {rows.map((row, ri) => {
-            const back = ri % 2 === 1
-            const shown = back ? [...row].reverse() : row
-            return (
-              <Box key={`row-${ri}`} flexDirection="column">
-                <Box flexDirection="row" width={rowWidth}>
-                  {shown.map((c, i) => (
-                    <Box key={`cell-${c.id}`} flexDirection="row">
-                      {cardNode(c)}
-                      {i < shown.length - 1 ? (
-                        <Box flexDirection="column" justifyContent="center" paddingX={1}>
-                          <Text color={CLAY}>{back ? '←' : '→'}</Text>
-                        </Box>
-                      ) : null}
-                    </Box>
-                  ))}
-                </Box>
-                {ri < rows.length - 1 ? (
-                  <Box width={rowWidth} justifyContent={back ? 'flex-start' : 'flex-end'}>
-                    <Text color={CLAY}>{back ? '↓ ' : ' ↓'}</Text>
-                  </Box>
-                ) : null}
-              </Box>
-            )
-          })}
-        </Box>
-      )
-    }
+    const flowMap = (cards: Card[]) => <Box flexDirection="column">{cards.map(c => cardNode(c))}</Box>
     // Full screen view: back to the map, previous and next card, the numbered stepper, then the card's own content.
     const shell = (o: { ids: string[]; numOf: (id: string) => string; nameOf: (id: string) => string; current: string; go: (id: string) => unknown; back: () => unknown; title: any; body: any }) => {
       const k = o.ids.indexOf(o.current)
@@ -2540,11 +2524,11 @@ async function renderPane($: any, e: any) {
           onPress: () => setRstage('inbox'),
         },
       ].filter((c): c is Card => !!c)
-      return frame(factoryNoteBar(vctx), flowMap(cards), auditorBar, moreButton, skillsBlock)
+      return frame(factoryNoteBar(vctx), flowMap(cards), auditorBar, skillsBlock)
     }
 
     /* ---- Factory: the same kind of cards, now about one selected prototype ---- */
-    const idea = protoSel ? store.ideas.find(i => i.id === protoSel) : undefined
+    const idea = currentIdea
     const FIDS = IDEA_STAGES.filter(id => data.stages.some(s => s.id === id))
     const fcur = fstage && FIDS.includes(fstage) ? fstage : null
     const stageOf = (id: string) => data.stages.find(s => s.id === id)
@@ -2571,8 +2555,7 @@ async function renderPane($: any, e: any) {
             </Box>
           ) : (
             <Box flexDirection="column" gap={1}>
-              <Text color={AMBER}>Pick a prototype to work on this stage. Actions stay off until you do.</Text>
-              {protoList(vctx)}
+              <Text color={AMBER}>No prototype yet. Send an idea to the Factory from Radar, then work on its stages here.</Text>
             </Box>
           ),
         }),
@@ -2598,6 +2581,7 @@ async function renderPane($: any, e: any) {
           ],
           border: g.color,
           selected: id === idea.stage,
+          done: idea.checks?.[id] === 'done',
           onPress: () => goF(id),
         }
       }
@@ -2613,11 +2597,5 @@ async function renderPane($: any, e: any) {
         onPress: () => goF(id),
       }
     })
-    return frame(
-      factoryNoteBar(vctx),
-      idea ? protoHeader(vctx, idea) : protoList(vctx),
-      flowMap(cardsF),
-      moreButton,
-      skillsBlock,
-    )
+    return frame(factoryNoteBar(vctx), protoPicker(vctx, idea), idea ? protoHeader(vctx, idea) : null, flowMap(cardsF), skillsBlock)
 }

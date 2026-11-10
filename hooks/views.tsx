@@ -46,8 +46,9 @@ export type Ctx = {
   proto: string | null
   showArchived: boolean
   toggleArchived: () => unknown
-  stageFilter: string | null
-  setStageFilter: (id: string | null) => unknown
+  protoMenu: boolean
+  toggleProtoMenu: () => unknown
+  changeProto: () => unknown
   fstage: string | null
   setFstage: (id: string) => unknown
   openProtoChat: (ideaId: string, stageId: string) => unknown
