@@ -71,6 +71,7 @@ const KEY = 'rr1'
 const selected = atom({ plugin: 'radar-panel', key: 'selected' } as const, null)
 const tab = atom({ plugin: 'radar-panel', key: 'tab' } as const, 'chat')
 const rev = atom({ plugin: 'radar-panel', key: 'rev' } as const, 0)
+const statusOpen = atom({ plugin: 'radar-panel', key: 'statusOpen' } as const, false)
 const openIds = atom({ plugin: 'radar-panel', key: 'open' } as const, [] as string[])
 
 type TabDef = { id: string; label: string }
@@ -1092,7 +1093,7 @@ function liveOf(s: Stage): { level: number; lines: string[] } {
   }
   if (s.trigger_ids.length === 0) return { level, lines }
   if (!live) return { level, lines: [...lines, 'Live status: not queried yet.'] }
-  if ('error' in live) return { level, lines: [...lines, `Live status unavailable: ${live.error}`] }
+  if ('error' in live) return { level, lines: [...lines, `Live task status unavailable (optional connector).`] }
   for (const id of s.trigger_ids) {
     const t = live.byId[id]
     if (!t) {
@@ -1732,6 +1733,10 @@ export const register: Register = on => {
     }
 
     /* header */
+    const statusOpen_ = await read($, statusOpen)
+    const bad = (rcp && !rcp.ok) || !!memError
+    const statusColor = bad ? AMBER : !rcp ? MUTED : OLIVE
+    const statusLine = bad ? 'Drive or memory needs attention (click for detail)' : !rcp ? 'Reading Drive...' : 'Drive and memory OK'
     const header = (
       <Box flexDirection="column">
         <Box gap={1} alignItems="center">
@@ -1742,23 +1747,27 @@ export const register: Register = on => {
           <Text color={MUTED}>pipeline control</Text>
           <Text bold color={SKY}>{`v${ver}`}</Text>
         </Box>
-        <Text color={MUTED}>
-          {live && !('error' in live)
-            ? `Scheduled tasks read live at ${live.at.slice(11, 16)} UTC. Stage descriptions come from the data file (${data.updated}).`
-            : `Task list not available in this session (needs the Claude Code Remote connector). Stage health comes from receipts. Stage descriptions come from the data file (${data.updated}).`}
-        </Text>
-        <Text color={rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED}>
-          {!rcp
-            ? 'Receipts: reading Drive...'
-            : rcp.ok
-              ? `Receipts: ${receipts.length} read from Drive at ${rcp.at.slice(11, 16)} UTC, newest ${receipts[0] ? `${receipts[0].task_key} ${receipts[0].finished_utc.slice(0, 16).replace('T', ' ')} UTC` : 'none yet'}.`
-              : `Receipts: Drive check failed (${rcp.error}). Showing ${receipts.length} read earlier.`}
-        </Text>
-        <Text color={memError ? AMBER : store.outbox.length > 0 ? MUTED : OLIVE}>
-          {memError
-            ? `Memory: ${store.memSaved} saved to Drive, ${store.outbox.length} waiting. Last error: ${memError}`
-            : `Memory: ${store.memSaved} events saved to Drive${store.outbox.length > 0 ? `, ${store.outbox.length} waiting` : ''}${store.restoredAt ? '' : ', checking Drive for earlier memory'}.`}
-        </Text>
+        <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
+          <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
+          <Text color={MUTED}>{` ${statusLine}`}</Text>
+        </Button>
+        {statusOpen_ ? (
+          <Box flexDirection="column" paddingLeft={2}>
+            <Text color={rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED}>
+              {!rcp
+                ? 'Receipts: reading Drive...'
+                : rcp.ok
+                  ? `Receipts: ${receipts.length} read from Drive at ${rcp.at.slice(11, 16)} UTC, newest ${receipts[0] ? `${receipts[0].task_key} ${receipts[0].finished_utc.slice(0, 16).replace('T', ' ')} UTC` : 'none yet'}.`
+                  : `Receipts: Drive check failed (${rcp.error}). Showing ${receipts.length} read earlier.`}
+            </Text>
+            <Text color={memError ? AMBER : store.outbox.length > 0 ? MUTED : OLIVE}>
+              {memError
+                ? `Memory: ${store.memSaved} saved to Drive, ${store.outbox.length} waiting. Last error: ${memError}`
+                : `Memory: ${store.memSaved} events saved to Drive${store.outbox.length > 0 ? `, ${store.outbox.length} waiting` : ''}${store.restoredAt ? '' : ', checking Drive for earlier memory'}.`}
+            </Text>
+            <Text color={MUTED}>{`Stage descriptions come from the data file (${data.updated}).`}</Text>
+          </Box>
+        ) : null}
         <Box gap={2}>
           <Text color={OLIVE}>● OK</Text>
           <Text color={AMBER}>● ATTENTION</Text>
@@ -2048,6 +2057,7 @@ export const register: Register = on => {
         body = (
           <Box flexDirection="column" paddingX={1}>
             {current.trigger_ids.length === 0 ? <Text color={MUTED}>{current.no_task_note || 'No automated task.'}</Text> : null}
+            {current.trigger_ids.length > 0 && live && 'error' in live ? <Text color={MUTED}>Live task status unavailable (optional connector).</Text> : null}
             {current.trigger_ids.length > 0 ? (
               <Box gap={1} flexWrap="wrap">
                 {current.trigger_ids.map(tid => {

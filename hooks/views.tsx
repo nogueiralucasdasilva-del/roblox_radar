@@ -612,7 +612,7 @@ const OUTCOME_META: Record<Outcome, { glyph: string; color: string; label: strin
   failed: { glyph: '✖', color: RUST, label: 'FAILED' },
 }
 
-const ITEM_COLOR: Record<string, string> = { ok: OLIVE, ran: OLIVE, stale: SKY, degraded: AMBER, degraded_size: AMBER, partial: AMBER, running: SKY, dead: RUST, missing: RUST, did_not_run: RUST, failed: RUST }
+const ITEM_COLOR: Record<string, string> = { ok: OLIVE, ran: OLIVE, stale: SKY, skipped_cost: SKY, degraded: AMBER, degraded_size: AMBER, partial: AMBER, running: SKY, dead: RUST, missing: RUST, did_not_run: RUST, failed: RUST }
 
 export function receiptsView(x: Ctx, stage: Stage) {
   const { Box, Text, Button } = x.C

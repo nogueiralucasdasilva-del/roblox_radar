@@ -197,7 +197,7 @@ const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 export function sourceStatusOf(word: string): SourceStatus {
   if (word === 'ok') return 'working'
-  if (word === 'stale') return 'stale'
+  if (word === 'stale' || word === 'skipped_cost') return 'stale'
   if (word === 'degraded' || word === 'degraded_size') return 'attention'
   if (word === 'dead' || word === 'missing' || word === 'failed') return 'broken'
   return 'unknown'
