@@ -3,7 +3,9 @@ import type { Register } from 'claude-code'
 
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
-import { ago, chatPanel, templatesView, ideasView, knowledgeView, receiptsView, registryView, reportsView, sourcesView } from './views'
+import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
+import { factoryView, skillsRow } from './ui/factory'
+import { factoryNoteBar, inboxBox } from './ui/radar'
 import type { Ctx } from './views'
 import {
   HISTORY_CHARS,
@@ -21,13 +23,14 @@ import {
   promoteIdea,
   setIdeaStatus,
   isBusyStale,
+  nextStageOf,
   needsRollover,
   newThread,
   recentHistory,
   summarizerPrompt,
 } from './model'
 import { STALE_BUSY_MS } from './model'
-import type { Idea, IdeaStatus, Job, Knowledge, LogEntry, Msg, Store, Thread } from './model'
+import type { Idea, Job, Knowledge, LogEntry, Msg, Store, Thread } from './model'
 import {
   KEEP_MESSAGES,
   MEMORY_FOLDER_ID,
@@ -45,7 +48,15 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
-import { actionFor } from './actions'
+import { AUTO_OPEN_CHAT_ON_SEND, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, renameAbbr, resolveGates, sendInboxToFactory } from './factory'
+import { actionByKey, buildActionPrompt, gatePrompt, researchMessage } from './prompts'
+import type { PromptCtx } from './prompts'
+import { parseTags, splitItems } from './outputs'
+import type { Parsed } from './outputs'
+import { DEFAULT_SCORING, parseScoring, safetyBlocked } from './scoring'
+import type { ScoringConfig } from './scoring'
+import { SKILLS_ROOT_ID, refreshSkills, skillFiles, skillFolders } from './skills'
+import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
 import type { Template } from './templates'
 import { ideaBackground, ideaChatTitle, ideaOpening, parseLink, parseSessionId, stageBackground, stageChatTitle, stageOpening } from './chats'
@@ -55,6 +66,7 @@ import {
   RECEIPT_FOLDER_ID,
   STAGES_WITH_RECEIPTS,
   jsonOf,
+  unwrapDoc,
   mergeReports,
   parseReceipt,
   receiptsFor,
@@ -72,22 +84,17 @@ const selected = atom({ plugin: 'radar-panel', key: 'selected' } as const, null)
 const tab = atom({ plugin: 'radar-panel', key: 'tab' } as const, 'chat')
 const rev = atom({ plugin: 'radar-panel', key: 'rev' } as const, 0)
 const statusOpen = atom({ plugin: 'radar-panel', key: 'statusOpen' } as const, false)
+const modeAtom = atom({ plugin: 'radar-panel', key: 'mode' } as const, 'radar')
+const protoAtom = atom({ plugin: 'radar-panel', key: 'proto' } as const, null as string | null)
+const moreAtom = atom({ plugin: 'radar-panel', key: 'more' } as const, false)
+const archivedAtom = atom({ plugin: 'radar-panel', key: 'archived' } as const, false)
+const filterAtom = atom({ plugin: 'radar-panel', key: 'filter' } as const, null as string | null)
+const fstageAtom = atom({ plugin: 'radar-panel', key: 'fstage' } as const, null as string | null)
+const tabsAtom = atom({ plugin: 'radar-panel', key: 'tabs' } as const, {} as Record<string, string>)
 const openIds = atom({ plugin: 'radar-panel', key: 'open' } as const, [] as string[])
 
 type TabDef = { id: string; label: string }
-
-// Chat first, then the tabs specific to the stage, then the common ones. Log only when it has something to show.
-function tabsFor(stage: Stage, showLog: boolean): TabDef[] {
-  const common: TabDef[] = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'tasks', label: 'Tasks' },
-    { id: 'pending', label: 'Pending' },
-    { id: 'assets', label: 'Skills and docs' },
-  ]
-  if (showLog) common.push({ id: 'log', label: 'Log' })
-  const rec: TabDef[] = STAGES_WITH_RECEIPTS.includes(stage.id) ? [{ id: 'receipts', label: 'Receipts' }] : []
-  return [{ id: 'chat', label: 'Chat' }, ...(stage.extra_tabs ?? []), ...rec, ...common]
-}
+const SYNC_EVENTS = 120
 
 /* ---------- live scheduled tasks ---------- */
 
@@ -328,6 +335,7 @@ async function restoreMemory($: any): Promise<void> {
     }
     await mutate($, s => {
       const n = applyEvents(s, events)
+      migrateStore(s, true)
       s.restoredAt = new Date().toISOString()
       if (n > 0) addLog(s, 'prevalid', 'memory', `Restored ${n} memory events from Drive.`)
     })
@@ -515,7 +523,7 @@ async function onIdeaDone($: any, agentId: string, job: Job, answer: string, rea
 // Nothing here starts on its own: a conversation is started only when Lucas clicks, and the app asks him to approve it.
 
 const chatBusy = new Set<string>()
-type PendingChat = { key: string; kind: 'idea' | 'stage'; scope: string; title: string; prompt: string; background: string }
+type PendingChat = { key: string; kind: 'idea' | 'stage'; scope: string; title: string; prompt: string; background: string; noOpen?: boolean }
 const pendingChats = new Map<string, PendingChat>()
 let lastPending: string | null = null
 // What Lucas types after clicking a card whose conversation does not exist yet.
@@ -543,6 +551,7 @@ async function saveStartedChat($: any, p: PendingChat, id: string): Promise<void
   })
   pendingChats.delete(p.key)
   delete chatError[p.key]
+  void fileInGroup($, id)
 }
 const chatError: Record<string, string> = {}
 let syncBusy = false
@@ -673,7 +682,8 @@ async function fileInGroup($: any, sessionId: string): Promise<void> {
 
 // Opens the conversation of an idea card or a stage. The first click starts it (the app asks to approve);
 // every later click reopens the same one.
-async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: string): Promise<void> {
+async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: string, opts: { show?: boolean } = {}): Promise<void> {
+  const show = opts.show !== false
   const key = `${kind}:${scope}`
   if (chatBusy.has(key)) return
   chatBusy.add(key)
@@ -684,7 +694,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     if (!data) throw new Error('Could not read the stage data.')
     const existing = kind === 'idea' ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
     if (existing) {
-      await showChat($, existing, key)
+      if (show) await showChat($, existing, key)
       void resolvePending($).then(() => syncChats($))
       return
     }
@@ -708,7 +718,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     }
     // A new conversation is started by Lucas's own message: the panel writes the request in the message box,
     // he presses Enter, and the main chat starts the conversation (the app asks him to approve it).
-    pendingChats.set(key, { key, kind, scope, title, prompt, background })
+    pendingChats.set(key, { key, kind, scope, title, prompt, background, noOpen: !show })
     lastPending = key
     // The conversation may already exist (an earlier click, another session): reuse it, never start a second one.
     const known = await findSessionByTitle($, title)
@@ -716,7 +726,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
       await saveStartedChat($, pendingChats.get(key)!, known.id)
       const saved = (await loadStore($))
       const chat = kind === 'idea' ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
-      if (chat) await showChat($, chat, key)
+      if (chat && show) await showChat($, chat, key)
       return
     }
     const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
@@ -727,7 +737,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     const direct = await startDirect($, pendingChats.get(key)!)
     if (direct) {
       const chat = (await loadStore($)).ideas.find(i => i.id === scope)?.chat ?? (await loadStore($)).stageChats[scope]
-      if (chat) await showChat($, chat, key)
+      if (chat && show) await showChat($, chat, key)
       return
     }
     // Fire and forget: the panel never waits for the main chat's whole turn.
@@ -768,88 +778,64 @@ async function startDirect($: any, p: PendingChat): Promise<boolean> {
   }
 }
 
-// One click creates the conversation of every idea that has none, in a single request to the main chat, so
-// only this click waits; every later click on any card is instant. Existing conversations are linked, never doubled.
-const batches = new Map<string, string[]>()
-let batchNote = ''
+/* ---------- Factory: prototypes, requests, gates ---------- */
 
-async function createAllChats($: any): Promise<void> {
-  const s0 = await loadStore($)
-  const todo = s0.ideas.filter(i => !i.chat && i.status !== 'rejected')
-  if (todo.length === 0) {
-    batchNote = 'Every idea already has its chat.'
-    await update($, rev, n => n + 1)
-    return
+let factoryNote: { ideaId: string; text: string } | null = null
+let skillsState: SkillsState | null = null
+let skillsBusy = false
+let scoringCfg: ScoringConfig = DEFAULT_SCORING
+
+async function loadScoring($: any): Promise<void> {
+  try {
+    scoringCfg = parseScoring(JSON.parse(String(await $.fs.read(`${$.plugin.root}/data/scoring.json`))))
+  } catch {
+    scoringCfg = DEFAULT_SCORING
   }
-  const known = await sessionsByTitle($)
-  const keys: string[] = []
-  let linked = 0
-  for (const i of todo) {
-    const key = `idea:${i.id}`
-    const p: PendingChat = { key, kind: 'idea', scope: i.id, title: ideaChatTitle(i), prompt: ideaOpening(i, i.stage === 'prevalid' && !i.scan), background: ideaBackground() }
-    const id = known.get(norm(p.title))
-    if (id) {
-      await saveStartedChat($, p, id)
-      linked++
-      continue
-    }
-    if (await startDirect($, p)) {
-      linked++
-      continue
-    }
-    if (keys.length >= 10) continue
-    pendingChats.set(key, p)
-    keys.push(key)
-  }
-  if (keys.length === 0) {
-    batchNote = `Linked ${linked} existing chat(s). Nothing new to create.`
-    await update($, rev, n => n + 1)
-    return
-  }
-  const bid = Date.now().toString(36)
-  batches.set(bid, keys)
-  void Promise.resolve($.prompt.submit({ text: `Create the Roblox Radar chats for ${keys.length} idea(s) [radar-batch:${bid}]` })).catch(() => {
-    batchNote = 'Could not ask the main chat. Try again.'
-  })
-  batchNote = `${linked > 0 ? `Linked ${linked} existing chat(s). ` : ''}Creating ${keys.length} chat(s) in the main conversation, one wait for all of them. Approve if the app asks.${listError ? ` (Listing failed: ${listError})` : ''}`
-  await update($, rev, n => n + 1)
 }
 
-// The main action of the card's stage: sent straight to the idea's conversation (started first when it does
-// not exist yet), then the conversation opens beside the panel.
-async function runAction($: any, ideaId: string): Promise<void> {
-  const key = `idea:${ideaId}`
-  const s0 = await loadStore($)
-  const i = s0.ideas.find(x => x.id === ideaId)
-  const a = i ? actionFor(i.stage) : null
-  if (!i || !a) return
-  const blocked = a.needs ? a.needs(i) : null
-  if (blocked) {
-    chatError[key] = blocked
+// Lists the Drive skill folders (never reads the files: the chat does). Used for the Skills row and to record versions.
+async function fetchSkills($: any): Promise<void> {
+  if (skillsBusy) return
+  skillsBusy = true
+  try {
+    skillsState = await refreshSkills((tool, args) => driveCall($, tool, args), SKILLS_ROOT_ID, skillsState, new Date().toISOString())
+  } finally {
+    skillsBusy = false
     await update($, rev, n => n + 1)
-    return
   }
-  const text = a.prompt(i, {
-    knowledge: s0.knowledge[i.stage] ?? [],
-    templateLink: i.template ? `https://docs.google.com/document/d/${i.template.id}` : null,
-  })
-  await mutate($, s => {
-    const x = s.ideas.find(y => y.id === ideaId)
-    if (!x) return
-    x.lastAction = { stage: x.stage, label: a.label, at: new Date().toISOString() }
-    addLog(s, x.stage, 'ideas', `${a.label}: requested for "${x.title}".`)
-  })
+}
+
+function promptCtx(data: Data, s: Store, stageId: string): PromptCtx {
+  const next = nextStageOf(stageId)
+  return {
+    stageName: data.stages.find(x => x.id === stageId)?.name ?? stageId,
+    folders: skillFolders(skillsState, stageId),
+    criteria: Object.keys(scoringCfg.weights),
+    knowledge: s.knowledge[stageId] ?? [],
+    nextStage: next,
+    nextStageName: next ? (data.stages.find(x => x.id === next)?.name ?? next) : null,
+  }
+}
+
+function ideaEvent(s: Store, i: Idea, at: string): void {
+  enqueue(s, { v: 1, kind: 'idea', scope: `idea:${i.id}`, at, stage: i.stage, idea: ideaSnapshot(i) })
+}
+
+// Sends a request to the prototype's own chat (creating the chat first when it does not exist) and shows it beside the panel.
+async function sendToProtoChat($: any, ideaId: string, text: string, done: string): Promise<void> {
+  const key = `idea:${ideaId}`
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i) return
   let chat = i.chat ?? null
   if (!chat) {
     const hit = await findSessionByTitle($, ideaChatTitle(i))
     if (hit) {
-      const p: PendingChat = { key, kind: 'idea', scope: ideaId, title: ideaChatTitle(i), prompt: '', background: '' }
-      await saveStartedChat($, p, hit.id)
+      await saveStartedChat($, { key, kind: 'idea', scope: ideaId, title: ideaChatTitle(i), prompt: '', background: '' }, hit.id)
       chat = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat ?? null
     }
   }
   if (!chat) {
-    // First time: the conversation is started with this action as its first task.
+    // First time: the conversation is started with this request as its first task.
     await openChat($, 'idea', ideaId, text)
     return
   }
@@ -860,55 +846,347 @@ async function runAction($: any, ideaId: string): Promise<void> {
   } catch {
     sent = false
   }
-  const shown = await showChat($, chat)
-  chatError[key] = sent
-    ? `${a.done}${shown ? '' : ' Open it from "open in app" or the Roblox Radar group in the sidebar.'}`
-    : `Could not send it to the chat. Open the chat and type: ${a.label.toLowerCase()}.`
+  const shown = await showChat($, chat, key)
+  chatError[key] = sent ? `${done}${shown ? '' : ' Open it from "open in app" or the Roblox Radar group in the sidebar.'}` : 'Could not send it to the chat. Open the chat and paste the request again from the card.'
   await update($, rev, n => n + 1)
 }
 
-// "Yes" on a card: the idea moves to the brief stage and its own chat opens, where Lucas confirms the brief.
-async function ideaYes($: any, ideaId: string, stages: Stage[]): Promise<void> {
-  const chat = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat
-  await promote($, ideaId, stages)
-  if (!chat) return
+// Best effort: keep the app conversation title equal to "<proto id> | <title>" (needs the rename tool of the app).
+async function syncChatTitle($: any, ideaId: string): Promise<void> {
   const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
-  let sent = false
+  if (!i || !i.chat || !i.proto_id) return
+  const want = ideaChatTitle(i)
+  if (i.chat.title === want) return
   try {
-    const r: any = await $.session.send({
-      to: { sessionId: chat.id },
-      text: `Yes. Write the full 2-page concept brief now as a Google Doc with the roblox-concept-validator skill. Put the proto_id ${i?.proto_id ?? '(none yet)'} in the title. Concept only, never loop design. Reply with the doc link, then three lines: the fantasy, the wedge, the main risk.`,
+    await ccdCall($, 'ccd_session_mgmt', 'set_session_title', { session_id: i.chat.id, title: want })
+    await mutate($, s => {
+      const x = s.ideas.find(y => y.id === ideaId)
+      if (x && x.chat) x.chat = { ...x.chat, title: want }
     })
-    sent = !!(r && r.isDelivered)
   } catch {
-    sent = false
+    // renaming is tidy-up only
   }
-  chatError[`idea:${ideaId}`] = sent ? 'Moved to the 2-page brief. Its chat is writing the brief now.' : 'Moved to the 2-page brief. Type "yes" in its chat and it writes the brief.'
-  await showChat($, chat)
+}
+
+// One action: allocate the proto ID, create the idea at pre-validation, create its chat, queue the memory event, give feedback.
+type SendSrc = { kind: 'inbox'; id: string } | { kind: 'advisor'; report: Report; si: number; ii: number }
+
+async function sendToFactory($: any, src: SendSrc): Promise<void> {
+  let ideaId = ''
+  let protoId = ''
+  let title = ''
+  const now = new Date().toISOString()
+  await mutate($, s => {
+    let idea: Idea | null = null
+    if (src.kind === 'inbox') {
+      idea = sendInboxToFactory(s, src.id, now)
+    } else {
+      const item = src.report.sections[src.si]?.items[src.ii]
+      const from = `${src.report.id}#${src.si}.${src.ii}`
+      if (!item || s.ideas.some(i => i.from === from) || s.inbox.some(i => i.from === from)) return
+      idea = createPrototype(s, {
+        title: item.title,
+        note: `${item.note} (from the ${src.report.title} report of ${src.report.date}, section "${src.report.sections[src.si]?.name ?? ''}")`,
+        origin: 'advisor',
+        from,
+        now,
+      })
+    }
+    if (!idea) return
+    ideaId = idea.id
+    protoId = idea.proto_id ?? ''
+    title = idea.title
+    ideaEvent(s, idea, now)
+    addLog(s, 'prevalid', 'ideas', `Created ${protoId} "${clip(idea.title, 40)}" in the Factory.`)
+  })
+  if (!ideaId) {
+    $.ui.toast('Nothing to send (already in the Factory?).')
+    return
+  }
+  factoryNote = { ideaId, text: `Created ${protoId} and its chat` }
+  await update($, protoAtom, () => ideaId)
+  $.ui.toast(`Created ${protoId} and its chat`)
+  void flushOutbox($)
+  const idea = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (idea?.chat) {
+    // A migrated idea brings its old chat: keep it, rename it when the app lets us.
+    await syncChatTitle($, ideaId)
+    if (AUTO_OPEN_CHAT_ON_SEND) await showChat($, idea.chat, `idea:${ideaId}`)
+  } else {
+    await openChat($, 'idea', ideaId, undefined, { show: AUTO_OPEN_CHAT_ON_SEND })
+  }
   await update($, rev, n => n + 1)
+}
+
+async function addInbox($: any, raw: string): Promise<void> {
+  const [t, ...rest] = raw.split(/\s*\|\s*|\n/)
+  const title = (t ?? '').trim()
+  if (!title) return
+  if (OPEN_WORDS.includes(title.toLowerCase().replace(/[.!]+$/, ''))) {
+    $.ui.toast('That box adds ideas. Use the Open chat button on a stage or prototype instead.')
+    return
+  }
+  await mutate($, s => {
+    s.inbox.push(newInbox(title, rest.join(' ').trim(), 'own', null, new Date().toISOString(), s.inbox.length))
+    addLog(s, 'triagem', 'ideas', `Added the loose idea "${title.slice(0, 60)}".`)
+  })
+}
+
+async function discardInbox($: any, id: string): Promise<void> {
+  await mutate($, s => {
+    s.inbox = s.inbox.filter(x => x.id !== id)
+  })
+}
+
+async function archiveProto($: any, ideaId: string, on: boolean): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const now = new Date().toISOString()
+    archiveIdea(i, on, now)
+    addLog(s, i.stage, 'ideas', `${on ? 'Archived' : 'Unarchived'} ${i.proto_id}.`)
+    ideaEvent(s, i, now)
+  })
+  void flushOutbox($)
+}
+
+async function renameProtoAbbr($: any, ideaId: string, raw: string): Promise<void> {
+  let ok = false
+  await mutate($, s => {
+    ok = renameAbbr(s, ideaId, raw)
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (ok && i) ideaEvent(s, i, new Date().toISOString())
+  })
+  if (!ok) {
+    $.ui.toast('That ABBR is empty or already used.')
+    return
+  }
+  await syncChatTitle($, ideaId)
+  void flushOutbox($)
+}
+
+// "Open chat" on a Factory stage: opens the prototype's chat and sends a one-line focus message.
+async function openProtoChat($: any, ideaId: string, stageId: string): Promise<void> {
+  const data = await load($)
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !data) return
+  const name = data.stages.find(x => x.id === stageId)?.name ?? stageId
+  const focus = `Focus: ${name}`
+  if (!i.chat) {
+    await openChat($, 'idea', ideaId, focus)
+    return
+  }
+  const key = `idea:${ideaId}`
+  await syncChatTitle($, ideaId)
+  await showChat($, i.chat, key)
+  try {
+    await $.session.send({ to: { sessionId: i.chat.id }, text: focus })
+  } catch {
+    // the chat opens either way
+  }
+  await update($, rev, n => n + 1)
+}
+
+async function runFactory($: any, ideaId: string, key: string): Promise<void> {
+  const a = actionByKey(key)
+  const data = await load($)
+  const s0 = await loadStore($)
+  const i = s0.ideas.find(x => x.id === ideaId)
+  if (!a || !i || !data) return
+  const blocked = a.needs ? a.needs(i) : null
+  if (blocked) {
+    chatError[`idea:${ideaId}`] = blocked
+    await update($, rev, n => n + 1)
+    return
+  }
+  const { text, gen } = buildActionPrompt(a, i, promptCtx(data, s0, a.stage))
+  const refs = skillFiles(skillsState, a.stage)
+  await mutate($, s => {
+    const x = s.ideas.find(y => y.id === ideaId)
+    if (!x) return
+    const now = new Date().toISOString()
+    markAsked(x, a.stage, a.kind, gen, refs, now)
+    x.lastAction = { stage: a.stage, label: a.label, at: now }
+    addLog(s, a.stage, 'ideas', `${a.label}: requested for ${x.proto_id}.`)
+    ideaEvent(s, x, now)
+  })
+  await sendToProtoChat($, ideaId, text, a.done)
+}
+
+async function markStageDone($: any, ideaId: string, stageId: string): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const now = new Date().toISOString()
+    markDone(i, stageId, now)
+    addLog(s, stageId, 'ideas', `${i.proto_id}: ${stageId} marked done by hand.`)
+    ideaEvent(s, i, now)
+  })
+  void flushOutbox($)
+}
+
+async function pickItem($: any, ideaId: string, stageId: string, item: string, mode: 'choose' | 'discard'): Promise<void> {
+  let chat: ChatLink | null = null
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    ensureProto(i)
+    const list = i.outputs![stageId] ?? []
+    if (mode === 'choose' && stageId === 'titulo') for (const o of list) o.chosen = []
+    for (const o of list) {
+      if (!splitItems(o.content).includes(item)) continue
+      if (mode === 'choose') {
+        if (!o.chosen.includes(item)) o.chosen.push(item)
+      } else {
+        if (!o.discarded.includes(item)) o.discarded.push(item)
+        o.chosen = o.chosen.filter(c => c !== item)
+      }
+    }
+    i.updated = new Date().toISOString()
+    chat = i.chat ?? null
+    ideaEvent(s, i, i.updated)
+  })
+  if (mode === 'choose' && chat) {
+    try {
+      await $.session.send({ to: { sessionId: (chat as ChatLink).id }, text: `Lucas marked this as chosen for ${stageId}: ${clip(item, 600)}` })
+    } catch {
+      // the choice is on the card either way
+    }
+  }
+  void flushOutbox($)
+}
+
+async function registerResearch($: any, ideaId: string, text: string): Promise<void> {
+  const t = text.trim()
+  if (!t) return
+  let chat: ChatLink | null = null
+  let msg = ''
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    i.research = t.slice(0, 20000)
+    i.updated = new Date().toISOString()
+    chat = i.chat ?? null
+    msg = researchMessage(i, t)
+    addLog(s, 'template', 'ideas', `${i.proto_id}: research registered.`)
+    ideaEvent(s, i, i.updated)
+  })
+  if (chat) {
+    try {
+      await $.session.send({ to: { sessionId: (chat as ChatLink).id }, text: msg })
+    } catch {
+      // the research is on the card either way
+    }
+  }
+  void flushOutbox($)
+}
+
+async function setTemplateMode($: any, ideaId: string, mode: 'library' | 'custom'): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (i) i.template_mode = mode
+  })
+}
+
+// "Advance": the chat runs the principles gate first. PASS advances on its own when the answer arrives.
+async function requestAdvance($: any, ideaId: string, force: boolean): Promise<void> {
+  const data = await load($)
+  const s0 = await loadStore($)
+  const i = s0.ideas.find(x => x.id === ideaId)
+  if (!i || !data) return
+  const next = nextStageOf(i.stage)
+  if (!next) return
+  if (safetyBlocked(i.scores, scoringCfg) && !force) {
+    chatError[`idea:${ideaId}`] = 'Safety is below the gate. Use "Advance anyway" to confirm.'
+    await update($, rev, n => n + 1)
+    return
+  }
+  const from = data.stages.find(x => x.id === i.stage)?.name ?? i.stage
+  const to = data.stages.find(x => x.id === next)?.name ?? next
+  const text = gatePrompt(i, from, to, promptCtx(data, s0, i.stage))
+  await mutate($, s => {
+    const x = s.ideas.find(y => y.id === ideaId)
+    if (!x) return
+    ensureProto(x)
+    x.gateAsked![x.stage] = new Date().toISOString()
+    addLog(s, x.stage, 'ideas', `${x.proto_id}: principles gate requested for ${from} to ${to}.`)
+  })
+  await sendToProtoChat($, ideaId, text, 'Principles gate requested in its chat.')
+}
+
+async function forceAdvance($: any, ideaId: string, record: (i: Idea, now: string) => void): Promise<void> {
+  let stage = ''
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const now = new Date().toISOString()
+    ensureProto(i)
+    record(i, now)
+    delete i.gateAsked![i.stage]
+    if (advanceIdea(i, now)) {
+      stage = i.stage
+      addLog(s, i.stage, 'ideas', `${i.proto_id} advanced to ${i.stage}.`)
+      ideaEvent(s, i, now)
+    }
+  })
+  if (stage) await update($, fstageAtom, () => stage)
+  void flushOutbox($)
+}
+
+const overrideAdvance = ($: any, ideaId: string) =>
+  forceAdvance($, ideaId, (i, now) => {
+    const g = i.gate![i.stage]
+    if (g) g.override = true
+    else i.gate![i.stage] = { verdict: 'BLOCK', reason: 'overridden by Lucas', at: now, override: true }
+  })
+
+const advanceNoGate = ($: any, ideaId: string) =>
+  forceAdvance($, ideaId, (i, now) => {
+    i.gate![i.stage] = { verdict: 'PASS WITH RISKS', reason: 'advanced without the gate (Lucas chose to skip it)', at: now }
+  })
+
+// What the chat tagged is read from its transcript. A long output that did not fit is read from its Drive file instead.
+async function readTruncated($: any, idea: Idea, parsed: Parsed): Promise<void> {
+  const fixes: Parsed['outputs'] = []
+  for (const t of parsed.outputs.filter(o => o.truncated).slice(0, 3)) {
+    try {
+      const raw = await driveCall($, 'search_files', { query: `title contains '${idea.proto_id}_${t.stage}_${t.gen}'`, pageSize: 5, excludeContentSnippets: true })
+      const f = (Array.isArray(jsonOf(raw)?.files) ? jsonOf(raw).files : []).find((x: any) => x && typeof x.id === 'string')
+      if (!f) continue
+      const content = unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })).trim()
+      if (content) fixes.push({ ...t, content, truncated: false })
+    } catch {
+      // the next sync tries again
+    }
+  }
+  parsed.outputs = [...parsed.outputs.filter(o => !o.truncated), ...fixes]
 }
 
 // Reads the linked conversations that changed and files them as memory: the note of the idea or stage, and the
-// transcript as a new file in Drive. Read only on the app side.
-async function syncChats($: any): Promise<void> {
+// transcript as a new file in Drive. For a prototype, the tagged blocks of the chat become outputs, checks, scores and gates.
+// `only` limits it to some prototypes (the 30 second sync while a request waits); `force` ignores the unchanged check.
+async function syncChats($: any, only?: string[], force = false): Promise<void> {
   if (syncBusy) return
   syncBusy = true
   try {
     if (pendingChats.size > 0) await resolvePending($)
     const s0 = await loadStore($)
     const targets: { kind: 'idea' | 'stage'; scope: string; chat: ChatLink; label: string; old: string }[] = []
-    for (const i of s0.ideas) if (i.chat) targets.push({ kind: 'idea', scope: i.id, chat: i.chat, label: `the idea "${i.title}"`, old: i.memory ?? '' })
-    for (const [sid, chat] of Object.entries(s0.stageChats)) targets.push({ kind: 'stage', scope: sid, chat, label: `the "${sid}" stage`, old: s0.memory[sid]?.text ?? '' })
+    for (const i of s0.ideas) if (i.chat && (!only || only.includes(i.id))) targets.push({ kind: 'idea', scope: i.id, chat: i.chat, label: `the prototype "${i.title}"`, old: i.memory ?? '' })
+    if (!only) for (const [sid, chat] of Object.entries(s0.stageChats)) targets.push({ kind: 'stage', scope: sid, chat, label: `the "${sid}" stage`, old: s0.memory[sid]?.text ?? '' })
     for (const t of targets.slice(0, 20)) {
       let text = ''
       try {
-        text = await ccdCall($, 'ccd_session_mgmt', 'list_events', { session_id: t.chat.id, limit: 40 })
+        text = await ccdCall($, 'ccd_session_mgmt', 'list_events', { session_id: t.chat.id, limit: SYNC_EVENTS })
       } catch {
         continue
       }
       const h = hashText(text)
-      if (h === t.chat.seen) continue
+      if (h === t.chat.seen && !force) continue
       const tail = text.slice(-8000)
+      const parsed = t.kind === 'idea' ? parseTags(text) : null
+      const idea0 = t.kind === 'idea' ? s0.ideas.find(x => x.id === t.scope) : undefined
+      if (parsed && idea0 && parsed.outputs.some(o => o.truncated)) await readTruncated($, idea0, parsed)
       const memText = await rewriteMemory($, t.label, t.old, '(the conversation continued; transcript tail below)', tail)
       const at = new Date().toISOString()
       const level = t.kind === 'idea' ? lastPotential(text) : null
@@ -919,7 +1197,18 @@ async function syncChats($: any): Promise<void> {
           i.memory = memText
           if (level) i.scan = { level, at }
           i.chat = { ...i.chat, seen: h, syncedAt: at }
+          let changed = false
+          if (parsed) {
+            const r = applyParsed(i, parsed, at)
+            changed = r.added > 0 || r.scored || r.gates > 0
+            if (resolveGates(i, at)) {
+              changed = true
+              addLog(s, i.stage, 'ideas', `${i.proto_id} advanced to ${i.stage} after the principles gate.`)
+            }
+            if (changed) addLog(s, i.stage, 'ideas', `Read tagged output from the chat of ${i.proto_id}.`)
+          }
           enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at, stage: i.stage, user: 'transcript', answer: tail, purpose: 'chat', memory: memText, idea: ideaSnapshot(i) })
+          if (changed) ideaEvent(s, i, at)
         } else {
           const c = s.stageChats[t.scope]
           if (!c) return
@@ -933,6 +1222,13 @@ async function syncChats($: any): Promise<void> {
     syncBusy = false
   }
   void flushOutbox($)
+}
+
+// Every 30 seconds: only the prototypes with a request still waiting for its answer.
+async function syncPending($: any): Promise<void> {
+  const s = await loadStore($)
+  const ids = s.ideas.filter(i => i.chat && anyPending(i, Date.now())).map(i => i.id)
+  if (ids.length > 0) await syncChats($, ids)
 }
 
 /* ---------- template library (Drive) ---------- */
@@ -1002,6 +1298,11 @@ async function chooseTemplate($: any, ideaId: string, templateId: string | null)
     if (!i) return
     const now = new Date().toISOString()
     i.template = t ? { id: t.id, name: t.name, family: t.family, at: now } : null
+    if (t) {
+      ensureProto(i)
+      i.template_mode = 'library'
+      i.checks!.template = 'done'
+    }
     i.updated = now
     addLog(s, i.stage, 'ideas', t ? `"${i.title}" uses the template ${t.name}.` : `Template cleared on "${i.title}".`)
     enqueue(s, { v: 1, kind: 'idea', scope: `idea:${i.id}`, at: now, stage: i.stage, idea: ideaSnapshot(i) })
@@ -1141,7 +1442,13 @@ const loadSeed = ($: any) => loadJson<SeedFile>($, 'seed.json', x => Array.isArr
 async function loadStore($: any): Promise<Store> {
   const raw = (await $.store.get(KEY)) as Partial<Store> | undefined
   // Merge over defaults so a store saved by an older build still loads.
-  return raw && raw.threads ? { ...emptyStore(), ...raw } : emptyStore()
+  const s: Store = raw && raw.threads ? { ...emptyStore(), ...raw } : emptyStore()
+  if (!s.migrated070) {
+    // One-time 0.7.0 migration: old ideas become prototypes with new IDs, or go to the inbox. Chat links are kept.
+    migrateStore(s)
+    await $.store.set(KEY, s)
+  }
+  return s
 }
 
 // First run: import the ideas and the knowledge seeds once.
@@ -1154,7 +1461,7 @@ async function ensureSeed($: any): Promise<void> {
     if (s.seeded) return
     const now = new Date().toISOString()
     seed.ideas.forEach((x, n) => {
-      s.ideas.push(newIdea(x.title, x.note, x.origin, null, now, n))
+      s.inbox.push(newInbox(x.title, x.note, x.origin, null, now, n))
     })
     for (const [stage, list] of Object.entries(seed.knowledge)) {
       const cur = s.knowledge[stage] ?? []
@@ -1164,7 +1471,7 @@ async function ensureSeed($: any): Promise<void> {
       s.knowledge[stage] = cur
     }
     s.seeded = true
-    addLog(s, 'prevalid', 'ideas', `Imported ${seed.ideas.length} ideas from the project docs.`)
+    addLog(s, 'triagem', 'ideas', `Imported ${seed.ideas.length} ideas from the project docs into the loose ideas.`)
   })
 }
 
@@ -1194,24 +1501,6 @@ function threadOf(s: Store, stage: string): Thread {
 
 const toggleOpen = ($: any, id: string) => update($, openIds, (list: string[]) => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]))
 
-async function sendItem($: any, report: Report, si: number, ii: number): Promise<void> {
-  const item = report.sections[si]?.items[ii]
-  if (!item) return
-  const from = `${report.id}#${si}.${ii}`
-  let newId = ''
-  await mutate($, s => {
-    if (s.ideas.some(i => i.from === from)) return
-    const now = new Date().toISOString()
-    const idea = newIdea(item.title, `${item.note} (from the ${report.title} report of ${report.date}, section "${report.sections[si]?.name ?? ''}")`, 'advisor', from, now, s.ideas.length)
-    s.ideas.push(idea)
-    newId = idea.id
-    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: now, stage: idea.stage, idea: ideaSnapshot(idea) })
-    addLog(s, 'triagem', 'ideas', `Sent "${item.title}" from the ${report.date} report to pre-validation.`)
-    addLog(s, 'prevalid', 'ideas', `Received "${item.title}" from the advisor report of ${report.date}.`)
-  })
-  $.ui.toast(`Sent to pre-validation: ${item.title}`)
-}
-
 async function saveHook($: any, report: Report, item: ReportItem): Promise<void> {
   await mutate($, s => {
     const list = s.knowledge.thumb ?? []
@@ -1222,69 +1511,6 @@ async function saveHook($: any, report: Report, item: ReportItem): Promise<void>
     addLog(s, 'thumb', 'knowledge', `Saved hook "${item.title}" from the ${report.date} report.`)
   })
   $.ui.toast(`Saved to the Thumbnail repository: ${item.title}`)
-}
-
-async function setStatus($: any, ideaId: string, status: IdeaStatus): Promise<void> {
-  await mutate($, s => {
-    const idea = s.ideas.find(i => i.id === ideaId)
-    if (!idea) return
-    setIdeaStatus(idea, status, new Date().toISOString())
-    addLog(s, idea.stage, 'ideas', `"${idea.title}" set to ${status}.`)
-    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: idea.updated, stage: idea.stage, idea: ideaSnapshot(idea) })
-  })
-  void flushOutbox($)
-}
-
-async function promote($: any, ideaId: string, stages: Stage[]): Promise<void> {
-  let msg = ''
-  await mutate($, s => {
-    const idea = s.ideas.find(i => i.id === ideaId)
-    if (!idea) return
-    const from = idea.stage
-    const taken = s.ideas.map(i => i.proto_id).filter((x): x is string => !!x)
-    if (!promoteIdea(idea, taken, new Date().toISOString())) return
-    const name = stages.find(x => x.id === idea.stage)?.name ?? idea.stage
-    msg = `"${idea.title}" moved to ${name}${idea.proto_id ? ` as ${idea.proto_id}` : ''}.`
-    addLog(s, from, 'ideas', msg)
-    addLog(s, idea.stage, 'ideas', `Received "${idea.title}".`)
-    enqueue(s, { v: 1, kind: 'handoff', scope: `idea:${idea.id}`, at: idea.updated, stage: idea.stage, memory: idea.memory ?? '', idea: ideaSnapshot(idea) })
-  })
-  if (msg) $.ui.toast(msg)
-  void flushOutbox($)
-}
-
-// "Yes" on a quick scan: the idea moves to the brief stage and the brief agent starts on it.
-async function briefIdea($: any, ideaId: string, stages: Stage[]): Promise<void> {
-  await promote($, ideaId, stages)
-  const s = await loadStore($)
-  const i = s.ideas.find(x => x.id === ideaId)
-  if (i && i.stage === 'brief') await startIdeaJob($, ideaId, 'brief', '')
-}
-
-async function removeIdea($: any, ideaId: string): Promise<void> {
-  await mutate($, s => {
-    const i = s.ideas.find(x => x.id === ideaId)
-    s.ideas = s.ideas.filter(x => x.id !== ideaId)
-    if (i) addLog(s, i.stage, 'ideas', `Deleted "${i.title}".`)
-  })
-}
-
-async function addIdea($: any, raw: string): Promise<void> {
-  const title = raw.trim()
-  if (!title) return
-  if (OPEN_WORDS.includes(title.toLowerCase().replace(/[.!]+$/, ''))) {
-    $.ui.toast('That box adds ideas. Use the Open chat button on a card instead.')
-    return
-  }
-  let newId = ''
-  await mutate($, s => {
-    const now = new Date().toISOString()
-    const idea = newIdea(title.slice(0, 120), title.length > 120 ? title : '', 'own', null, now, s.ideas.length)
-    s.ideas.push(idea)
-    newId = idea.id
-    addLog(s, 'prevalid', 'ideas', `Added your idea "${title.slice(0, 60)}".`)
-    enqueue(s, { v: 1, kind: 'idea', scope: `idea:${idea.id}`, at: now, stage: idea.stage, idea: ideaSnapshot(idea) })
-  })
 }
 
 async function addKnowledge($: any, stageId: string, raw: string): Promise<void> {
@@ -1540,7 +1766,7 @@ async function onAgentDone($: any, agentId: string, answer: string, reason: stri
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'panel', description: 'Open the Roblox Radar panel' })
+    await $.command.register({ name: 'panel', description: 'Open the Roblox Radar panel: /panel radar or /panel factory' })
     await $.command.register({ name: 'stage', description: 'Focus a stage: /stage <name or id>, or /stage clear' })
     // The pane is not opened here: it belongs to Lucas, so only /panel opens it.
     await note($, 'surfaces_at_session_start', await $.session.surfaces())
@@ -1548,9 +1774,13 @@ export const register: Register = on => {
     void fetchLive($)
     void fetchReceipts($)
     void fetchTemplates($)
+    void loadScoring($)
+    void fetchSkills($)
     void restoreMemory($).then(() => flushOutbox($))
     $.clock.every(60 * 1000, () => void flushOutbox($))
     $.clock.every(5 * 60 * 1000, () => void syncChats($))
+    $.clock.every(30 * 1000, () => void syncPending($))
+    $.clock.every(FETCH_MS, () => void fetchSkills($))
     $.clock.every(FETCH_MS, () => void fetchLive($))
     $.clock.every(FETCH_MS, () => void fetchReceipts($))
     $.clock.every(FETCH_MS, () => void fetchTemplates($))
@@ -1564,12 +1794,15 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: 'panel' }, async $ => {
+  on('command.run', { command: 'panel' }, async ($, e) => {
+    const arg = e.args.trim().toLowerCase()
+    if (arg === 'radar' || arg === 'factory') await update($, modeAtom, () => arg)
     await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
+    void loadScoring($)
     void syncChats($)
     void fetchLive($)
     void fetchReceipts($)
-    return { text: 'Roblox Radar panel opened.' }
+    return { text: `Roblox Radar panel opened${arg === 'radar' || arg === 'factory' ? ` in ${arg} mode` : ''}.` }
   })
 
   on('command.run', { command: 'stage' }, async ($, e) => {
@@ -1583,7 +1816,7 @@ export const register: Register = on => {
     const found = findStage(data, arg)
     if (!found) return { text: `Stage not found. Ids: ${data.stages.map(s => s.id).join(', ')}.` }
     await update($, selected, () => found.id)
-    await update($, tab, () => 'chat')
+    await update($, fstageAtom, () => found.id)
     return { text: `Stage in focus: ${found.name}.` }
   })
 
@@ -1604,15 +1837,6 @@ export const register: Register = on => {
   })
 
   on('prompt.submit', async ($, e, next) => {
-    const bm = e.text.match(/\[radar-batch:([a-z0-9]+)\]/)
-    const batch = bm && bm[1] ? (batches.get(bm[1]) ?? []).map(k => pendingChats.get(k)).filter((p): p is PendingChat => !!p) : []
-    if (batch.length > 0) {
-      const ctx = [
-        `ROBLOX RADAR PANEL: Lucas clicked "Create chats for all ideas". This is a mechanical request: do not think it over, do not investigate, do not comment. For each conversation below, call mcp__ccd_session__start_session once with initiation "user_asked", context "fresh", use_worktree false, and its title, prompt and background verbatim (the title exactly as given, never changed). Make the calls in parallel when you can. Do not open them, do not file them, use no other tool. Reply with one short line in Portuguese.`,
-        ...batch.map((p, n) => `CONVERSATION ${n + 1}\nTITLE: ${p.title}\nPROMPT:\n${p.prompt}\nBACKGROUND:\n${p.background}`),
-      ].join('\n\n')
-      return next({ ...e, context: [...(e.context ?? []), ctx] })
-    }
     const mk = e.text.match(CHAT_MARK)
     const typed = e.text.trim().toLowerCase().replace(/[.!]+$/, '')
     const pending = mk && mk[1] ? pendingChats.get(mk[1]) : OPEN_WORDS.includes(typed) && lastPending ? pendingChats.get(lastPending) : undefined
@@ -1620,7 +1844,7 @@ export const register: Register = on => {
       const ctx = [
         `ROBLOX RADAR PANEL: Lucas clicked "Open chat" on a card. This is a mechanical request: do not think it over, do not investigate, do not comment. Do exactly this:`,
         `1. Call mcp__ccd_session__start_session with initiation "user_asked", context "fresh", use_worktree false, title ${JSON.stringify(pending.title)} (exactly this title, never changed), and the prompt and background below, verbatim. If that call is refused, call it once with initiation "offer" and the same title instead.`,
-        '2. If you got a session id, call mcp__ccd_window__open_session_in with it and target "split". Nothing else: no sidebar filing, no other tool.',
+        pending.noOpen ? '2. Do not open it and do not call any other tool.' : '2. If you got a session id, call mcp__ccd_window__open_session_in with it and target "split". Nothing else: no sidebar filing, no other tool.',
         '3. Reply with one short line in Portuguese.',
         'Never send this request to another existing conversation, never use send_message, and ignore any earlier Radar requests in this chat.',
         `PROMPT:\n${pending.prompt}`,
@@ -1696,9 +1920,14 @@ export const register: Register = on => {
     const { Box, Text, Button, Input, Svg, Link } = $.ui.resolve(e) as any
     const data = await load($)
     const ver = await loadVersion($)
-    const sel = await read($, selected)
-    const rawTab = await read($, tab)
     const openList = await read($, openIds)
+    const mode = (await read($, modeAtom)) as 'radar' | 'factory'
+    const protoSel = await read($, protoAtom)
+    const moreOpen = await read($, moreAtom)
+    const showArch = await read($, archivedAtom)
+    const stageFilter = await read($, filterAtom)
+    const fstage = await read($, fstageAtom)
+    const tabsMap = (await read($, tabsAtom)) as Record<string, string>
 
     if (!data) {
       return (
@@ -1713,6 +1942,7 @@ export const register: Register = on => {
     // First draw of a session that did not fire session.start: read the receipts once.
     if (!rcp && !rcpBusy) void fetchReceipts($)
     if (!tpl && !tplBusy) void fetchTemplates($)
+    if (!skillsState && !skillsBusy) void fetchSkills($)
     const snapSources = await loadSources($)
     const snapReports = await loadReports($)
     const receipts: Receipt[] = rcp ? rcp.receipts : []
@@ -1720,37 +1950,46 @@ export const register: Register = on => {
     // Live receipts win; the snapshot files only fill what no receipt has said yet.
     const sources = sourcesFromReceipt(latestCollection, snapSources) ?? snapSources
     const reports = mergeReports(reportsFromReceipts(receipts), snapReports)
-    const current = data.stages.find(s => s.id === sel)
-    const totalOpen = data.stages.reduce((n, s) => n + openCount(s), 0)
     const columns = (e.props as { bodyColumns?: number }).bodyColumns ?? e.viewport?.columns ?? 80
 
-    const perRow = columns >= 100 ? 4 : columns >= 60 ? 2 : 1
-    const nodeW = Math.max(18, Math.min(60, Math.floor((columns - 4 - (perRow - 1) * 3) / perRow)))
-    const select = (id: string) => Promise.all([update($, selected, () => id), update($, tab, () => 'chat')])
-    const pick = (id: string, name: string) => {
-      $.ui.toast(`Opening ${name}`)
-      return select(id)
+    const setMode = (m: 'radar' | 'factory') => update($, modeAtom, () => m)
+    const setFstage = (id: string) => Promise.all([update($, fstageAtom, () => id), update($, selected, () => id)])
+    const selectProto = async (id: string | null) => {
+      await update($, protoAtom, () => id)
+      if (id) {
+        const i = store.ideas.find(x => x.id === id)
+        await update($, fstageAtom, () => (i ? i.stage : null))
+        await setMode('factory')
+      }
     }
 
-    /* header */
+    /* header: one row with the mode switch, one status line with a click-to-expand detail */
     const statusOpen_ = await read($, statusOpen)
     const bad = (rcp && !rcp.ok) || !!memError
     const statusColor = bad ? AMBER : !rcp ? MUTED : OLIVE
     const statusLine = bad ? 'Drive or memory needs attention (click for detail)' : !rcp ? 'Reading Drive...' : 'Drive and memory OK'
     const header = (
       <Box flexDirection="column">
-        <Box gap={1} alignItems="center">
+        <Box gap={2} alignItems="center" flexWrap="wrap">
           {Svg ? <Svg source={ICON_SVG} alt="Roblox Radar" width={28} height={28} /> : null}
           <Text bold color={CLAY}>
             {Svg ? 'Roblox Radar' : '▣ Roblox Radar'}
           </Text>
-          <Text color={MUTED}>pipeline control</Text>
+          <Button key="mode-radar" onPress={() => setMode('radar')}>
+            <Text bold color={mode === 'radar' ? BG : FG} backgroundColor={mode === 'radar' ? NEON : PANEL}>{' Radar '}</Text>
+          </Button>
+          <Button key="mode-factory" onPress={() => setMode('factory')}>
+            <Text bold color={mode === 'factory' ? BG : FG} backgroundColor={mode === 'factory' ? NEON : PANEL}>{' Factory '}</Text>
+          </Button>
           <Text bold color={SKY}>{`v${ver}`}</Text>
         </Box>
-        <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
-          <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
-          <Text color={MUTED}>{` ${statusLine}`}</Text>
-        </Button>
+        <Box gap={2}>
+          <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
+            <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
+            <Text color={MUTED}>{` ${statusLine}`}</Text>
+          </Button>
+          <Button key="refresh" label="Refresh" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)])} />
+        </Box>
         {statusOpen_ ? (
           <Box flexDirection="column" paddingLeft={2}>
             <Text color={rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED}>
@@ -1768,259 +2007,76 @@ export const register: Register = on => {
             <Text color={MUTED}>{`Stage descriptions come from the data file (${data.updated}).`}</Text>
           </Box>
         ) : null}
-        <Box gap={2}>
-          <Text color={OLIVE}>● OK</Text>
-          <Text color={AMBER}>● ATTENTION</Text>
-          <Text color={RUST}>● ERROR</Text>
-          <Text color={SAND}>○ NOT BUILT</Text>
-          <Text color={FG}>◆ your call</Text>
-          <Text color={MUTED}>{totalOpen} open items</Text>
-          <Button key="refresh" label="Refresh live status" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($)])} />
-        </Box>
       </Box>
     )
 
-    /* flow map: rows of clickable nodes joined by arrows, registry bar, learning loop */
-    const flowStages = data.stages.filter(s => s.id !== 'registro' && s.id !== 'auditor')
-    const registry = data.stages.find(s => s.id === 'registro')
-    const auditor = data.stages.find(s => s.id === 'auditor')
-    const rows: Stage[][] = []
-    for (let i = 0; i < flowStages.length; i += perRow) rows.push(flowStages.slice(i, i + perRow))
-    const rowNotes = ['brief approved, proto_id born', 'prototype built and named, ready for art']
-    const rowWidth = perRow * nodeW + (perRow - 1) * 3
-    const nodeOf = (s: Stage) => {
-      const tone = toneOf(s)
-      const open = openCount(s)
-      const isSel = s.id === sel
-      const n = flowStages.findIndex(x => x.id === s.id) + 1
-      // The stage's own task first; the daily status summary only when the stage has nothing else.
-      const ownR = STAGES_WITH_RECEIPTS.includes(s.id) ? receiptsFor(receipts, s.id) : []
-      const lastR = ownR.find(r => !r.task_key.startsWith('status_')) ?? ownR[0] ?? null
-      const lateR = !!lastR && isLate(lastR, Date.now())
-      const lastColor = !lastR ? MUTED : lastR.outcome === 'failed' ? RUST : lastR.outcome !== 'ok' || lateR ? AMBER : OLIVE
-      return (
-        <Box
-          key={`node-${s.id}`}
-          flexDirection="column"
-          borderStyle={isSel ? 'double' : 'round'}
-          borderColor={isSel ? NEON : tone.color}
-          backgroundColor={isSel ? NEON_BG : PANEL}
-          paddingX={1}
-          width={nodeW}
-        >
-          <Button key={`stage-${s.id}`} hotkey={HOTKEYS[n - 1]} onPress={() => pick(s.id, s.name)}>
-            <Text bold color={isSel ? BG : FG} backgroundColor={isSel ? NEON : CLAY}>
-              {` ${n} `}
-            </Text>
-            <Text bold color={isSel ? NEON : FG}>
-              {' '}
-              {s.gate ? '◆ ' : ''}
-              {clip(s.name, nodeW - 14).padEnd(Math.max(0, nodeW - 14), '\u00a0')}
-            </Text>
-          </Button>
-          <Text color={isSel ? FG : MUTED}>{clip(s.sub, nodeW - 4)}</Text>
-          {lastR ? <Text color={lastColor}>{clip(`${lastR.task_key} ${ago(lastR.finished_utc, Date.now())}${lateR ? ', late' : ''}`, nodeW - 4)}</Text> : null}
-          <Text bold={isSel} color={tone.color}>
-            {tone.glyph} {tone.label}
-            {open > 0 ? `  ${open} open` : ''}
-          </Text>
-        </Box>
-      )
+    const vctx: Ctx = {
+      C: { Box, Text, Button, Input, Link },
+      columns,
+      now: Date.now(),
+      store,
+      stages: data.stages,
+      sources,
+      reports,
+      receipts,
+      rcp: rcp ? { at: rcp.at, ok: rcp.ok, error: rcp.error } : null,
+      open: openList,
+      toggle: id => toggleOpen($, id),
+      go: id => setFstage(id),
+      sendItem: (r, si, ii) => sendToFactory($, { kind: 'advisor', report: r, si, ii }),
+      saveHook: (r, it) => saveHook($, r, it),
+      openChat: (kind, scope) => openChat($, kind, scope),
+      runTask: tid => runTask($, tid),
+      templates: tpl ? { at: tpl.at, ok: tpl.ok, error: tpl.error, list: tpl.list } : null,
+      chooseTemplate: (ideaId, tid) => chooseTemplate($, ideaId, tid),
+      refreshTemplates: () => fetchTemplates($),
+      chatError: key => chatError[key] ?? null,
+      chatBusy: key => chatBusy.has(key),
+      addKnowledge: (sid, v) => addKnowledge($, sid, v),
+      removeKnowledge: (sid, id) => removeKnowledge($, sid, id),
+      scoring: scoringCfg,
+      skills: skillsState,
+      sendToFactory: src => sendToFactory($, src),
+      addInbox: v => addInbox($, v),
+      discardInbox: id => discardInbox($, id),
+      factoryNote,
+      selectProto,
+      proto: protoSel,
+      showArchived: showArch,
+      toggleArchived: () => update($, archivedAtom, (v: boolean) => !v),
+      stageFilter,
+      setStageFilter: id => update($, filterAtom, () => id),
+      fstage,
+      setFstage: id => setFstage(id),
+      openProtoChat: (id, st) => openProtoChat($, id, st),
+      runFactory: (id, key) => runFactory($, id, key),
+      markDone: (id, st) => markStageDone($, id, st),
+      requestAdvance: (id, force) => requestAdvance($, id, force),
+      overrideAdvance: id => overrideAdvance($, id),
+      advanceNoGate: id => advanceNoGate($, id),
+      refreshNow: id => syncChats($, [id], true).then(() => update($, rev, n => n + 1)),
+      pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
+      registerResearch: (id, t) => registerResearch($, id, t),
+      setTemplateMode: (id, m) => setTemplateMode($, id, m),
+      renameAbbr: (id, raw) => renameProtoAbbr($, id, raw),
+      archive: (id, on) => archiveProto($, id, on),
     }
-    const flow = (
-      <Box flexDirection="column">
-        {rows.map((row, ri) => {
-          const rev = ri % 2 === 1
-          const shown = rev ? [...row].reverse() : row
-          return (
-            <Box key={`row-${ri}`} flexDirection="column">
-              <Box flexDirection="row" width={rowWidth}>
-                {shown.map((s, i) => (
-                  <Box key={`cell-${s.id}`} flexDirection="row">
-                    {nodeOf(s)}
-                    {i < shown.length - 1 ? (
-                      <Box flexDirection="column" justifyContent="center" paddingX={1}>
-                        <Text color={CLAY}>{rev ? '←' : '→'}</Text>
-                      </Box>
-                    ) : null}
-                  </Box>
-                ))}
-              </Box>
-              {ri < rows.length - 1 ? (
-                <Box width={rowWidth} justifyContent={rev ? 'flex-start' : 'flex-end'}>
-                  <Text color={CLAY}>
-                    {rev ? '↓ ' : ''}
-                    {perRow === 4 ? (rowNotes[ri] ?? '') : ''}
-                    {rev ? '' : ' ↓'}
-                  </Text>
-                </Box>
-              ) : null}
-            </Box>
-          )
-        })}
-        {registry ? (
-          <Box
-            key="registry-bar"
-            borderStyle={registry.id === sel ? 'double' : 'round'}
-            borderColor={registry.id === sel ? NEON : toneOf(registry).color}
-            backgroundColor={registry.id === sel ? NEON_BG : PANEL}
-            paddingX={1}
-            marginTop={1}
-            gap={1}
-          >
-            <Button key={`stage-${registry.id}`} onPress={() => select(registry.id)}>
-              <Text bold color={registry.id === sel ? NEON : FG}>
-                Registry (proto_id)
-              </Text>
-            </Button>
-            <Text color={MUTED}>one line per prototype ties trend, brief, doc, listing, metrics and post mortem</Text>
-            <Text color={toneOf(registry).color}>
-              {toneOf(registry).glyph} {toneOf(registry).label}
-            </Text>
-          </Box>
-        ) : null}
-        {auditor ? (
-          <Box
-            key="auditor-bar"
-            borderStyle={auditor.id === sel ? 'double' : 'round'}
-            borderColor={auditor.id === sel ? NEON : toneOf(auditor).color}
-            backgroundColor={auditor.id === sel ? NEON_BG : PANEL}
-            paddingX={1}
-            gap={1}
-          >
-            <Button key={`stage-${auditor.id}`} onPress={() => select(auditor.id)}>
-              <Text bold color={auditor.id === sel ? NEON : FG}>
-                Auditor
-              </Text>
-            </Button>
-            <Text color={MUTED}>{auditor.sub}</Text>
-            {(() => {
-              const last = stageHealth(receipts, 'auditor', Date.now()).last
-              return last ? (
-                <Text color={last.outcome === 'ok' ? OLIVE : last.outcome === 'failed' ? RUST : AMBER}>{`${clip(last.summary, 90)} (${ago(last.finished_utc, Date.now())})`}</Text>
-              ) : (
-                <Text color={MUTED}>no audit yet</Text>
-              )
-            })()}
-          </Box>
-        ) : null}
-        <Text color={SKY}>↺ learning feeds back: screening weights, validator, templates, listing, thresholds</Text>
-      </Box>
-    )
 
-    /* detail */
-    let detail
-    if (!current) {
-      const c = { pending: 0, promising: 0, rejected: 0 }
-      for (const i of store.ideas) c[i.status] += 1
-      detail = (
-        <Box flexDirection="column">
-          <Text bold color={FG}>Pick a stage</Text>
-          <Text color={MUTED}>
-            Click a stage to open it full screen, with its own chat and the tabs that belong to it. Each stage keeps a separate
-            context, so no single conversation has to carry the whole project.
-          </Text>
-          <Text color={MUTED}>
-            Ideas in the pipeline: {store.ideas.length} ({c.pending} pending, {c.promising} promising, {c.rejected} rejected).
-          </Text>
-        </Box>
-      )
-    } else {
+    /* the body of one tab of one stage */
+    const bodyFor = (current: Stage, tabId: string) => {
       const tone = toneOf(current)
-      const thread = store.threads[current.id]
       const logs: LogEntry[] = store.log[current.id] ?? []
-      const showLog = current.trigger_ids.length > 0 || logs.length > 0
       const instructions = store.instructions[current.id] ?? []
       const archive = store.archive[current.id] ?? []
       const openPend = current.pendencies.filter(p => !p.done)
-
-      const tabs = tabsFor(current, showLog)
-      const activeTab = tabs.some(t => t.id === rawTab) ? rawTab : 'chat'
-      const stageIdeas = ideasAt(store.ideas, current.id).length
-      const countOf = (id: string): string => {
-        if (id === 'pending' && openPend.length > 0) return ` (${openPend.length})`
-        if ((id === 'ideas' || id === 'protos') && stageIdeas > 0) return ` (${stageIdeas})`
-        if (id === 'reports' && reports) return ` (${reports.reports.length})`
-        if (id === 'receipts') return ` (${receiptsFor(receipts, current.id).length})`
-        if (id === 'knowledge') return ` (${(store.knowledge[current.id] ?? []).length})`
-        if (id === 'registry') return ` (${store.ideas.filter(i => i.proto_id).length})`
-        if (id === 'templates') return ` (${tpl ? tpl.list.length : 0})`
-        return ''
-      }
-      const tabBar = (
-        <Box gap={2} paddingX={1} flexWrap="wrap">
-          {tabs.map(t => (
-            <Button key={`tab-${t.id}`} onPress={() => update($, tab, () => t.id)}>
-              <Text bold={t.id === activeTab} underline={t.id === activeTab} color={t.id === activeTab ? NEON : MUTED}>
-                {t.label}
-                {countOf(t.id)}
-              </Text>
-            </Button>
-          ))}
-        </Box>
-      )
-      const vctx: Ctx = {
-        C: { Box, Text, Button, Input, Link },
-        columns,
-        now: Date.now(),
-        store,
-        stages: data.stages,
-        sources,
-        reports,
-        receipts,
-        rcp: rcp ? { at: rcp.at, ok: rcp.ok, error: rcp.error } : null,
-        open: openList,
-        toggle: id => toggleOpen($, id),
-        go: id => select(id),
-        sendItem: (r, si, ii) => sendItem($, r, si, ii),
-        saveHook: (r, it) => saveHook($, r, it),
-        setStatus: (id, st) => setStatus($, id, st),
-        promote: id => promote($, id, data.stages),
-        scanIdea: id => startIdeaJob($, id, 'scan', ''),
-        ideaSay: (id, v) => startIdeaJob($, id, 'chat', v),
-        briefIdea: id => briefIdea($, id, data.stages),
-        openChat: (kind, scope) => openChat($, kind, scope),
-        ideaYes: id => ideaYes($, id, data.stages),
-        createAllChats: () => createAllChats($),
-        batchNote: () => batchNote,
-        runAction: id => runAction($, id),
-        runTask: tid => runTask($, tid),
-        templates: tpl ? { at: tpl.at, ok: tpl.ok, error: tpl.error, list: tpl.list } : null,
-        chooseTemplate: (ideaId, tid) => chooseTemplate($, ideaId, tid),
-        refreshTemplates: () => fetchTemplates($),
-        removeIdea: id => removeIdea($, id),
-        chatError: key => chatError[key] ?? null,
-        chatBusy: key => chatBusy.has(key),
-        addIdea: v => addIdea($, v),
-        addKnowledge: (sid, v) => addKnowledge($, sid, v),
-        removeKnowledge: (sid, id) => removeKnowledge($, sid, id),
-      }
-      let extra: any = null
-      if (activeTab === 'sources') extra = sourcesView(vctx)
-      else if (activeTab === 'reports') extra = reportsView(vctx)
-      else if (activeTab === 'receipts') extra = receiptsView(vctx, current)
-      else if (activeTab === 'ideas') extra = ideasView(vctx, current, true)
-      else if (activeTab === 'protos') extra = ideasView(vctx, current, false)
-      else if (activeTab === 'knowledge') extra = knowledgeView(vctx, current)
-      else if (activeTab === 'registry') extra = registryView(vctx)
-      else if (activeTab === 'templates') extra = templatesView(vctx)
-
-      let body
-      if (extra) {
-        body = (
-          <Box flexDirection="column" paddingX={1}>
-            {extra}
-          </Box>
-        )
-      } else if (activeTab === 'chat') {
-        body = (
-          <Box flexDirection="column" paddingX={1}>
-            {chatPanel(vctx, 'stage', current.id, store.stageChats[current.id] ?? null, store.memory[current.id]?.text ?? '', `Chat with the ${current.name} stage`)}
-          </Box>
-        )
-      } else if (activeTab === 'overview') {
-        body = (
-          <Box flexDirection="column" paddingX={1}>
+      if (tabId === 'sources') return sourcesView(vctx)
+      if (tabId === 'reports') return reportsView(vctx)
+      if (tabId === 'receipts') return receiptsView(vctx, current)
+      if (tabId === 'knowledge') return knowledgeView(vctx, current)
+      if (tabId === 'templates') return templatesView(vctx)
+      if (tabId === 'overview') {
+        return (
+          <Box flexDirection="column">
             <Box gap={1}>
               <Text color={tone.color}>{tone.glyph}</Text>
               <Text bold color={FG}>{current.name}</Text>
@@ -2033,7 +2089,7 @@ export const register: Register = on => {
             {current.flag ? <Text color={current.flag.level === 'err' ? RUST : AMBER}>{current.flag.text}</Text> : null}
             {current.gate_note ? <Text color={SKY}>Your call: {current.gate_note}</Text> : null}
             <Text bold color={FG}>Standing instructions</Text>
-            {instructions.length === 0 ? <Text color={MUTED}>None yet. Rules you give in the chat are saved here.</Text> : null}
+            {instructions.length === 0 ? <Text color={MUTED}>None yet. Rules you give in a stage chat are saved here.</Text> : null}
             {instructions.map((r, i) => (
               <Box key={`ins-${i}`} gap={1}>
                 <Text color={FG}>- {r}</Text>
@@ -2052,10 +2108,11 @@ export const register: Register = on => {
             <Text color={MUTED}>{current.checked_at ? `Checked live on ${current.checked_at}` : 'Never checked live.'}</Text>
           </Box>
         )
-      } else if (activeTab === 'tasks') {
+      }
+      if (tabId === 'tasks') {
         const lines = liveOf(current).lines
-        body = (
-          <Box flexDirection="column" paddingX={1}>
+        return (
+          <Box flexDirection="column">
             {current.trigger_ids.length === 0 ? <Text color={MUTED}>{current.no_task_note || 'No automated task.'}</Text> : null}
             {current.trigger_ids.length > 0 && live && 'error' in live ? <Text color={MUTED}>Live task status unavailable (optional connector).</Text> : null}
             {current.trigger_ids.length > 0 ? (
@@ -2074,9 +2131,10 @@ export const register: Register = on => {
             {current.status_doc ? <Text color={MUTED}>Daily report: {current.status_doc} (Drive).</Text> : null}
           </Box>
         )
-      } else if (activeTab === 'pending') {
-        body = (
-          <Box flexDirection="column" paddingX={1}>
+      }
+      if (tabId === 'pending') {
+        return (
+          <Box flexDirection="column">
             {openPend.length === 0 ? <Text color={MUTED}>Nothing open.</Text> : null}
             {openPend.map(p => (
               <Box key={`p-${p.id}`} gap={1}>
@@ -2085,13 +2143,13 @@ export const register: Register = on => {
                 <Text color={MUTED}>since {p.since}</Text>
               </Box>
             ))}
-            <Text color={MUTED}>Ask the chat to mark an item done or to add one.</Text>
           </Box>
         )
-      } else if (activeTab === 'assets') {
+      }
+      if (tabId === 'assets') {
         const items = [...current.skills.map(i => ({ ...i, kind: 'skill' })), ...current.docs.map(i => ({ ...i, kind: 'doc' }))]
-        body = (
-          <Box flexDirection="column" paddingX={1}>
+        return (
+          <Box flexDirection="column">
             {items.length === 0 ? <Text color={MUTED}>Nothing registered.</Text> : null}
             {items.map(i => (
               <Box key={`a-${i.kind}-${i.name}`} gap={1}>
@@ -2102,115 +2160,161 @@ export const register: Register = on => {
                 </Text>
               </Box>
             ))}
-            <Text color={MUTED}>Ask the chat to update a skill or a doc.</Text>
-          </Box>
-        )
-      } else {
-        body = (
-          <Box flexDirection="column" paddingX={1}>
-            {liveOf(current).lines.map(l => (
-              <Text key={`lv-${l}`} dimColor>
-                {l}
-              </Text>
-            ))}
-            {logs.length === 0 ? <Text color={MUTED}>No events yet.</Text> : null}
-            {[...logs]
-              .reverse()
-              .slice(0, 40)
-              .map((l, i) => (
-                <Box key={`lg-${i}`} gap={1}>
-                  <Text color={MUTED}>{l.at.slice(5, 16).replace('T', ' ')}</Text>
-                  <Text color={l.kind === 'error' ? RUST : l.kind === 'instruction' ? SKY : FG}>{l.text}</Text>
-                </Box>
-              ))}
-            {archive.length > 0 ? <Text bold color={FG}>Earlier chats</Text> : null}
-            {[...archive].reverse().map(a => (
-              <Box key={`ar-${a.id}`} flexDirection="column">
-                <Text color={MUTED}>
-                  Chat #{a.n}, {a.messageCount} messages, closed {a.endedAt.slice(0, 10)} ({a.reason})
-                </Text>
-                <Text color={FG}>{clip(a.summary, 400)}</Text>
-              </Box>
-            ))}
           </Box>
         )
       }
-      detail = (
-        <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingY={1}>
-          {tabBar}
-          {body}
+      // log
+      return (
+        <Box flexDirection="column">
+          {liveOf(current).lines.map(l => (
+            <Text key={`lv-${l}`} dimColor>
+              {l}
+            </Text>
+          ))}
+          {logs.length === 0 ? <Text color={MUTED}>No events yet.</Text> : null}
+          {[...logs]
+            .reverse()
+            .slice(0, 40)
+            .map((l, i) => (
+              <Box key={`lg-${i}`} gap={1}>
+                <Text color={MUTED}>{l.at.slice(5, 16).replace('T', ' ')}</Text>
+                <Text color={l.kind === 'error' ? RUST : l.kind === 'instruction' ? SKY : FG}>{l.text}</Text>
+              </Box>
+            ))}
+          {archive.length > 0 ? <Text bold color={FG}>Earlier chats</Text> : null}
+          {[...archive].reverse().map(a => (
+            <Box key={`ar-${a.id}`} flexDirection="column">
+              <Text color={MUTED}>
+                Chat #{a.n}, {a.messageCount} messages, closed {a.endedAt.slice(0, 10)} ({a.reason})
+              </Text>
+              <Text color={FG}>{clip(a.summary, 400)}</Text>
+            </Box>
+          ))}
         </Box>
       )
     }
 
-    if (!current) {
+    const MORE_TABS: TabDef[] = [
+      { id: 'overview', label: 'Overview' },
+      { id: 'pending', label: 'Pending' },
+      { id: 'assets', label: 'Skills and docs' },
+      { id: 'log', label: 'Log' },
+    ]
+    const setTab = (key: string, t: string) => update($, tabsAtom, (m: Record<string, string>) => ({ ...m, [key]: t }))
+
+    // Tab bar: the main tabs, then one "More" toggle that reveals the rarely used ones.
+    const tabBarOf = (key: string, main: TabDef[], extra: TabDef[], active: string) => (
+      <Box gap={2} paddingX={1} flexWrap="wrap">
+        {[...main, ...(moreOpen ? extra : [])].map(t => (
+          <Button key={`tab-${key}-${t.id}`} onPress={() => setTab(key, t.id)}>
+            <Text bold={t.id === active} underline={t.id === active} color={t.id === active ? NEON : MUTED}>
+              {t.label}
+            </Text>
+          </Button>
+        ))}
+        <Button key={`more-${key}`} onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+          <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
+        </Button>
+      </Box>
+    )
+
+    /* Radar mode: collection, screening and advisor, loose ideas, auditor bar */
+    const radarStageBox = (st: Stage) => {
+      const tone = toneOf(st)
+      const dflt = st.default_tab ?? 'overview'
+      const mainLabel = (st.extra_tabs ?? []).find(t => t.id === dflt)?.label ?? 'Main'
+      const main: TabDef[] = [{ id: dflt, label: mainLabel }, { id: 'tasks', label: 'Tasks' }]
+      if (STAGES_WITH_RECEIPTS.includes(st.id)) main.push({ id: 'receipts', label: `Receipts (${receiptsFor(receipts, st.id).length})` })
+      const known = [...main, ...MORE_TABS].map(t => t.id)
+      const active = tabsMap[st.id] && known.includes(tabsMap[st.id] as string) ? (tabsMap[st.id] as string) : dflt
+      const shown = active === dflt || main.some(t => t.id === active) || moreOpen ? active : dflt
+      return (
+        <Box key={`rbox-${st.id}`} flexDirection="column" gap={1} borderStyle="round" borderColor={tone.color} backgroundColor={PANEL} paddingX={1} paddingY={1}>
+          <Box gap={2} flexWrap="wrap" alignItems="center">
+            <Text bold color={NEON}>{st.name}</Text>
+            <Text bold color={tone.color}>{`${tone.glyph} ${tone.label}`}</Text>
+            <Text color={MUTED}>{st.sub}</Text>
+            {openChatButton(vctx, 'stage', st.id, store.stageChats[st.id] ?? null, () => openChat($, 'stage', st.id))}
+          </Box>
+          {tabBarOf(st.id, main, MORE_TABS, shown)}
+          <Box flexDirection="column" paddingX={1}>
+            {bodyFor(st, shown)}
+          </Box>
+        </Box>
+      )
+    }
+    const auditor = data.stages.find(s => s.id === 'auditor')
+    const auditorBar = auditor ? (
+      <Box key="auditor-bar" borderStyle="round" borderColor={toneOf(auditor).color} backgroundColor={PANEL} paddingX={1} gap={1} flexWrap="wrap">
+        <Text bold color={FG}>Auditor</Text>
+        <Text color={MUTED}>{auditor.sub}</Text>
+        {(() => {
+          const last = stageHealth(receipts, 'auditor', Date.now()).last
+          return last ? (
+            <Text color={last.outcome === 'ok' ? OLIVE : last.outcome === 'failed' ? RUST : AMBER}>{`${clip(last.summary, 90)} (${ago(last.finished_utc, Date.now())})`}</Text>
+          ) : (
+            <Text color={MUTED}>no audit yet</Text>
+          )
+        })()}
+      </Box>
+    ) : null
+    const skillsBlock = moreOpen ? <Box flexDirection="column" paddingX={1}>{skillsRow(vctx)}</Box> : null
+    const coleta = data.stages.find(s => s.id === 'coleta')
+    const triagem = data.stages.find(s => s.id === 'triagem')
+
+    if (mode === 'radar') {
       return (
         <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
           {header}
-          {flow}
-          {detail}
+          {factoryNoteBar(vctx)}
+          {coleta ? radarStageBox(coleta) : null}
+          {triagem ? radarStageBox(triagem) : null}
+          {inboxBox(vctx)}
+          {auditorBar}
+          {skillsBlock}
         </Box>
       )
     }
 
-    /* full screen stage view */
-    const idx = data.stages.findIndex(x => x.id === current.id)
-    const prevStage = idx > 0 ? data.stages[idx - 1] : undefined
-    const nextStage = idx >= 0 && idx < data.stages.length - 1 ? data.stages[idx + 1] : undefined
-    const numOf = (id: string): string => {
-      const n = flowStages.findIndex(x => x.id === id) + 1
-      return n > 0 ? String(n) : id === 'auditor' ? 'AU' : 'R'
+    /* Factory mode: prototype list, or one prototype with its stages */
+    const moreFor = (stageId: string) => {
+      const st = data.stages.find(x => x.id === stageId)
+      if (!st) return null
+      const extra: TabDef[] = [
+        ...(st.extra_tabs ?? []).filter(t => t.id === 'knowledge' || t.id === 'templates'),
+        ...(st.trigger_ids.length > 0 ? [{ id: 'tasks', label: 'Tasks' }] : []),
+        ...(STAGES_WITH_RECEIPTS.includes(st.id) ? [{ id: 'receipts', label: 'Receipts' }] : []),
+        ...MORE_TABS,
+      ]
+      const key = `more:${st.id}`
+      const active = tabsMap[key] && extra.some(t => t.id === tabsMap[key]) ? (tabsMap[key] as string) : (extra[0]?.id ?? 'overview')
+      return (
+        <Box flexDirection="column" gap={1}>
+          <Button key="factory-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+            <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
+          </Button>
+          {moreOpen ? (
+            <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingY={1}>
+              <Box gap={2} paddingX={1} flexWrap="wrap">
+                {extra.map(t => (
+                  <Button key={`mtab-${t.id}`} onPress={() => setTab(key, t.id)}>
+                    <Text bold={t.id === active} underline={t.id === active} color={t.id === active ? NEON : MUTED}>{t.label}</Text>
+                  </Button>
+                ))}
+              </Box>
+              <Box flexDirection="column" paddingX={1}>
+                {bodyFor(st, active)}
+                {skillsRow(vctx)}
+              </Box>
+            </Box>
+          ) : null}
+        </Box>
+      )
     }
-    const cTone = toneOf(current)
-    const topBar = (
-      <Box gap={2} flexWrap="wrap">
-        <Button key="back" label="← Pipeline" onPress={() => update($, selected, () => null)} />
-        <Text bold color={CLAY}>
-          ▣ Roblox Radar
-        </Text>
-        {prevStage ? <Button key="prev" label={`‹ ${prevStage.name}`} onPress={() => select(prevStage.id)} /> : null}
-        {nextStage ? <Button key="next" label={`${nextStage.name} ›`} onPress={() => select(nextStage.id)} /> : null}
-      </Box>
-    )
-    const stepper = (
-      <Box gap={1} flexWrap="wrap">
-        {data.stages.map(x => {
-          const isHere = x.id === current.id
-          return (
-            <Button key={`jump-${x.id}`} onPress={() => select(x.id)}>
-              <Text bold color={isHere ? BG : toneOf(x).color} backgroundColor={isHere ? NEON : PANEL}>
-                {` ${numOf(x.id)} `}
-              </Text>
-            </Button>
-          )
-        })}
-      </Box>
-    )
-    const titleRow = (
-      <Box gap={1} flexWrap="wrap">
-        <Text bold color={BG} backgroundColor={NEON}>
-          {` ${numOf(current.id)} `}
-        </Text>
-        <Text bold color={NEON}>
-          {current.name}
-        </Text>
-        <Text color={MUTED}>{current.sub}</Text>
-        <Text bold color={cTone.color}>
-          {cTone.glyph} {cTone.label}
-        </Text>
-        {current.gate ? (
-          <Text bold color={CLAY}>
-            ◆ YOUR CALL
-          </Text>
-        ) : null}
-      </Box>
-    )
     return (
       <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
-        {topBar}
-        {stepper}
-        {titleRow}
-        {detail}
+        {header}
+        {factoryView(vctx, moreFor)}
       </Box>
     )
   })

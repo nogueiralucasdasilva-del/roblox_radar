@@ -131,16 +131,17 @@ const DATA = {
   updated: '2026-10-19',
   note: 'test snapshot',
   stages: [
-    stageOf({ id: 'coleta', name: 'Radar and collection', build: 'built', extra_tabs: [{ id: 'sources', label: 'Sources' }] }),
-    stageOf({ id: 'triagem', name: 'Screening and advisor', build: 'built', extra_tabs: [{ id: 'reports', label: 'Reports' }] }),
-    stageOf({ id: 'prevalid', name: 'Pre-validation', extra_tabs: [{ id: 'ideas', label: 'Ideas' }] }),
+    stageOf({ id: 'coleta', name: 'Radar and collection', build: 'built', group: 'radar', default_tab: 'sources', extra_tabs: [{ id: 'sources', label: 'Sources' }] }),
+    stageOf({ id: 'triagem', name: 'Screening and advisor', build: 'built', group: 'radar', default_tab: 'reports', extra_tabs: [{ id: 'reports', label: 'Reports' }] }),
+    stageOf({ id: 'prevalid', name: 'Pre-validation', group: 'factory', default_tab: 'main' }),
     stageOf({
       id: 'brief',
-      pendencies: [{ id: 'k1', text: 'Decide the proto_id format.', owner: 'Lucas', since: '2026-10-16', done: false }],
-      extra_tabs: [{ id: 'protos', label: 'Prototypes' }],
+      group: 'factory',
+      default_tab: 'main',
+      pendencies: [{ id: 'k1', text: 'Decide the brief template.', owner: 'Lucas', since: '2026-10-16', done: false }],
     }),
-    stageOf({ id: 'thumb', name: 'Thumbnail', extra_tabs: [{ id: 'protos', label: 'Prototypes' }, { id: 'knowledge', label: 'Knowledge' }] }),
-    stageOf({ id: 'registro', name: 'Registry (proto_id)', extra_tabs: [{ id: 'registry', label: 'Registry' }] }),
+    stageOf({ id: 'thumb', name: 'Thumbnail', group: 'factory', default_tab: 'main', extra_tabs: [{ id: 'knowledge', label: 'Knowledge' }] }),
+    stageOf({ id: 'auditor', name: 'Auditor', build: 'built', group: 'radar', default_tab: 'main' }),
   ],
 }
 const SOURCES = {
@@ -183,57 +184,41 @@ async function mountPane(surface: 'terminal' | 'desktop', $: any, on: any) {
   return $.ui.mount({ plugin: 'radar-panel', surface, component: 'Pane', requestId: 'radar-panel', props: {} } as any)
 }
 
+// Host UI tests (run inside the app's test runner, not with node). Chat creation calls fail in the mock and show a message.
 for (const surface of ['terminal', 'desktop'] as const) {
-  test(`clicking a stage opens it full screen with the chat first (${surface})`, async ($, on) => {
+  test(`the pane opens in Radar mode with its boxes and switches to the Factory (${surface})`, async ($, on) => {
     const ui = await mountPane(surface, $, on)
-    expect(await ui.find({ type: 'Text', text: /Pick a stage/ })).toBeDefined()
-    await ui.press({ key: 'stage-brief' })
-    expect(await ui.find({ type: 'Text', text: /This chat knows the 2-page brief stage/ })).toBeDefined()
-    await (ui as any).input({ key: 'chat-brief', text: 'What is left on this stage?' })
-    expect(await ui.find({ type: 'Text', text: /What is left on this stage\?/ })).toBeDefined()
-    await ui.press({ key: 'tab-pending' })
-    expect(await ui.find({ type: 'Text', text: /Decide the proto_id format/ })).toBeDefined()
-    await ui.press({ key: 'back' })
-    expect(await ui.find({ type: 'Text', text: /Pick a stage/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Loose ideas/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /Radar and collection/ })).toBeDefined()
+    await ui.press({ key: 'mode-factory' })
+    expect(await ui.find({ type: 'Text', text: /Pick a prototype/ })).toBeDefined()
+    await ui.press({ key: 'mode-radar' })
+    expect(await ui.find({ type: 'Text', text: /Loose ideas/ })).toBeDefined()
     await ui.unmount()
   })
 }
 
-test('collection stage shows every source with its status', async ($, on) => {
+test('collection stage shows every source with its status right away', async ($, on) => {
   const ui = await mountPane('desktop', $, on)
-  await ui.press({ key: 'stage-coleta' })
-  await ui.press({ key: 'tab-sources' })
   expect(await ui.find({ type: 'Text', text: /tiktok_trends/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /STALE/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /WORKING/ })).toBeDefined()
   await ui.unmount()
 })
 
-test('a report idea is sent to pre-validation and shows up as a card there', async ($, on) => {
+test('the latest report is open and an item is sent to the Factory as P001', async ($, on) => {
   const ui = await mountPane('desktop', $, on)
-  await ui.press({ key: 'stage-triagem' })
-  await ui.press({ key: 'tab-reports' })
-  await ui.press({ key: 'rep-toggle-2026-10-12-themes' })
   expect(await ui.find({ type: 'Text', text: /Observe and reveal transfers cleanly/ })).toBeDefined()
   await ui.press({ key: 'send-2026-10-12-themes#0.0' })
-  await ui.press({ key: 'jump-prevalid' })
-  await ui.press({ key: 'tab-ideas' })
-  expect(await ui.find({ type: 'Text', text: /Anomaly \(spot the error\)/ })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /Monster truck/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Created P001-ANOMALY and its chat/ })).toBeDefined()
+  await ui.press({ key: 'mode-factory' })
   await ui.unmount()
 })
 
-test('an own idea is added in pre-validation and the knowledge repository takes a typed entry', async ($, on) => {
+test('a loose idea is added to the inbox', async ($, on) => {
   const ui = await mountPane('terminal', $, on)
-  await ui.press({ key: 'stage-prevalid' })
-  await ui.press({ key: 'tab-ideas' })
-  await (ui as any).input({ key: 'add-idea-prevalid', text: 'Prison break tycoon' })
+  await (ui as any).input({ key: 'add-inbox', text: 'Prison break tycoon | escape the prison' })
   expect(await ui.find({ type: 'Text', text: /Prison break tycoon/ })).toBeDefined()
-  await ui.press({ key: 'jump-thumb' })
-  await ui.press({ key: 'tab-knowledge' })
-  expect(await ui.find({ type: 'Text', text: /The storefront is a contract/ })).toBeDefined()
-  await (ui as any).input({ key: 'add-know-thumb', text: 'technique: show the reveal in the first frame' })
-  expect(await ui.find({ type: 'Text', text: /show the reveal in the first frame/ })).toBeDefined()
   await ui.unmount()
 })
 

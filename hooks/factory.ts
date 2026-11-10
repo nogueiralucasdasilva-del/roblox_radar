@@ -107,12 +107,21 @@ export function sendInboxToFactory(s: Store, inboxId: string, now: string): Idea
 }
 
 // One-time migration of a store saved before 0.7.0. Ideas keep their chat links. Idempotent.
-export function migrateStore(s: Store): Store {
-  if (s.migrated070) return s
+export function migrateStore(s: Store, force = false): Store {
+  if (s.migrated070 && !force) return s
   const ordered = [...s.ideas].sort((a, b) => a.created.localeCompare(b.created))
   const keep: Idea[] = []
   const inbox: InboxIdea[] = [...s.inbox]
+  // Ideas already migrated (they carry an ABBR) keep their ID; the counter never falls below the highest one in use.
   for (const i of ordered) {
+    const m = /^P(\d{3,})-/.exec(i.proto_id ?? '')
+    if (i.abbr && m && m[1]) s.protoSeq = Math.max(s.protoSeq, Number(m[1]))
+  }
+  for (const i of ordered) {
+    if (i.abbr) {
+      keep.push(ensureProto(i))
+      continue
+    }
     const rejected = i.status === 'rejected'
     if (!i.proto_id && !rejected) {
       inbox.push({ id: i.id, title: i.title, note: i.note, origin: i.origin, from: i.from, created: i.created, chat: i.chat ?? null, memory: i.memory, scan: i.scan ?? null })
@@ -168,8 +177,23 @@ export function isPending(i: Idea, stage: string): boolean {
   return !last || last.at < r.at
 }
 
-export function anyPending(i: Idea): boolean {
-  return IDEA_STAGES.some(st => isPending(i, st)) || Object.keys(i.gateAsked ?? {}).some(st => !i.gate?.[st] || (i.gate[st]?.at ?? '') < (i.gateAsked?.[st] ?? ''))
+const PENDING_WINDOW_MS = 6 * 3600 * 1000
+
+// A request or a gate still waiting for its answer, asked within the last 6 hours (older ones stop the fast sync).
+export function anyPending(i: Idea, nowMs: number): boolean {
+  const fresh = (at: string | undefined) => !!at && nowMs - Date.parse(at) < PENDING_WINDOW_MS
+  if (IDEA_STAGES.some(st => isPending(i, st) && fresh(i.requested?.[st]?.at))) return true
+  return Object.keys(i.gateAsked ?? {}).some(st => fresh(i.gateAsked?.[st]) && (!i.gate?.[st] || (i.gate[st]?.at ?? '') < (i.gateAsked?.[st] ?? '')))
+}
+
+// After a gate answer arrives: PASS and PASS WITH RISKS advance the prototype on their own, BLOCK waits for Lucas.
+export function resolveGates(i: Idea, now: string): boolean {
+  const st = i.stage
+  const asked = i.gateAsked?.[st]
+  const g = i.gate?.[st]
+  if (!asked || !g || g.at < asked || g.verdict === 'BLOCK') return false
+  delete i.gateAsked![st]
+  return advanceIdea(i, now)
 }
 
 export function markAsked(i: Idea, stage: string, kind: string, gen: number, skill: SkillRef[], now: string): void {

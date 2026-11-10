@@ -1,10 +1,11 @@
 import type { Report, ReportItem, SourceStatus, SourcesFile, ReportsFile, Stage } from '../types'
 import { AMBER, CLAY, FG, LINE, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY, BG } from './theme'
-import { KNOWLEDGE_KINDS, STALE_BUSY_MS, clip, ideasAt, nextStageOf, stepFor } from './model'
-import type { ChatLink, Idea, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
+import { KNOWLEDGE_KINDS, clip } from './model'
+import type { ChatLink, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
 import type { Template } from './templates'
-import { actionFor } from './actions'
+import type { ScoringConfig } from './scoring'
+import type { SkillsState } from './skills'
 import type { Outcome, Receipt } from './receipts'
 
 // Components come from $.ui.resolve(e) at render time.
@@ -25,26 +26,42 @@ export type Ctx = {
   go: (stageId: string) => unknown
   sendItem: (report: Report, sectionIdx: number, itemIdx: number) => unknown
   saveHook: (report: Report, item: ReportItem) => unknown
-  setStatus: (ideaId: string, status: IdeaStatus) => unknown
-  promote: (ideaId: string) => unknown
-  scanIdea: (ideaId: string) => unknown
-  ideaSay: (ideaId: string, text: string) => unknown
-  briefIdea: (ideaId: string) => unknown
   openChat: (kind: 'idea' | 'stage', scope: string) => unknown
-  ideaYes: (ideaId: string) => unknown
-  removeIdea: (ideaId: string) => unknown
-  runAction: (ideaId: string) => unknown
-  createAllChats: () => unknown
-  batchNote: () => string
   runTask: (triggerId: string) => unknown
   templates: { at: string; ok: boolean; error?: string; list: Template[] } | null
   chooseTemplate: (ideaId: string, templateId: string | null) => unknown
   refreshTemplates: () => unknown
   chatError: (key: string) => string | null
   chatBusy: (key: string) => boolean
-  addIdea: (title: string) => unknown
   addKnowledge: (stageId: string, raw: string) => unknown
   removeKnowledge: (stageId: string, id: string) => unknown
+  // 0.7.0 Radar inbox and Factory
+  scoring: ScoringConfig
+  skills: SkillsState | null
+  sendToFactory: (src: { kind: 'inbox'; id: string } | { kind: 'advisor'; report: Report; si: number; ii: number }) => unknown
+  addInbox: (raw: string) => unknown
+  discardInbox: (id: string) => unknown
+  factoryNote: { ideaId: string; text: string } | null
+  selectProto: (id: string | null) => unknown
+  proto: string | null
+  showArchived: boolean
+  toggleArchived: () => unknown
+  stageFilter: string | null
+  setStageFilter: (id: string | null) => unknown
+  fstage: string | null
+  setFstage: (id: string) => unknown
+  openProtoChat: (ideaId: string, stageId: string) => unknown
+  runFactory: (ideaId: string, key: string) => unknown
+  markDone: (ideaId: string, stageId: string) => unknown
+  requestAdvance: (ideaId: string, force: boolean) => unknown
+  overrideAdvance: (ideaId: string) => unknown
+  advanceNoGate: (ideaId: string) => unknown
+  refreshNow: (ideaId: string) => unknown
+  pickItem: (ideaId: string, stageId: string, item: string, mode: 'choose' | 'discard') => unknown
+  registerResearch: (ideaId: string, text: string) => unknown
+  setTemplateMode: (ideaId: string, mode: 'library' | 'custom') => unknown
+  renameAbbr: (ideaId: string, raw: string) => unknown
+  archive: (ideaId: string, on: boolean) => unknown
 }
 
 const STATUS_META: Record<SourceStatus, { glyph: string; color: string; label: string }> = {
@@ -55,10 +72,10 @@ const STATUS_META: Record<SourceStatus, { glyph: string; color: string; label: s
   unknown: { glyph: '?', color: SAND, label: 'UNKNOWN' },
 }
 
-const IDEA_COLOR: Record<IdeaStatus, string> = { pending: AMBER, promising: OLIVE, rejected: RUST }
-const IDEA_LABEL: Record<IdeaStatus, string> = { pending: 'PENDING', promising: 'PROMISING', rejected: 'REJECTED' }
+export const IDEA_COLOR: Record<IdeaStatus, string> = { pending: AMBER, promising: OLIVE, rejected: RUST }
+export const IDEA_LABEL: Record<IdeaStatus, string> = { pending: 'PENDING', promising: 'PROMISING', rejected: 'REJECTED' }
 const VERDICT_COLOR: Record<string, string> = { PASS: OLIVE, MAYBE: AMBER, REJECT: RUST, HOOK: SKY }
-const POTENTIAL_COLOR: Record<string, string> = { HIGH: OLIVE, MEDIUM: AMBER, LOW: RUST }
+export const POTENTIAL_COLOR: Record<string, string> = { HIGH: OLIVE, MEDIUM: AMBER, LOW: RUST }
 const KIND_COLOR: Record<KnowledgeKind, string> = { principle: CLAY, technique: OLIVE, pattern: SKY, pitfall: RUST, result: AMBER }
 
 export function ago(iso: string | null, now: number): string {
@@ -71,7 +88,7 @@ export function ago(iso: string | null, now: number): string {
   return `${Math.floor(h / 24)} days ago`
 }
 
-function nameOf(stages: Stage[], id: string): string {
+export function nameOf(stages: Stage[], id: string): string {
   return stages.find(s => s.id === id)?.name ?? id
 }
 
@@ -144,13 +161,15 @@ export function reportsView(x: Ctx) {
   const f = x.reports
   if (!f) return <Text color={RUST}>Could not read data/reports.json.</Text>
   const reports = [...f.reports].sort((a, b) => b.date.localeCompare(a.date))
+  // The latest report starts expanded; clicking its header collapses it (the toggle list flips the default).
+  const latestId = reports[0] ? `rep:${reports[0].id}` : ''
   return (
     <Box flexDirection="column" gap={1}>
-      <Text color={FG}>Open a report, then send an idea from it to Pre-validation. Each report is one card.</Text>
+      <Text color={FG}>Latest report is open. Send an idea from it to the Factory.</Text>
       <Text color={MUTED}>{f.origin}</Text>
       {reports.map(r => {
         const id = `rep:${r.id}`
-        const isOpen = x.open.includes(id)
+        const isOpen = x.open.includes(id) !== (id === latestId)
         return (
           <Box
             key={`rep-${r.id}`}
@@ -190,6 +209,7 @@ export function reportsView(x: Ctx) {
                     {sec.items.map((it, ii) => {
                       const from = `${r.id}#${si}.${ii}`
                       const sent = x.store.ideas.find(i => i.from === from)
+                      const inInbox = x.store.inbox.find(i => i.from === from)
                       const vc = VERDICT_COLOR[it.verdict] ?? MUTED
                       return (
                         <Box key={`it-${from}`} flexDirection="column" paddingLeft={1}>
@@ -201,11 +221,15 @@ export function reportsView(x: Ctx) {
                             {it.ip ? <Text color={AMBER}>third-party IP</Text> : null}
                             {sent ? (
                               <Text bold color={SKY}>
-                                {`In ${nameOf(x.stages, sent.stage)}, ${IDEA_LABEL[sent.status].toLowerCase()}`}
+                                {`In the Factory as ${sent.proto_id ?? sent.title}, ${nameOf(x.stages, sent.stage)}`}
+                              </Text>
+                            ) : inInbox ? (
+                              <Text bold color={SKY}>
+                                In loose ideas
                               </Text>
                             ) : it.verdict !== 'REJECT' ? (
                               <Box gap={1}>
-                                <Button key={`send-${from}`} label="Send to pre-validation" onPress={() => x.sendItem(r, si, ii)} />
+                                <Button key={`send-${from}`} label="Send to Factory" onPress={() => x.sendItem(r, si, ii)} />
                                 {r.kind === 'hooks' ? (
                                   <Button key={`hook-${from}`} label="Save to Thumbnail repository" onPress={() => x.saveHook(r, it)} />
                                 ) : null}
@@ -228,9 +252,9 @@ export function reportsView(x: Ctx) {
   )
 }
 
-/* ---------- Ideas and prototypes (card stages) ---------- */
+/* ---------- shared bits ---------- */
 
-function chip(x: Ctx, label: string, color: string, key: string) {
+export function chip(x: Ctx, label: string, color: string, key: string) {
   const { Text } = x.C
   return (
     <Text key={key} bold color={BG} backgroundColor={color}>
@@ -239,245 +263,19 @@ function chip(x: Ctx, label: string, color: string, key: string) {
   )
 }
 
-export function ideasView(x: Ctx, stage: Stage, withAdd: boolean) {
-  const { Box, Text, Button, Input } = x.C
-  const list = ideasAt(x.store.ideas, stage.id)
-  const nextId = nextStageOf(stage.id)
-  const counts: Record<IdeaStatus, number> = { pending: 0, promising: 0, rejected: 0 }
-  for (const i of list) {
-    const st = stepFor(i, stage.id)
-    if (st) counts[st.status] += 1
-  }
-  return (
-    <Box flexDirection="column" gap={1}>
-      <Text color={FG}>
-        {stage.id === 'prevalid'
-          ? 'Every idea you explored, from the advisor reports and your own. Open a card to set its status or move it on.'
-          : 'Ideas that reached this stage, each with its proto_id. Open a card to set its status or move it on.'}
-      </Text>
-      <Box gap={2}>
-        {(['pending', 'promising', 'rejected'] as IdeaStatus[]).map(k => (
-          <Text key={`ic-${k}`} bold color={IDEA_COLOR[k]}>
-            {counts[k]} {k}
-          </Text>
-        ))}
-      </Box>
-      {withAdd ? (
-        <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
-          <Input
-            key={`add-idea-${stage.id}`}
-            placeholder="Add an idea of your own: type it and send"
-            rows={1}
-            submitLabel="add"
-            onSubmit={(v: string) => void x.addIdea(v)}
-          />
-        </Box>
-      ) : null}
-      {list.length === 0 ? (
-        <Text color={MUTED}>
-          {stage.id === 'prevalid'
-            ? 'No ideas yet. Send one from a report in the advisor stage, or add your own above.'
-            : 'No idea has reached this stage yet. Promote one from the previous stage.'}
-        </Text>
-      ) : null}
-      {list.map(i => {
-        const id = `idea:${i.id}`
-        const isOpen = x.open.includes(id)
-        const here = i.stage === stage.id
-        const step = stepFor(i, stage.id)
-        const status: IdeaStatus = step ? step.status : i.status
-        return (
-          <Box
-            key={`idea-${i.id}`}
-            flexDirection="column"
-            borderStyle="round"
-            borderColor={isOpen ? CLAY : LINE}
-            backgroundColor={PANEL}
-            paddingX={1}
-          >
-            <Button key={`idea-toggle-${i.id}`} onPress={() => x.toggle(id)}>
-              <Text bold color={isOpen ? CLAY : FG}>
-                {isOpen ? '▾ ' : '▸ '}
-                {i.title}
-              </Text>
-            </Button>
-            <Box gap={1} flexWrap="wrap">
-              {chip(x, IDEA_LABEL[status], IDEA_COLOR[status], `st-${i.id}`)}
-              {!here ? chip(x, `MOVED TO ${nameOf(x.stages, i.stage).toUpperCase()}`, SKY, `mv-${i.id}`) : null}
-              {i.proto_id ? chip(x, i.proto_id, CLAY, `pid-${i.id}`) : null}
-              {i.scan ? chip(x, `POTENTIAL ${i.scan.level}`, POTENTIAL_COLOR[i.scan.level] ?? SKY, `pot-${i.id}`) : null}
-              {i.template ? chip(x, `TEMPLATE ${i.template.name.toUpperCase()}`, SKY, `tpl-${i.id}`) : null}
-              {busyOf(i, x.now) ? <Text color={CLAY}>agent working...</Text> : null}
-              <Text color={MUTED}>{i.origin === 'advisor' ? 'from the advisor' : 'your idea'}</Text>
-            </Box>
-            {here && status !== 'rejected' ? actionRow(x, i) : null}
-            {isOpen ? (
-              <Box flexDirection="column" gap={1} paddingTop={1}>
-                {i.note ? <Text color={FG}>{i.note}</Text> : null}
-                {i.from ? <Text color={MUTED}>Source: {i.from.split('#')[0]}</Text> : null}
-                <Text color={MUTED}>
-                  Path:{' '}
-                  {i.history.map(h => `${nameOf(x.stages, h.stage)} (${h.at.slice(0, 10)}, ${h.status})`).join(', then ')}
-                </Text>
-                {i.proto_id ? <Text color={MUTED}>proto_id format is provisional (RB-date-slug) until you decide it.</Text> : null}
-                {stage.id === 'template' && here ? templateChooser(x, i) : null}
-                {chatPanel(x, 'idea', i.id, i.chat ?? null, i.memory ?? '', stage.id === 'prevalid' && !i.scan ? 'Open chat and run the quick scan' : 'Open chat')}
-                <Box gap={1} flexWrap="wrap">
-                  {here ? (
-                    <Box gap={1} flexWrap="wrap">
-                      {stage.id === 'prevalid' && i.chat && status !== 'rejected' ? (
-                        <Button key={`yes-${i.id}`} label="Yes, write the 2-page brief" onPress={() => x.ideaYes(i.id)} />
-                      ) : null}
-                      <Button key={`s-pr-${i.id}`} label="Promising" onPress={() => x.setStatus(i.id, 'promising')} />
-                      <Button key={`s-pe-${i.id}`} label={status === 'rejected' ? 'Reopen as pending' : 'Pending'} onPress={() => x.setStatus(i.id, 'pending')} />
-                      <Button key={`s-re-${i.id}`} label={stage.id === 'prevalid' && i.chat ? 'No, reject' : 'Reject'} onPress={() => x.setStatus(i.id, 'rejected')} />
-                      {i.origin === 'own' && !i.proto_id ? (
-                        <Button key={`del-${i.id}`} label="Delete" onPress={() => x.removeIdea(i.id)} />
-                      ) : null}
-                      {nextId && status !== 'rejected' && !(stage.id === 'prevalid' && i.chat) ? (
-                        <Button key={`pro-${i.id}`} label={`Promote to ${nameOf(x.stages, nextId)}`} onPress={() => x.promote(i.id)} />
-                      ) : null}
-
-                    </Box>
-                  ) : (
-                    <Button key={`go-${i.id}`} label={`Open in ${nameOf(x.stages, i.stage)}`} onPress={() => x.go(i.stage)} />
-                  )}
-                </Box>
-              </Box>
-            ) : null}
-          </Box>
-        )
-      })}
-    </Box>
-  )
-}
-
-function busyOf(i: Idea, now: number): boolean {
-  return !!i.busy && now - Date.parse(i.busy.at) < STALE_BUSY_MS
-}
-
-// The conversation inside an idea card. The quick scan lands here as the first answer.
-function ideaChat(x: Ctx, i: Idea, here: boolean) {
-  const { Box, Text, Input } = x.C
-  const msgs = (i.messages ?? []).slice(-8)
-  return (
-    <Box flexDirection="column" gap={1}>
-      {msgs.map((m, n) => {
-        if (m.role === 'system') {
-          return (
-            <Text key={`im-${i.id}-${n}`} color={MUTED}>
-              {clip(m.text, 300)}
-            </Text>
-          )
-        }
-        const isUser = m.role === 'user'
-        return (
-          <Box key={`im-${i.id}-${n}`} flexDirection="column" paddingX={1} marginLeft={isUser ? 6 : 0} marginRight={isUser ? 0 : 6}>
-            <Text bold color={isUser ? MUTED : CLAY}>
-              {isUser ? 'You' : '✻ Idea agent'}
-            </Text>
-            <Text color={FG}>{clip(m.text, 3000)}</Text>
-          </Box>
-        )
-      })}
-      {busyOf(i, x.now) ? <Text color={CLAY}>The idea agent is working. The answer lands here.</Text> : null}
-      {here ? (
-        <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
-          <Input
-            key={`idea-chat-${i.id}`}
-            placeholder="Talk about this idea: ask, push back, or adjust it"
-            rows={2}
-            submitLabel="send"
-            onSubmit={(v: string) => {
-              if (v.trim()) void x.ideaSay(i.id, v.trim())
-            }}
-          />
-        </Box>
-      ) : null}
-    </Box>
-  )
-}
-
-// The link between the panel and a real app conversation: open or start it, and show what the panel filed from it.
-export function chatPanel(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: ChatLink | null, memory: string, startLabel: string) {
+// "Open chat" for a stage or a prototype: the chat is a real app conversation opened beside the panel.
+export function openChatButton(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: ChatLink | null, onPress: () => unknown) {
   const { Box, Text, Button, Link } = x.C
   const key = `${kind}:${scope}`
   const err = x.chatError(key)
-  const busy = x.chatBusy(key)
-  return (
-    <Box flexDirection="column" gap={1}>
-      <Box gap={1} flexWrap="wrap">
-        {chat ? (
-          <Button key={`chat-open-${key}`} label="Open chat" onPress={() => x.openChat(kind, scope)} />
-        ) : (
-          <Button key={`chat-start-${key}`} label={startLabel} onPress={() => x.openChat(kind, scope)} />
-        )}
-        {busy ? <Text color={CLAY}>opening...</Text> : null}
-        {chat ? <Text color={MUTED}>{`${chat.title}, started ${chat.at.slice(0, 10)}${chat.syncedAt ? `, read ${ago(chat.syncedAt, x.now)}` : ''}`}</Text> : null}
-        {chat && chat.link && Link ? <Link key={`chat-link-${key}`} href={chat.link} label="open in app" /> : null}
-      </Box>
-      {!chat ? (
-        <Text color={MUTED}>
-          {kind === 'idea'
-            ? 'This card gets its own conversation in the app, in the Roblox Radar sidebar group. Click the button: the conversation is created and opens beside the panel (approve if the app asks). Later clicks reopen the same one.'
-            : 'This stage gets its own conversation in the app, in the Roblox Radar sidebar group. Click the button: the conversation is created and opens beside the panel (approve if the app asks). Later clicks reopen the same one.'}
-        </Text>
-      ) : null}
-      {err ? <Text color={AMBER}>{err}</Text> : null}
-      {memory ? (
-        <Box flexDirection="column">
-          <Text bold color={FG}>
-            Memory
-          </Text>
-          <Text color={MUTED}>{clip(memory, 1200)}</Text>
-        </Box>
-      ) : null}
-    </Box>
-  )
-}
-
-// The main action of the card's stage, highlighted, with what was last asked.
-function actionRow(x: Ctx, i: Idea) {
-  const { Box, Text, Button } = x.C
-  const a = actionFor(i.stage)
-  if (!a || (i.stage === 'prevalid' && i.scan)) return null
-  const blocked = a.needs ? a.needs(i) : null
-  const last = i.lastAction && i.lastAction.stage === i.stage ? i.lastAction : null
-  return (
-    <Box gap={1} flexWrap="wrap">
-      <Button key={`act-${i.id}`} onPress={() => x.runAction(i.id)}>
-        <Text bold color={BG} backgroundColor={blocked ? SAND : NEON}>
-          {` ▶ ${a.label} `}
-        </Text>
-      </Button>
-      {blocked ? <Text color={AMBER}>{blocked}</Text> : null}
-      {last ? <Text color={MUTED}>{`asked ${ago(last.at, x.now)}`}</Text> : null}
-    </Box>
-  )
-}
-
-// Picks the template of an idea in the Template match stage, from the Drive library.
-function templateChooser(x: Ctx, i: Idea) {
-  const { Box, Text, Button } = x.C
-  const list = x.templates ? x.templates.list : []
   return (
     <Box flexDirection="column">
-      <Text bold color={FG}>
-        Template
-      </Text>
-      {list.length === 0 ? <Text color={MUTED}>No template doc in the library yet. Add one to the Drive folder roblox_radar_templates.</Text> : null}
       <Box gap={1} flexWrap="wrap">
-        {list.map(t => {
-          const isOn = i.template?.id === t.id
-          return (
-            <Button key={`pick-${i.id}-${t.id}`} onPress={() => x.chooseTemplate(i.id, isOn ? null : t.id)}>
-              <Text bold={isOn} color={isOn ? BG : t.status === 'ready' ? FG : MUTED} backgroundColor={isOn ? NEON : undefined}>
-                {` ${isOn ? '● ' : ''}${t.name}${t.status === 'draft' ? ' (draft)' : ''} `}
-              </Text>
-            </Button>
-          )
-        })}
+        <Button key={`chat-open-${key}`} label="Open chat" onPress={onPress} />
+        {x.chatBusy(key) ? <Text color={CLAY}>opening...</Text> : null}
+        {chat && chat.link && Link ? <Link key={`chat-link-${key}`} href={chat.link} label="open in app" /> : null}
       </Box>
+      {err ? <Text color={AMBER}>{err}</Text> : null}
     </Box>
   )
 }
@@ -570,33 +368,6 @@ export function knowledgeView(x: Ctx, stage: Stage) {
         )
       })}
       <Text color={MUTED}>Evidence tags: F fact with a source, I inference, H hypothesis, V to validate, unrated means nobody rated it yet.</Text>
-    </Box>
-  )
-}
-
-/* ---------- Registry (proto_id) ---------- */
-
-export function registryView(x: Ctx) {
-  const { Box, Text, Button } = x.C
-  const withId = x.store.ideas.filter(i => i.proto_id).sort((a, b) => a.created.localeCompare(b.created))
-  const without = x.store.ideas.length - withId.length
-  return (
-    <Box flexDirection="column" gap={1}>
-      <Text color={FG}>One row per prototype. A proto_id is born when an idea is promoted into the brief stage.</Text>
-      <Text color={MUTED}>{without} idea(s) have no proto_id yet.</Text>
-      {withId.length === 0 ? <Text color={MUTED}>No prototype yet.</Text> : null}
-      {withId.map(i => (
-        <Box key={`reg-${i.id}`} gap={1} flexWrap="wrap">
-          <Text bold color={CLAY}>
-            {i.proto_id}
-          </Text>
-          <Text bold color={FG}>
-            {i.title}
-          </Text>
-          <Text color={IDEA_COLOR[i.status]}>{IDEA_LABEL[i.status].toLowerCase()}</Text>
-          <Button key={`reg-go-${i.id}`} label={`In ${nameOf(x.stages, i.stage)}`} onPress={() => x.go(i.stage)} />
-        </Box>
-      ))}
     </Box>
   )
 }

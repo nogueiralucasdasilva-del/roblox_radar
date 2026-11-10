@@ -21,6 +21,8 @@ export type Stage = {
   flag: { level: 'warn' | 'err'; text: string } | null
   checked_at: string | null
   extra_tabs?: { id: string; label: string }[]
+  group?: 'radar' | 'factory'
+  default_tab?: string
 }
 export type SourceStatus = 'working' | 'attention' | 'stale' | 'broken' | 'unknown'
 export type Source = {
@@ -56,6 +58,6 @@ export type Data = { updated: string; note: string; stages: Stage[] }
 
 declare module 'claude-code' {
   interface PluginState {
-    'radar-panel': { selected: string | null; tab: string; rev: number; open: string[]; statusOpen: boolean }
+    'radar-panel': { selected: string | null; tab: string; rev: number; open: string[]; statusOpen: boolean; mode: string; proto: string | null; more: boolean; archived: boolean; filter: string | null; fstage: string | null; tabs: Record<string, string> }
   }
 }
