@@ -6,7 +6,7 @@ Control surface for the Roblox Radar pipeline.
 
 - **Two modes:** a switch at the top, `Radar | Factory`. `/panel radar` and `/panel factory` open the pane in a mode.
 - **Radar mode:** collection (sources with status), screening and advisor (latest report open), and Loose ideas (an inbox of raw ideas). The auditor is a small bar. "Send to Factory" creates a prototype.
-- **Factory mode:** a list of prototypes sorted by potential, then one selected prototype at a time: header with proto ID, editable ABBR, potential score and criteria bars, a stepper with a check per stage, and a panel per stage with its main action, its output, "Open chat", "Refresh now" and "Advance".
+- **Factory mode:** a list of prototypes sorted by potential, then one selected prototype at a time: header with the fixed proto ID, potential score and criteria bars, a stepper with a check per stage, and a panel per stage with its main action, its output, "Open chat", "Refresh now" and "Advance".
 - **Proto IDs:** `P<seq>-<ABBR>`, for example `P001-MONSTER`. The counter is never reused. One app chat per prototype, titled `<proto id> | <title>`, filed in the Roblox Radar sidebar group.
 - **Chat first:** the panel is a dashboard and launcher. Buttons send a request to the prototype's chat. The chat ends its reply with tagged blocks (`@@OUTPUT`, `@@DOC`, `@@CHOSEN`, `@@SCORES`, `@@GATE`) and the panel files them on the card. While a request waits, that chat is read every 30 seconds.
 - **Potential score:** weights live in `data/scoring.json` (edit freely). The panel computes the overall percentage; `safety` is a gate below 40.

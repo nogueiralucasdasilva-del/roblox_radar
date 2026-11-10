@@ -61,7 +61,6 @@ export type Ctx = {
   pickItem: (ideaId: string, stageId: string, item: string, mode: 'choose' | 'discard') => unknown
   registerResearch: (ideaId: string, text: string) => unknown
   setTemplateMode: (ideaId: string, mode: 'library' | 'custom') => unknown
-  renameAbbr: (ideaId: string, raw: string) => unknown
   archive: (ideaId: string, on: boolean) => unknown
 }
 

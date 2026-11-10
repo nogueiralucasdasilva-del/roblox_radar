@@ -97,10 +97,9 @@ function criteriaColumns(x: Ctx, i: Idea) {
 }
 
 export function protoHeader(x: Ctx, i: Idea) {
-  const { Box, Text, Button, Input } = x.C
+  const { Box, Text, Button } = x.C
   const p = potential(i.scores, x.scoring)
   const blocked = safetyBlocked(i.scores, x.scoring)
-  const settingsId = `settings:${i.id}`
   return (
     <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1}>
       <Box gap={2} flexWrap="wrap" alignItems="center">
@@ -112,18 +111,10 @@ export function protoHeader(x: Ctx, i: Idea) {
       </Box>
       {criteriaColumns(x, i)}
       <Text color={MUTED}>Confidence: l low, m medium, h high. Evidence: F fact, H hypothesis, V needs validation.</Text>
-      <Button key={`set-${i.id}`} onPress={() => x.toggle(settingsId)}>
-        <Text color={SKY}>{x.open.includes(settingsId) ? '▾ Prototype settings' : '▸ Prototype settings'}</Text>
-      </Button>
-      {x.open.includes(settingsId) ? (
-        <Box gap={1} flexWrap="wrap" alignItems="center">
-          <Text color={MUTED}>{`ABBR ${i.abbr ?? ''}`}</Text>
-          <Box borderStyle="round" borderColor={LINE} paddingX={1}>
-            <Input key={`abbr-${i.id}`} placeholder="new ABBR, letters only, max 7" rows={1} submitLabel="set ABBR" onSubmit={(v: string) => void x.renameAbbr(i.id, v)} />
-          </Box>
-          <Button key={`arch-${i.id}`} label={isArchived(i) ? 'Unarchive' : 'Archive'} onPress={() => x.archive(i.id, !isArchived(i))} />
-        </Box>
-      ) : null}
+      <Box gap={2} alignItems="center">
+        <Text color={MUTED}>{`ID ${i.proto_id} is fixed.`}</Text>
+        <Button key={`arch-${i.id}`} label={isArchived(i) ? 'Unarchive' : 'Archive'} onPress={() => x.archive(i.id, !isArchived(i))} />
+      </Box>
     </Box>
   )
 }

@@ -227,19 +227,6 @@ export function archiveIdea(i: Idea, archived: boolean, now: string): void {
   if (last && last.stage === i.stage) last.status = i.status
 }
 
-// Renaming the ABBR renames the proto ID (the number stays). Returns false when the ABBR is empty or taken.
-export function renameAbbr(s: Store, ideaId: string, raw: string): boolean {
-  const i = s.ideas.find(x => x.id === ideaId)
-  const abbr = cleanAbbr(raw)
-  if (!i || !abbr) return false
-  if (s.ideas.some(x => x.id !== ideaId && x.abbr === abbr)) return false
-  const m = /^P(\d{3,})-/.exec(i.proto_id ?? '')
-  if (!m || !m[1]) return false
-  i.abbr = abbr
-  i.proto_id = protoIdOf(Number(m[1]), abbr)
-  return true
-}
-
 export type ApplyResult = { added: number; scored: boolean; gates: number; truncated: { stage: string; kind: string; gen: number }[] }
 
 const sameContent = (a: string, b: string) => a.replace(/\s+/g, ' ').trim() === b.replace(/\s+/g, ' ').trim()

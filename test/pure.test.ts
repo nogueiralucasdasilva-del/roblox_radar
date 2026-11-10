@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { abbrOf, applyParsed, archiveIdea, chatTitleOf, createPrototype, migrateStore, protoIdOf, renameAbbr, sendInboxToFactory, newInbox, ensureProto, isPending, markAsked, advanceIdea } from '../hooks/factory'
+import { abbrOf, applyParsed, archiveIdea, chatTitleOf, createPrototype, migrateStore, protoIdOf, sendInboxToFactory, newInbox, ensureProto, isPending, markAsked, advanceIdea } from '../hooks/factory'
 import { emptyStore, newIdea } from '../hooks/model'
 import type { Idea } from '../hooks/model'
 import { parseTags, splitItems } from '../hooks/outputs'
@@ -37,16 +37,6 @@ test('proto IDs use a 3-digit counter that is never reused, even after an archiv
 test('chat title is "<id> | <title>" clipped to 58 chars', () => {
   assert.equal(chatTitleOf('P001-MONSTER', 'Monster Truck'), 'P001-MONSTER | Monster Truck')
   assert.ok(chatTitleOf('P001-MONSTER', 'x'.repeat(200)).length <= 58)
-})
-
-test('ABBR can be renamed unless empty or taken', () => {
-  const s = emptyStore()
-  const a = createPrototype(s, { title: 'Alpha', note: '', origin: 'own', from: null, now: NOW })
-  createPrototype(s, { title: 'Beta', note: '', origin: 'own', from: null, now: NOW })
-  assert.equal(renameAbbr(s, a.id, 'beta'), false)
-  assert.equal(renameAbbr(s, a.id, '123'), false)
-  assert.equal(renameAbbr(s, a.id, 'al-pha!'), true)
-  assert.equal(a.proto_id, 'P001-ALPHA')
 })
 
 test('inbox idea sent to the Factory becomes a prototype at pre-validation and leaves the inbox', () => {

@@ -49,7 +49,7 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
-import { AUTO_OPEN_CHAT_ON_SEND, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, renameAbbr, resolveGates, sendInboxToFactory } from './factory'
+import { AUTO_OPEN_CHAT_ON_SEND, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionPrompt, gatePrompt, researchMessage } from './prompts'
 import type { PromptCtx } from './prompts'
 import { parseTags, splitItems } from './outputs'
@@ -949,21 +949,6 @@ async function archiveProto($: any, ideaId: string, archived: boolean): Promise<
     addLog(s, i.stage, 'ideas', `${archived ? 'Archived' : 'Unarchived'} ${i.proto_id}.`)
     ideaEvent(s, i, now)
   })
-  void flushOutbox($)
-}
-
-async function renameProtoAbbr($: any, ideaId: string, raw: string): Promise<void> {
-  let ok = false
-  await mutate($, s => {
-    ok = renameAbbr(s, ideaId, raw)
-    const i = s.ideas.find(x => x.id === ideaId)
-    if (ok && i) ideaEvent(s, i, new Date().toISOString())
-  })
-  if (!ok) {
-    $.ui.toast('That ABBR is empty or already used.')
-    return
-  }
-  await syncChatTitle($, ideaId)
   void flushOutbox($)
 }
 
@@ -2140,7 +2125,6 @@ async function renderPane($: any, e: any) {
       pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
       registerResearch: (id, t) => registerResearch($, id, t),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
-      renameAbbr: (id, raw) => renameProtoAbbr($, id, raw),
       archive: (id, archived) => archiveProto($, id, archived),
     }
 

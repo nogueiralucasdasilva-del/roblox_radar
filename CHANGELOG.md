@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.4
+
+- A proto ID never changes once created. The ABBR editor, its button and the rename logic are removed. Archive stays.
+- Decision: ABBR is chosen once, automatically, when the prototype is created (the earlier "editable ABBR" rule is dropped).
+
 ## 0.7.3
 
 Layout in the order Lucas asked for.
