@@ -1,0 +1,7338 @@
+{
+ "radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "reading drive...",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: collection card opens full screen with its sources": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: advisor card opens with the latest report and Send to Factory": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:triagem",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-triagem",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "loose ideas",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-24-hooks",
+    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-28-hooks",
+    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-05-hooks",
+    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-hooks",
+    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-themes",
+    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.5",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-reports",
+    "text": "reports",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: loose ideas card opens with the inbox": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-del-in1",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-send-in1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "add-inbox",
+    "placeholder": "Raw idea: type the title, then | and an optional note",
+    "submitLabel": "add",
+    "rows": 1,
+    "submit": true
+   }
+  ],
+  "links": []
+ },
+ "radar: auditor opens": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:auditor",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-auditor",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "loose ideas",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-auditor-main",
+    "text": "main",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-auditor-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-auditor-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: garbage values fall back to the map": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: more open": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: order is title, status, big tabs, buttons, then picker, potential and stacked stages": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: a stage that happened has a check": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: drop-down menu lists the prototypes": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p1",
+    "text": "p001-monster1 monster truck 1 -- pre-valid",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p2",
+    "text": "p002-monster2 monster truck 2 60% title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu-archived",
+    "text": "show archived",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: no prototypes at all": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "choose a prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: stage opened with no prototype says so": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: stage prevalid full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-scan",
+    "text": "run quick scan",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage brief full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage template full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tm-custom",
+    "text": "build my own",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tm-library",
+    "text": "use existing template",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage doccompleto full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-fulldoc",
+    "text": "write full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-doccompleto",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage build full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-build",
+    "text": "plan the build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-build",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage titulo full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage thumb full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-thumb",
+    "text": "generate 5 prompts",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage publicar full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-launch",
+    "text": "prepare the launch",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "metrics and learning",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: stage metricas full screen for prototype 2": {
+  "buttons": [
+   {
+    "key": "actb-p2-results",
+    "text": "read the results",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: proto 3 archived thumb": {
+  "buttons": [
+   {
+    "key": "actb-p3-thumb",
+    "text": "generate 5 more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p3",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "dc-1-0",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: template custom + library": {
+  "buttons": [
+   {
+    "key": "actb-p2-packet",
+    "text": "reverse-engineering packet",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-refs",
+    "text": "find 3 reference games",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-template_doc",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tm-custom",
+    "text": "build my own",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tm-library",
+    "text": "use existing template",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "research-p2",
+    "placeholder": "Paste links or text of the finished research",
+    "submitLabel": "register",
+    "rows": 3,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: gate waiting / block": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-nogate-p2",
+    "text": "advance without gate",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: gate block": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-override-p2",
+    "text": "override and advance to thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "factory: selected proto id that no longer exists": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "choose a prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory: more open on a stage": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "old store shape (no inbox, no protoSeq, not migrated)": {
+  "buttons": [
+   {
+    "key": "arch-o1",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (1)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p001-old old",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: radar map": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: radar collection": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: radar advisor": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:triagem",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-triagem",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "loose ideas",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-24-hooks",
+    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-28-hooks",
+    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-05-hooks",
+    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-hooks",
+    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-themes",
+    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.5",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-reports",
+    "text": "reports",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: radar inbox": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-del-in1",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-send-in1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "add-inbox",
+    "placeholder": "Raw idea: type the title, then | and an optional note",
+    "submitLabel": "add",
+    "rows": 1,
+    "submit": true
+   }
+  ],
+  "links": []
+ },
+ "tier 60: factory map": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: factory menu open": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p1",
+    "text": "p001-monster1 monster truck 1 -- pre-valid",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p2",
+    "text": "p002-monster2 monster truck 2 60% title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu-archived",
+    "text": "show archived",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: factory titles stage": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 60: factory thumb stage": {
+  "buttons": [
+   {
+    "key": "actb-p3-thumb",
+    "text": "generate 5 more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p3",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "dc-1-0",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: factory more open": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 60: radar more open": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: radar map": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: radar collection": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: radar advisor": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:triagem",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-triagem",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "loose ideas",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-24-hooks",
+    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-28-hooks",
+    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-05-hooks",
+    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-hooks",
+    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-themes",
+    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.5",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-reports",
+    "text": "reports",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: radar inbox": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-del-in1",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-send-in1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "add-inbox",
+    "placeholder": "Raw idea: type the title, then | and an optional note",
+    "submitLabel": "add",
+    "rows": 1,
+    "submit": true
+   }
+  ],
+  "links": []
+ },
+ "tier 90: factory map": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: factory menu open": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p1",
+    "text": "p001-monster1 monster truck 1 -- pre-valid",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p2",
+    "text": "p002-monster2 monster truck 2 60% title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu-archived",
+    "text": "show archived",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: factory titles stage": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 90: factory thumb stage": {
+  "buttons": [
+   {
+    "key": "actb-p3-thumb",
+    "text": "generate 5 more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p3",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "dc-1-0",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 90: factory more open": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 90: radar more open": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: radar map": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: radar collection": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: radar advisor": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:triagem",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-triagem",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "loose ideas",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-24-hooks",
+    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-09-28-hooks",
+    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-05-hooks",
+    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-hooks",
+    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rep-toggle-2026-10-12-themes",
+    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#0.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#1.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.0",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.2",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.3",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.4",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "send-2026-10-12-themes#2.5",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-reports",
+    "text": "reports",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-triagem-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: radar inbox": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-del-in1",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "inbox-send-in1",
+    "text": "send to factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "add-inbox",
+    "placeholder": "Raw idea: type the title, then | and an optional note",
+    "submitLabel": "add",
+    "rows": 1,
+    "submit": true
+   }
+  ],
+  "links": []
+ },
+ "tier 130: factory map": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: factory menu open": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p1",
+    "text": "p001-monster1 monster truck 1 -- pre-valid",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "opt-p2",
+    "text": "p002-monster2 monster truck 2 60% title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu-archived",
+    "text": "show archived",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ template match",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: factory titles stage": {
+  "buttons": [
+   {
+    "key": "actb-p2-titles",
+    "text": "generate more titles",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-titulo",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "thumbnail",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "build",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 130: factory thumb stage": {
+  "buttons": [
+   {
+    "key": "actb-p3-thumb",
+    "text": "generate 5 more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ch-1-0",
+    "text": "mark as chosen",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p3",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "dc-1-0",
+    "text": "discard",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 130: factory more open": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mtab-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "template match",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "tier 130: radar more open": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive or memory needs attention (click for detail)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-assets",
+    "text": "skills and docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-log",
+    "text": "log",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-overview",
+    "text": "overview",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-pending",
+    "text": "pending",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (0)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "a drawing error never leaves a blank pane": {
+  "buttons": [
+   {
+    "key": "err-radar",
+    "text": "back to radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "err-retry",
+    "text": "try again",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ }
+}

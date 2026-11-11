@@ -94,10 +94,27 @@ function dump(tree) {
 
 let failures = 0
 const results = []
-async function scenario(name, setup, check) {
+const signatures = {}
+function signature(tree) {
+  const norm = t => t.replace(/[▶▸▾▴‹›←●○◐✔]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase()
+  const buttons = []
+  const inputs = []
+  const links = []
+  walk(tree, n => {
+    if (n.type === 'Button') buttons.push({ key: n.props.key ?? null, text: norm(n.props.label ?? textOf(n)), hotkey: n.props.hotkey ?? null, press: typeof n.props.onPress === 'function' })
+    if (n.type === 'Input') inputs.push({ key: n.props.key ?? null, placeholder: n.props.placeholder ?? null, submitLabel: n.props.submitLabel ?? null, rows: n.props.rows ?? null, submit: typeof n.props.onSubmit === 'function' })
+    if (n.type === 'Link') links.push({ href: n.props.href ?? null, label: n.props.label ?? null })
+  })
+  const by = (a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))
+  return { buttons: buttons.sort(by), inputs: inputs.sort(by), links: links.sort(by) }
+}
+async function scenario(name, setup, check, columns = 100) {
   try {
     if (setup) await setup()
+    e.viewport = { columns }
+    e.props = { bodyColumns: columns }
     const tree = await render($, e)
+    signatures[name] = signature(tree)
     const problems = lint(tree)
     const text = dump(tree)
     const extra = check ? check(tree, text, keys(tree)) : []
@@ -197,6 +214,18 @@ await scenario('old store shape (no inbox, no protoSeq, not migrated)', async ()
   await setAtom('mode', 'factory')
 })
 
+for (const cols of [60, 90, 130]) {
+  await scenario(`tier ${cols}: radar map`, reset, need('[ 1  '), cols)
+  await scenario(`tier ${cols}: radar collection`, async () => { await reset(); await setAtom('rstage', 'coleta') }, need('google_trends'), cols)
+  await scenario(`tier ${cols}: radar advisor`, async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory'), cols)
+  await scenario(`tier ${cols}: radar inbox`, async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park'), cols)
+  await scenario(`tier ${cols}: factory map`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') }, need('Potential'), cols)
+  await scenario(`tier ${cols}: factory menu open`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('protoMenu', true) }, need('P001-MONSTER1'), cols)
+  await scenario(`tier ${cols}: factory titles stage`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'titulo') }, need('Mud Kings'), cols)
+  await scenario(`tier ${cols}: factory thumb stage`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p3'); await setAtom('fstage', 'thumb') }, need('Close up'), cols)
+  await scenario(`tier ${cols}: factory more open`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief'); await setAtom('more', true) }, null, cols)
+  await scenario(`tier ${cols}: radar more open`, async () => { await reset(); await setAtom('rstage', 'coleta'); await setAtom('more', true) }, null, cols)
+}
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))
 
 const dumpName = process.argv.includes('--dump') ? process.argv[process.argv.indexOf('--dump') + 1] : null
@@ -204,6 +233,10 @@ for (const r of results) {
   console.log(`${r.ok ? 'ok  ' : 'FAIL'} ${r.name}`)
   for (const p of r.problems.slice(0, 6)) console.log(`       ${p}`)
   if (dumpName && r.name.includes(dumpName)) console.log(r.text.split(String.fromCharCode(10)).map(l => `     | ${l}`).join(String.fromCharCode(10)))
+}
+if (process.env.PARITY_OUT) {
+  const { writeFileSync } = await import('node:fs')
+  writeFileSync(process.env.PARITY_OUT, JSON.stringify(signatures, null, 1))
 }
 console.log(failures === 0 ? 'SMOKE OK' : `SMOKE FAILED: ${failures}`)
 process.exit(failures === 0 ? 0 : 1)

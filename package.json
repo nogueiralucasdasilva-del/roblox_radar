@@ -7,7 +7,8 @@
   "scripts": {
     "test": "node --import ./test/register.mjs --test test/*.test.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "smoke": "node test/smoke/run.mjs"
+    "smoke": "node test/smoke/run.mjs",
+    "parity": "node test/smoke/parity.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
