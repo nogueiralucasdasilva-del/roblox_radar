@@ -48,7 +48,7 @@ test('JSON-wrapped, fenced and trailing-space replies give exactly the same resu
 })
 
 test('CRLF line endings parse the same', () => {
-  const crlf = fx('reply_plain.txt').split(String.fromCharCode(10)).join(String.fromCharCode(13, 10))
+  const crlf = fx('reply_plain.txt').split(String.fromCharCode(13)).join('').split(String.fromCharCode(10)).join(String.fromCharCode(13, 10))
   assert.equal(JSON.stringify(readPrevalid(crlf).scan), JSON.stringify(readPrevalid(fx('reply_plain.txt')).scan))
 })
 
