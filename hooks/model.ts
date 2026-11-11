@@ -1,4 +1,5 @@
 import type { Stage } from '../types'
+import type { Scan } from './scan'
 
 export type Msg = { role: 'user' | 'assistant' | 'system'; text: string; at: string; moveTo?: string }
 export type Busy = { agentId: string; at: string }
@@ -48,6 +49,18 @@ export type Idea = {
   refs?: Refs
   reveng?: Reveng
   failed?: Record<string, { reason: string; at: string }>
+  creation?: Creation
+  // The pre-validation decision after the scan: open until Lucas chooses.
+  decision?: 'open' | 'brief' | 'adjusting' | 'stopped'
+}
+export type StepStateName = 'pending' | 'running' | 'done' | 'failed'
+export type CreationStep = { state: StepStateName; error?: string }
+// The visible sequence of creating a prototype: prototype and ID, Drive folder, chat created, chat opened.
+export type Creation = {
+  steps: Record<'proto' | 'folder' | 'chat' | 'open', CreationStep>
+  notice?: string
+  link?: string | null
+  attempts: { step: string; ok: boolean; detail: string; at: string }[]
 }
 export type DocRef = { name: string; url: string; fileId: string | null; at: string; gen: number; kind: string; checked?: boolean }
 export type RefCandidate = { name: string; url?: string; universe_id?: string; visits?: string; approval_pct?: string; ccu?: string; as_of?: string; why_fit?: string; risk?: string; tag?: string }
@@ -57,13 +70,13 @@ export type UploadRecord = { at: string; files: UploadFile[]; rejected: { name: 
 export type RevengVerdict = 'PASS' | 'PASS WITH GAPS' | 'FAIL'
 export type Reveng = { gen: number; uploads: Record<number, UploadRecord>; segment: number; mode: 'extract' | 'audit'; noEconomy: boolean; verdict?: RevengVerdict; verdictAt?: string; verdictReason?: string }
 export type StageCheck = 'asked' | 'done'
-export type SkillRef = { name: string; modified: string }
-export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[]; action?: string }
-export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string } }
+export type SkillRef = { name: string; modified: string; id?: string; version?: number | null; actions?: string[] }
+export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[]; action?: string; noTags?: boolean }
+export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string }; scan?: Scan; scanErrors?: string[] }
 export type Confidence = 'low' | 'medium' | 'high'
 export type EvidenceTag = 'F' | 'H' | 'V'
 export type Criterion = { v: number; c: Confidence; e: string; t: EvidenceTag; stage: string }
-export type ScoreEntry = { at: string; stage: string; criteria: Record<string, Criterion>; h: string }
+export type ScoreEntry = { at: string; stage: string; criteria: Record<string, Criterion>; h: string; provisional?: boolean }
 export type GateVerdict = 'PASS' | 'PASS WITH RISKS' | 'BLOCK'
 export type GateRecord = { verdict: GateVerdict; reason: string; at: string; override?: boolean }
 // A raw idea in the Radar inbox: no proto ID and no chat until it is sent to the Factory.

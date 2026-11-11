@@ -1,0 +1,5 @@
+@@OUTPUT stage=template kind=reveng_validation gen=1
+Coverage 58 min, 74 percent readable, 6 onboarding steps, 31 balance values, 5 price readings.
+@@END
+@@DOC stage=template | P002-ANOMALI_03_reveng_report_v1 | https://docs.google.com/document/d/FAKEID2/edit
+@@VERDICT stage=template kind=reveng_validation verdict=PASS WITH GAPS | economy sinks missing, enter as tunables

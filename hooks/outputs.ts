@@ -41,7 +41,7 @@ const NL = String.fromCharCode(10)
 
 // A transcript may arrive as a JSON string or JSON events with escaped newlines. Turn that into plain text.
 export function normalizeTranscript(raw: string): string {
-  let t = raw
+  let t = raw.replace(/\r\n/g, NL)
   const trimmed = t.trim()
   if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
     try {
@@ -61,6 +61,24 @@ export function normalizeTranscript(raw: string): string {
 const kv = (s: string, key: string): string | null => {
   const m = new RegExp(`${key}=("[^"]*"|[^\\s|]+)`).exec(s)
   return m && m[1] ? m[1].replace(/^"|"$/g, '') : null
+}
+
+// The first balanced {...} of a text, respecting strings.
+function balancedObject(text: string): string | null {
+  let depth = 0
+  let inStr = false
+  for (let k = 0; k < text.length; k++) {
+    const c = text[k]
+    if (inStr) {
+      if (c === '\\') k++
+      else if (c === '"') inStr = false
+      continue
+    }
+    if (c === '"') inStr = true
+    else if (c === '{') depth++
+    else if (c === '}' && --depth === 0) return text.slice(0, k + 1)
+  }
+  return null
 }
 
 const REF_KEYS = ['name', 'url', 'universe_id', 'visits', 'approval_pct', 'ccu', 'as_of', 'why_fit', 'risk', 'tag'] as const
@@ -95,7 +113,6 @@ export function parseRefs(text: string): RefCandidate[] | null {
 export function parseTags(raw: string): Parsed {
   const out: Parsed = { outputs: [], docs: [], chosen: [], scores: [], gates: [], refs: [], verdicts: [], fails: [], headers: [] }
   const lines = normalizeTranscript(raw).split(NL)
-  let fence = false
   let cur: { stage: string; kind: string; gen: number; buf: string[] } | null = null
   const flush = (truncated: boolean) => {
     if (cur) out.outputs.push({ stage: cur.stage, kind: cur.kind, gen: cur.gen, content: cur.buf.join(NL).trim(), truncated })
@@ -105,21 +122,18 @@ export function parseTags(raw: string): Parsed {
     const line = lines[li] as string
     const hm = /Action:\s.*\(([A-Za-z0-9_]+)\)\.\s*Generation:\s*(\d+)\./.exec(line)
     if (hm && hm[1]) out.headers.push({ action: hm[1], gen: Number(hm[2]), pos: li })
-    if (/^\s*```/.test(line)) {
-      fence = !fence
-      if (cur) cur.buf.push(line)
-      continue
-    }
-    if (cur && !fence && /^\s*@@END\b/.test(line)) {
+    // A code fence line is not content and not a tag: tags inside a fence are read like any other (the chat sometimes fences them).
+    if (/^\s*```/.test(line)) continue
+    if (cur && /^\s*@@END\b/.test(line)) {
       flush(false)
       continue
     }
-    if (cur && !fence && /^\s*@@OUTPUT\s/.test(line)) flush(true)
+    if (cur && /^\s*@@OUTPUT\s/.test(line)) flush(true)
     if (cur) {
       cur.buf.push(line)
       continue
     }
-    if (fence || /^\s*>/.test(line)) continue
+    if (/^\s*>/.test(line)) continue
     const h = /^\s*@@OUTPUT\s+(.*)$/.exec(line)
     if (h && h[1]) {
       const stage = kv(h[1], 'stage')
@@ -138,12 +152,16 @@ export function parseTags(raw: string): Parsed {
       out.chosen.push({ stage: c[1], text: c[2] ?? '' })
       continue
     }
-    const s = /^\s*@@SCORES\s+(\{.*\})\s*$/.exec(line)
-    if (s && s[1]) {
-      try {
-        out.scores.push(JSON.parse(s[1]))
-      } catch {
-        // a malformed block is ignored
+    const sc = /^\s*@@SCORES\s+(\{.*)$/.exec(line)
+    if (sc && sc[1]) {
+      // The JSON object ends where its braces balance, so text after it (a JSON-wrapped transcript) does not matter.
+      const obj = balancedObject(sc[1])
+      if (obj) {
+        try {
+          out.scores.push(JSON.parse(obj))
+        } catch {
+          // a malformed block is ignored
+        }
       }
       continue
     }
@@ -191,4 +209,37 @@ export function splitItems(content: string): string[] {
     .split(/\n\s*\n/)
     .map(s => s.trim())
     .filter(Boolean)
+}
+
+// The transcript of list_events is plain text: blocks that start with a line such as [assistant] or [user].
+export type Block = { role: string; text: string }
+
+export function transcriptBlocks(text: string): Block[] {
+  const blocks: Block[] = []
+  for (const line of text.split(NL)) {
+    const m = /^\[([a-zA-Z_ -]+)(?:[^\]]*)\]\s?(.*)$/.exec(line)
+    if (m && m[1]) blocks.push({ role: m[1].trim().toLowerCase(), text: m[2] ?? '' })
+    else if (blocks.length > 0) blocks[blocks.length - 1]!.text += NL + line
+  }
+  return blocks
+}
+
+const TAG_LINE = /^\s*@@(OUTPUT|END|DOC|CHOSEN|SCORES|GATE|REFS|VERDICT|FAIL)\b/
+
+// True when the chat answered the panel's request (the request header is in a user block) with a real reply that has no tag
+// line at all. Needs the role markers; without them it cannot tell and says false.
+export function repliedWithoutTags(text: string, action: string, gen: number): boolean {
+  const blocks = transcriptBlocks(text)
+  if (blocks.length === 0 || !blocks.some(b => b.role === 'assistant')) return false
+  const want = new RegExp(`Action:\\s.*\\(${action}\\)\\.\\s*Generation:\\s*${gen}\\.`)
+  let at = -1
+  blocks.forEach((b, k) => {
+    if (b.role !== 'assistant' && want.test(b.text)) at = k
+  })
+  if (at < 0) return false
+  const reply = blocks.slice(at + 1).filter(b => b.role === 'assistant')
+  if (reply.length === 0) return false
+  const body = reply.map(b => b.text).join(NL)
+  if (body.split(NL).some(l => TAG_LINE.test(l))) return false
+  return body.replace(/\s+/g, ' ').trim().length >= 200
 }

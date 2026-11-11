@@ -1,0 +1,3 @@
+@@OUTPUT stage=publicar kind=launch gen=1
+Hypothesis: listing click-through above 6 percent. Window 7 days, proposed budget and audience listed for approval. Kill below 3 percent after 2000 impressions. No spend made.
+@@END

@@ -24,6 +24,7 @@ const idText = (id: string | null, fallback: string) => (id ? `id ${id}` : `id n
 
 export function buildRequest(r: RequestInput): string {
   const head = `Prototype ${r.protoId} (${r.title}). Stage: ${r.stageName} (${r.stageId}). Action: ${r.actionLabel} (${r.actionId}). Generation: ${r.gen}.`
+  const step0 = 'Step 0: follow _all/skill_output_protocol.md, including the Drive check.'
   const skills = `Skills: before starting, list the Drive folder ${r.skills.folder} (${idText(r.skills.stageFolderId, `find it inside the Drive folder ${SKILLS_ROOT}`)}) and the folder _all (${idText(r.skills.allId, `find it inside the Drive folder ${SKILLS_ROOT}`)}). Read every file in both (ignore subfolders) and follow them as the skills for this action. If a folder cannot be read, say so and use the installed skill of the same name if one exists.`
   const output = `Output: save every document you create in the Drive folder ${r.protoFolder.name} (${idText(r.protoFolder.id, 'find it inside the Drive folder roblox_radar_protos and create it if it is missing')}), ${r.expectedDocName ? `using exactly the name ${r.expectedDocName}` : 'if a skill asks for a document'}. End your reply with the tagged blocks defined in _all/skill_output_protocol.md.`
   const params = Object.entries(r.params ?? {})
@@ -33,5 +34,5 @@ export function buildRequest(r: RequestInput): string {
   for (const d of r.docs) context.push(`- ${d.stage} | ${d.name} | ${d.url}`)
   if (r.chosenReference) context.push(`Chosen reference: ${r.chosenReference}`)
   if (params.length > 0) context.push(`Params: ${params.join('; ')}`)
-  return [head, skills, output, context.length > 0 ? ['Context:', ...context].join(String.fromCharCode(10)) : 'Context: none.'].join(String.fromCharCode(10))
+  return [head, step0, skills, output, context.length > 0 ? ['Context:', ...context].join(String.fromCharCode(10)) : 'Context: none.'].join(String.fromCharCode(10))
 }

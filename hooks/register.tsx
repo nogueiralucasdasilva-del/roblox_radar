@@ -5,6 +5,7 @@ import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stag
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
 import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
+import { readyBlock, readyColor } from './ui/ready'
 import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
 import type { Comps } from './ui/kit'
 import { factoryNoteBar, inboxBox } from './ui/radar'
@@ -33,7 +34,7 @@ import {
   summarizerPrompt,
 } from './model'
 import { STALE_BUSY_MS } from './model'
-import type { Idea, Job, Knowledge, LogEntry, Msg, Store, Thread, UploadFile } from './model'
+import type { Creation, Idea, Job, Knowledge, LogEntry, Msg, Store, StepStateName, Thread, UploadFile } from './model'
 import {
   KEEP_MESSAGES,
   MEMORY_FOLDER_ID,
@@ -51,14 +52,20 @@ import { docNameMatches, isStandardName, parseDocName } from './docnames'
 import { PROMPT_FILES, clampSegment, fillPrompt, segmentLabel, tidyPrompt } from './segments'
 import { expandHome, numberFromName, planUpload, splitPaths, summarizePlan } from './upload'
 import type { RawFile } from './upload'
-import { AUTO_OPEN_CHAT_ON_SEND, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
+import { AUTO_OPEN_CHAT_ON_SEND, isPending, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
 import type { RequestCtx } from './actions'
-import { parseTags, splitItems } from './outputs'
+import { parseTags, repliedWithoutTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
-import { ensureProtoFolders } from './protos'
+import { evalChatTools, evalDrive, evalDuplicates, evalFolders, evalRadar, evalScheduled, evalSelftest, evalSkills, PROTOCOL_FILE } from './ready'
+import type { ReadyItem, ReadyReport } from './ready'
+import { GOLDEN_FILES, PREVALID_FILES, runGolden, runPrevalid } from './selftest'
+import type { SelfResult } from './selftest'
+import { createChat, openBeside, permissionHelp, sessionRows, STEP_LABEL } from './chatflow'
+import type { Attempt, ChatDeps, CreateResult, StepName } from './chatflow'
+import { ensureProtoFolders, ensureProtosRoot } from './protos'
 import { SKILLS_ROOT_ID, listToolFiles, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
@@ -456,6 +463,10 @@ async function saveStartedChat($: any, p: PendingChat, id: string): Promise<void
   pendingChats.delete(p.key)
   delete chatError[p.key]
   void fileInGroup($, id)
+  if (p.kind === 'idea') {
+    await setStep($, p.scope, 'chat', 'done', undefined, { notice: undefined, link })
+    if (!p.noOpen) await openStep($, p.scope)
+  }
 }
 const chatError: Record<string, string> = {}
 let syncBusy = false
@@ -508,24 +519,6 @@ async function showChat($: any, chat: ChatLink, key?: string): Promise<boolean> 
 // whatever way it was started, and how it never starts a second one for the same card.
 let listError = ''
 const norm = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').trim()
-
-// The rows of a list_sessions answer, whatever wraps them: a JSON array, {sessions: [...]}, or an array inside text.
-function sessionRows(text: string): any[] {
-  const tryParse = (t: string): any => {
-    try {
-      return JSON.parse(t)
-    } catch {
-      return null
-    }
-  }
-  let o: any = tryParse(text) ?? jsonOf(text)
-  if (!o) {
-    const a = text.indexOf('[')
-    const b = text.lastIndexOf(']')
-    if (a >= 0 && b > a) o = tryParse(text.slice(a, b + 1))
-  }
-  return Array.isArray(o) ? o : Array.isArray(o?.sessions) ? o.sessions : Array.isArray(o?.data) ? o.data : []
-}
 
 // Every app conversation by normalized title, from one list_sessions call.
 async function sessionsByTitle($: any): Promise<Map<string, string>> {
@@ -596,7 +589,13 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     const data = await load($)
     const s0 = await loadStore($)
     if (!data) throw new Error('Could not read the stage data.')
-    const existing = kind === 'idea' ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
+    if ((kind as string) === 'idea') {
+      chatBusy.delete(key)
+      await createProtoChat($, scope, show, task)
+      return
+    }
+    const isIdea = (kind as string) === 'idea'
+    const existing = isIdea ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
     if (existing) {
       if (show) await showChat($, existing, key)
       void resolvePending($).then(() => syncChats($))
@@ -606,7 +605,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     let prompt = ''
     let background = ''
     let logStage = scope
-    if (kind === 'idea') {
+    if (isIdea) {
       const idea = s0.ideas.find(i => i.id === scope)
       if (!idea) throw new Error('Idea not found.')
       title = ideaChatTitle(idea)
@@ -629,11 +628,11 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     if (known) {
       await saveStartedChat($, pendingChats.get(key)!, known.id)
       const saved = (await loadStore($))
-      const chat = kind === 'idea' ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
+      const chat = isIdea ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
       if (chat && show) await showChat($, chat, key)
       return
     }
-    const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
+    const label = isIdea ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
     // The click sends the request as a message of the main chat, so the app judges a real request.
     // Direct start, only on Lucas's click: works when he allowed start_session in his settings. Otherwise the
@@ -647,10 +646,10 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     // Fire and forget: the panel never waits for the main chat's whole turn.
     void Promise.resolve($.prompt.submit({ text: request }))
       .then((r: any) => {
-        if (r && r.drop) chatError[key] = 'The main chat refused the request. Type "abrir chat" in the Claude message box at the bottom of the window.'
+        if (r && r.drop) chatError[key] = 'The main chat refused the request. Press Open chat again after allowing it, or open the stage chat from the sidebar.'
       })
       .catch(() => {
-        chatError[key] = 'Could not start it from here. Type "abrir chat" in the Claude message box at the bottom of the window.'
+        chatError[key] = 'Could not start the stage chat from here. Press Open chat again, or open it from the sidebar.'
       })
     chatError[key] = `Starting the chat in the main conversation (first time only; later clicks are instant).${listError ? ` Could not look for an existing one: ${listError}` : ''}`
   } catch (err: any) {
@@ -680,6 +679,256 @@ async function startDirect($: any, p: PendingChat): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+/* ---------- prototype chat: a visible sequence (prototype, Drive folder, chat created, chat opened) ---------- */
+
+const newCreation = (): Creation => ({
+  steps: { proto: { state: 'done' }, folder: { state: 'pending' }, chat: { state: 'pending' }, open: { state: 'pending' } },
+  attempts: [],
+})
+
+// Sets one step of the creation sequence on the card and logs it. A failure keeps its cause on the card.
+async function setStep($: any, ideaId: string, step: StepName, state: StepStateName, error?: string, extra?: Partial<Creation>): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const c = i.creation ?? newCreation()
+    c.steps[step] = error ? { state, error } : { state }
+    if (extra) Object.assign(c, extra)
+    i.creation = c
+    addLog(s, 'prevalid', 'chat', `${i.proto_id}: ${STEP_LABEL[step]} ${state}${error ? `: ${error}` : ''}`)
+  })
+}
+
+// Every attempt of the creation goes to the card's Log and to diag.json (no secrets: tool names, titles and raw errors only).
+async function recordAttempts($: any, ideaId: string, attempts: Attempt[]): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const c = i.creation ?? newCreation()
+    c.attempts = [...c.attempts, ...attempts].slice(-30)
+    i.creation = c
+    for (const a of attempts) addLog(s, 'prevalid', 'chat', `${i.proto_id}: ${a.step} ${a.ok ? 'ok' : 'failed'}: ${a.detail}`)
+  })
+  void note($, `chat_${ideaId}`, attempts)
+}
+
+function chatDeps($: any, ideaId: string, show: boolean): ChatDeps {
+  return {
+    call: (server, tool, args) => ccdCall($, server, tool, args),
+    // The main chat route: register the request, send it, and report a refusal on the card when it comes back.
+    askMain: async req => {
+      const key = `idea:${ideaId}`
+      pendingChats.set(key, { key, kind: 'idea', scope: ideaId, title: req.title, prompt: req.prompt, background: req.background, noOpen: !show })
+      lastPending = key
+      void Promise.resolve($.prompt.submit({ text: `Open the Roblox Radar chat for the prototype "${req.title}" [radar:${key}]` }))
+        .then(async (r: any) => {
+          if (r && r.drop) await failChat($, ideaId, `The main chat refused the request: ${String(r.drop).slice(0, 160)}`)
+        })
+        .catch(async (err: any) => failChat($, ideaId, `Could not ask the main chat: ${String((err && err.message) || err).slice(0, 160)}`))
+    },
+    now: () => new Date().toISOString(),
+  }
+}
+
+// A chat that could not be created: the cause stays on the prototype, with a Retry button and the rules that fix permissions.
+async function failChat($: any, ideaId: string, cause: string, permission = true): Promise<void> {
+  pendingChats.delete(`idea:${ideaId}`)
+  await setStep($, ideaId, 'chat', 'failed', cause, { notice: permission ? `${cause} ${permissionHelp()}` : cause })
+  await update($, rev, n => n + 1)
+}
+
+// Step 4: open the chat beside the panel. If the app refuses, the cause and the session link stay on the card.
+async function openStep($: any, ideaId: string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.chat) return
+  await setStep($, ideaId, 'open', 'running')
+  const r = await openBeside(chatDeps($, ideaId, true), i.chat.id)
+  await recordAttempts($, ideaId, [r.attempt])
+  if (r.ok) await setStep($, ideaId, 'open', 'done', undefined, { link: i.chat.link ?? null })
+  else await setStep($, ideaId, 'open', 'failed', `${r.error ?? 'The app refused to open it'}. It was started in another session: open it from the link or from the Roblox Radar group in the sidebar.`, { link: i.chat.link ?? null })
+  await update($, rev, n => n + 1)
+}
+
+// Steps 3 and 4 for a prototype: finds or creates its one chat, then opens it. Never makes a second chat.
+async function createProtoChat($: any, ideaId: string, show: boolean, task?: string): Promise<void> {
+  const key = `idea:${ideaId}`
+  if (chatBusy.has(key)) return
+  chatBusy.add(key)
+  await update($, rev, n => n + 1)
+  try {
+    const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+    if (!i || !i.proto_id) return
+    if (i.chat) {
+      await setStep($, ideaId, 'chat', 'done')
+      if (show) await openStep($, ideaId)
+      return
+    }
+    await setStep($, ideaId, 'chat', 'running', undefined, { notice: undefined })
+    const title = ideaChatTitle(i)
+    const res = await createChat(chatDeps($, ideaId, show), { protoId: i.proto_id, title, prompt: ideaOpening(i, task), background: ideaBackground(), storedId: null })
+    await recordAttempts($, ideaId, res.attempts)
+    if (res.status === 'existing' || res.status === 'created') {
+      await saveStartedChat($, { key, kind: 'idea', scope: ideaId, title, prompt: '', background: '', noOpen: !show }, (res as { id: string }).id)
+    } else if (res.status === 'main-pending') {
+      await setStep($, ideaId, 'chat', 'running', 'Waiting for the main chat to create it. Approve the request if the app asks.')
+      void resolvePending($)
+    } else {
+      const f = res as Extract<CreateResult, { status: 'failed' }>
+      await failChat($, ideaId, f.error, f.permission)
+    }
+  } catch (err: any) {
+    await failChat($, ideaId, String((err && err.message) || err).slice(0, 300), false)
+  } finally {
+    chatBusy.delete(key)
+    await update($, rev, n => n + 1)
+  }
+}
+
+// "Retry chat": starts again where it failed.
+async function retryChat($: any, ideaId: string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i) return
+  if (i.chat) await openStep($, ideaId)
+  else await createProtoChat($, ideaId, true)
+}
+
+/* ---------- Ready check, self-test, and nudges to the chat ---------- */
+
+let readyReport: ReadyReport | null = null
+let readyBusy = false
+let selfResults: SelfResult[] | null = null
+// The Ctx of the last drawing: the self-test builds real stage cards with the same components.
+let lastCtx: Ctx | null = null
+
+async function loadSelftestFiles($: any, names: string[], dir = ''): Promise<{ name: string; text: string }[]> {
+  const out: { name: string; text: string }[] = []
+  for (const name of names) {
+    try {
+      out.push({ name, text: String(await $.fs.read(`${$.plugin.root}/data/selftest/${dir}${name}`)) })
+    } catch {
+      // a missing fixture shows up as "fixture file not found"
+    }
+  }
+  return out
+}
+
+// Runs every fixture through the real parser and state code in a scratch store (never the real store), then builds each
+// stage card with the real components and checks it is not empty.
+async function runSelftest($: any): Promise<SelfResult[]> {
+  const golden = await loadSelftestFiles($, GOLDEN_FILES)
+  const ctx = lastCtx
+  const render = ctx ? (idea: Idea, stage: string) => stagePanel({ ...ctx, store: { ...ctx.store, ideas: [idea] } } as Ctx, idea, stage) : undefined
+  const prevalid = await loadSelftestFiles($, PREVALID_FILES, 'prevalid/')
+  selfResults = [...runGolden(golden, render), ...runPrevalid(prevalid)]
+  await update($, rev, n => n + 1)
+  return selfResults
+}
+
+// One check per row. Probes are small, read-only calls, except the Drive create test: a file named _readycheck_<time> in
+// roblox_radar_protos that is trashed right away.
+async function runReadyCheck($: any): Promise<void> {
+  if (readyBusy) return
+  readyBusy = true
+  await update($, rev, n => n + 1)
+  const drive = (tool: string, args: Record<string, unknown>) => driveCall($, tool, args)
+  const probe = async (fn: () => Promise<unknown>): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      await fn()
+      return { ok: true }
+    } catch (err: any) {
+      return { ok: false, error: String((err && err.message) || err).slice(0, 140) }
+    }
+  }
+  try {
+    await fetchSkills($)
+    await fetchReceipts($)
+    const data = await load($)
+    const stages = (data?.stages ?? []) as Stage[]
+    const items: ReadyItem[] = []
+
+    const search = await probe(() => drive('search_files', { query: `parentId = '${SKILLS_ROOT_ID}'`, pageSize: 1, excludeContentSnippets: true }))
+    const protoRef = (skillsState?.files._all ?? []).find(f => f.name === PROTOCOL_FILE)
+    const read = protoRef?.id ? await probe(() => drive('read_file_content', { fileId: protoRef.id })) : { ok: false, error: `${PROTOCOL_FILE} not found in _all` }
+    let trashed: boolean | null = null
+    const create = await probe(async () => {
+      protosRootId = await ensureProtosRoot(drive, protosRootId)
+      const made: any = jsonOf(await drive('create_file', { title: `_readycheck_${Date.now().toString(36)}`, parentId: protosRootId, contentMimeType: 'text/plain', textContent: 'ready check, safe to delete' }))
+      try {
+        if (made && typeof made.id === 'string') {
+          await drive('trash_file', { fileId: made.id })
+          trashed = true
+        }
+      } catch {
+        trashed = false
+      }
+    })
+    items.push(evalDrive(search, read, { ...create, trashed }))
+
+    const folderProbes = [
+      ['skills root', SKILLS_ROOT_ID],
+      ['protos', protosRootId],
+      ['receipts', RECEIPT_FOLDER_ID],
+      ['memory', MEMORY_FOLDER_ID],
+      ['templates', TEMPLATE_FOLDER_ID],
+    ] as const
+    const folders: { name: string; ok: boolean; error?: string }[] = []
+    for (const [name, id] of folderProbes) {
+      const r = id ? await probe(() => drive('search_files', { query: `parentId = '${id}'`, pageSize: 1, excludeContentSnippets: true })) : { ok: false, error: 'id not resolved' }
+      folders.push({ name, ...r })
+    }
+    items.push(evalFolders(folders))
+    items.push(evalSkills(skillsState, stages))
+    items.push(evalDuplicates(skillsState))
+
+    let names: string[] = []
+    try {
+      names = ((await $.tool.list()) as { name: string }[]).map(t => t.name)
+    } catch {
+      names = []
+    }
+    items.push(evalChatTools(names))
+    items.push(evalScheduled(live && !('error' in live) ? { ok: true } : { ok: false, error: live && 'error' in live ? live.error : undefined }))
+
+    const newest = receiptsFor(rcp ? rcp.receipts : [], 'coleta').find(r => r.task_key === 'coleta') ?? null
+    items.push(evalRadar(newest ? { finished_utc: newest.finished_utc, items: newest.items.map(i => ({ name: i.name, status: i.status })) } : null, Date.now()))
+
+    items.push(evalSelftest(await runSelftest($)))
+    readyReport = { at: new Date().toISOString(), items }
+    try {
+      await $.store.set('rr1ready', readyReport)
+    } catch {
+      // the cached result is a convenience
+    }
+  } finally {
+    readyBusy = false
+    await update($, rev, n => n + 1)
+  }
+}
+
+// One line to the prototype's chat: ask for the status, or ask it to send its answer again with the tags. Never automatic.
+async function askChatLine($: any, ideaId: string, stage: string, mode: 'status' | 'reformat'): Promise<void> {
+  const key = `idea:${ideaId}`
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.chat) {
+    chatError[key] = 'This prototype has no chat yet. Use Retry chat first.'
+    await update($, rev, n => n + 1)
+    return
+  }
+  const text =
+    mode === 'reformat'
+      ? `Re-send your last answer with the tagged blocks defined in _all/skill_output_protocol.md${stage === 'prevalid' ? ' and the prevalid scan skill' : ''}.`
+      : `Status of the ${stage} request: if you finished, end your reply with the tagged blocks defined in _all/skill_output_protocol.md. If something blocks you, say what.`
+  let sent = false
+  try {
+    const r: any = await $.session.send({ to: { sessionId: i.chat.id }, text })
+    sent = !!(r && r.isDelivered)
+  } catch {
+    sent = false
+  }
+  chatError[key] = sent ? (mode === 'reformat' ? 'Asked the chat to re-send its answer with the tags.' : 'Asked the chat for its status.') : 'Could not send the line to the chat. Open the chat and ask it there.'
+  await update($, rev, n => n + 1)
 }
 
 /* ---------- Factory: prototypes, requests, gates ---------- */
@@ -863,6 +1112,7 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
     ideaId = idea.id
     protoId = idea.proto_id ?? ''
     title = idea.title
+    idea.creation = newCreation()
     ideaEvent(s, idea, now)
     addLog(s, 'prevalid', 'ideas', `Created ${protoId} "${clip(idea.title, 40)}" in the Factory.`)
   })
@@ -871,19 +1121,21 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
     return
   }
   await update($, protoAtom, () => ideaId)
-  // The Drive folder first, so the chat's first message already knows it. A failure only adds a note: the chat is still created.
+  factoryNote = { ideaId, text: `Created ${protoId}` }
+  $.ui.toast(`Created ${protoId}. Setting up its folder and chat...`)
+  await update($, rev, n => n + 1)
+  // Step 2, the Drive folder: first, so the chat's first message already knows it. A failure only shows on the card.
+  await setStep($, ideaId, 'folder', 'running')
   const folderOk = await ensureProtoFolder($, ideaId)
-  factoryNote = { ideaId, text: `Created ${protoId} and its chat${folderOk ? '' : '. Drive folder not created yet, it is retried before the next action'}` }
-  $.ui.toast(`Created ${protoId} and its chat`)
+  if (folderOk) await setStep($, ideaId, 'folder', 'done')
+  else await setStep($, ideaId, 'folder', 'failed', folderNotes[ideaId] ?? 'Drive folder not created.')
   void flushOutbox($)
+  // Steps 3 and 4 never depend on step 2: a failed folder does not stop the chat.
   const idea = (await loadStore($)).ideas.find(x => x.id === ideaId)
-  if (idea?.chat) {
-    // A migrated idea brings its old chat: keep it, rename it when the app lets us.
-    await syncChatTitle($, ideaId)
-    if (AUTO_OPEN_CHAT_ON_SEND) await showChat($, idea.chat, `idea:${ideaId}`)
-  } else {
-    await openChat($, 'idea', ideaId, undefined, { show: AUTO_OPEN_CHAT_ON_SEND })
-  }
+  if (idea?.chat) await syncChatTitle($, ideaId)
+  await createProtoChat($, ideaId, AUTO_OPEN_CHAT_ON_SEND)
+  const done = (await loadStore($)).ideas.find(x => x.id === ideaId)?.creation
+  factoryNote = { ideaId, text: done && done.steps.chat.state === 'done' ? `Created ${protoId} and its chat` : `Created ${protoId}. See the steps below.` }
   await update($, rev, n => n + 1)
 }
 
@@ -941,7 +1193,7 @@ async function openProtoChat($: any, ideaId: string, stageId: string): Promise<v
   await update($, rev, n => n + 1)
 }
 
-async function runFactory($: any, ideaId: string, key: string): Promise<void> {
+async function runFactory($: any, ideaId: string, key: string, extra?: Record<string, string>): Promise<void> {
   const a = actionByKey(key)
   // An older prototype gets its Drive folder now (lazily); the request names it.
   await ensureProtoFolder($, ideaId)
@@ -955,7 +1207,7 @@ async function runFactory($: any, ideaId: string, key: string): Promise<void> {
     await update($, rev, n => n + 1)
     return
   }
-  const { text, gen } = buildActionRequest(a, i, requestCtx(data, a.stage, i))
+  const { text, gen } = buildActionRequest(a, i, requestCtx(data, a.stage, i), extra)
   const refs = skillFiles(skillsState, skillsFolderName(skillsState, data.stages.find(x => x.id === a.stage) ?? { id: a.stage }))
   await mutate($, s => {
     const x = s.ideas.find(y => y.id === ideaId)
@@ -967,6 +1219,32 @@ async function runFactory($: any, ideaId: string, key: string): Promise<void> {
     ideaEvent(s, x, now)
   })
   await sendToProtoChat($, ideaId, text, a.done)
+}
+
+async function setDecision($: any, ideaId: string, decision: NonNullable<Idea['decision']>): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (i) i.decision = decision
+  })
+}
+
+// Decision buttons of the pre-validation card.
+async function decideScan($: any, ideaId: string, decision: 'brief'): Promise<void> {
+  await setDecision($, ideaId, decision)
+  await runFactory($, ideaId, 'brief')
+}
+
+async function adjustScan($: any, ideaId: string, note: string): Promise<void> {
+  const text = note.replace(/\s+/g, ' ').trim().slice(0, 200)
+  if (!text) return
+  await setDecision($, ideaId, 'adjusting')
+  await runFactory($, ideaId, 'scan', { adjust: text })
+}
+
+async function stopAtScan($: any, ideaId: string): Promise<void> {
+  await setDecision($, ideaId, 'stopped')
+  await sendToProtoChat($, ideaId, 'Stopped at scan, log STOPPED_AT_SCAN. No further work on this prototype.', 'Told the chat: stopped at scan.')
+  await archiveProto($, ideaId, true)
 }
 
 async function markStageDone($: any, ideaId: string, stageId: string): Promise<void> {
@@ -1403,6 +1681,10 @@ async function syncChats($: any, only?: string[], force = false): Promise<void> 
               addLog(s, i.stage, 'ideas', `${i.proto_id} advanced to ${i.stage} after the principles gate.`)
             }
             if (changed) addLog(s, i.stage, 'ideas', `Read tagged output from the chat of ${i.proto_id}.`)
+            // A pending request whose chat answered with no tag at all: the card offers to ask it to reformat.
+            for (const [stg, req] of Object.entries(i.requested ?? {})) {
+              if (req.action && isPending(i, stg)) req.noTags = repliedWithoutTags(text, req.action, req.gen)
+            }
           }
           enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at, stage: i.stage, user: 'transcript', answer: tail, purpose: 'chat', memory: memText, idea: ideaSnapshot(i) })
           if (changed) ideaEvent(s, i, at)
@@ -2001,6 +2283,11 @@ export const register: Register = on => {
 
   on('command.run', { command: 'panel' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
+    if (arg === 'selftest') {
+      const res = await runSelftest($)
+      const bad = res.filter(r => !r.ok)
+      return { text: bad.length === 0 ? `Self-test: all ${res.length} fixtures pass.` : `Self-test: ${bad.length} of ${res.length} failed. ${bad.map(b => `${b.file}: ${b.detail}`).join(' | ')}` }
+    }
     if (arg === 'radar' || arg === 'factory') await update($, modeAtom, () => arg)
     await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
     void loadScoring($)
@@ -2024,7 +2311,7 @@ export const register: Register = on => {
         },
       )
       void fetchSkills($)
-      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.differs.length > 0 ? `, ${r.differs.length} differ from Drive and were uploaded as .new (${r.differs.join(', ')})` : ''}${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
+      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.replaced.length > 0 ? `, ${r.replaced.length} replaced by a newer version (${r.replaced.join(', ')})` : ''}${r.proposed.length > 0 ? `, ${r.proposed.length} edited by you, new version uploaded as .proposed.md (${r.proposed.join(', ')})` : ''}${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
     } catch (err: any) {
       return { text: `Skills seed failed: ${String((err && err.message) || err).slice(0, 300)}` }
     }
@@ -2211,6 +2498,14 @@ async function renderPane($: any, e: any) {
     }
 
     const store = await loadStore($)
+    if (!readyReport) {
+      try {
+        const saved: any = await $.store.get('rr1ready')
+        if (saved && Array.isArray(saved.items)) readyReport = saved as ReadyReport
+      } catch {
+        // the cached result is a convenience
+      }
+    }
     if (!store.seeded) void ensureSeed($)
     // First draw of a session that did not fire session.start: read the receipts once.
     if (!rcp && !rcpBusy) void fetchReceipts($)
@@ -2294,6 +2589,10 @@ async function renderPane($: any, e: any) {
         <Box gap={2} flexWrap="wrap">
           {btn(K, 'refresh', 'Refresh', 'secondary', () => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)]))}
           {btn(K, 'map-more', moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}
+          <Button key="ready-toggle" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+            <Text color={readyReport ? readyColor({ ready: readyReport } as Ctx) : SAND}>{'● '}</Text>
+            <Text color={MUTED}>Ready check</Text>
+          </Button>
         </Box>
         {rule(K, nodeW)}
       </Box>
@@ -2347,6 +2646,9 @@ async function renderPane($: any, e: any) {
       openProtoChat: (id, st) => openProtoChat($, id, st),
       runFactory: (id, key) => runFactory($, id, key),
       markDone: (id, st) => markStageDone($, id, st),
+      decide: (id, d) => decideScan($, id, d),
+      adjustScan: (id, t) => adjustScan($, id, t),
+      stopHere: id => stopAtScan($, id),
       requestAdvance: (id, force) => requestAdvance($, id, force),
       overrideAdvance: id => overrideAdvance($, id),
       advanceNoGate: id => advanceNoGate($, id),
@@ -2356,6 +2658,13 @@ async function renderPane($: any, e: any) {
       archive: (id, archived) => archiveProto($, id, archived),
       folderNotice: id => folderNotes[id] ?? null,
       chooseRef: (id, n) => chooseRef($, id, n),
+      retryChat: id => retryChat($, id),
+      ready: readyReport,
+      readyBusy,
+      runReady: () => runReadyCheck($),
+      selfResults,
+      runSelftest: () => runSelftest($),
+      askChat: (id, st, mode) => askChatLine($, id, st, mode),
       copyPrompt: (id, press) => copyPrompt($, id, press),
       uploadDocs: (id, raw) => uploadReveng($, id, raw),
       scanInputs: id => scanInputs($, id),
@@ -2363,6 +2672,7 @@ async function renderPane($: any, e: any) {
       revengNote: id => revengNotes[id] ?? null,
     }
 
+    lastCtx = vctx
     /* the body of one tab of one stage */
     const bodyFor = (current: Stage, tabId: string) => {
       const tone = toneOf(current)
@@ -2564,6 +2874,7 @@ async function renderPane($: any, e: any) {
     ) : null
     const skillsBlock = moreOpen ? (
       <Box flexDirection="column" borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
+        {readyBlock(vctx)}
         {skillsRow(vctx)}
       </Box>
     ) : null
@@ -2592,6 +2903,7 @@ async function renderPane($: any, e: any) {
               {rule(K, nodeW - 6)}
               <Box flexDirection="column" gap={1} paddingX={1}>
                 {bodyFor(st, active)}
+                {readyBlock(vctx)}
                 {skillsRow(vctx)}
               </Box>
             </Box>

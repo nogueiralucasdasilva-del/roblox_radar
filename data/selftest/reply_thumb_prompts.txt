@@ -1,0 +1,7 @@
+@@OUTPUT stage=thumb kind=thumb_prompts gen=1
+1. Spill close-up: a bowl of steaming soup tilting over a Roblox-style character's hands, wide eyes, bright warm background, bold simple shapes, 16:9
+2. Race angle: character sprinting with a soup tray, soup splashing behind, motion lines, high contrast
+3. Fail angle: soup on the ground, character looking down in shock, red background
+4. Crowd angle: many characters carrying trays on a long table course
+5. Reward angle: golden soup trophy with sparkles, character celebrating
+@@END

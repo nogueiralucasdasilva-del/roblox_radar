@@ -5,6 +5,7 @@ import { fileIdOf, kindOfName, parseDocName } from './docnames'
 import { DONE_KIND } from './outputs'
 import type { Parsed } from './outputs'
 import { addScores, parseCriteria } from './scoring'
+import { parseScan } from './scan'
 
 // Lucas prefers the new chat to open beside the panel right after "Send to Factory". Switch off here.
 export const AUTO_OPEN_CHAT_ON_SEND = true
@@ -299,7 +300,18 @@ export function applyParsed(i: Idea, p: Parsed, now: string): ApplyResult {
     list.unshift({ at: now, kind: o.kind, gen: o.gen, content: o.content, skill: req && req.kind === o.kind ? req.skill : [], chosen: [], discarded: [] })
     i.outputs![o.stage] = list
     res.added++
-    if (DONE_KIND[o.stage] === o.kind) i.checks![o.stage] = 'done'
+    if (o.stage === 'prevalid' && o.kind === 'scan') {
+      // The scan completes the stage only when its key lines are valid; otherwise the raw text stays and the card says what is missing.
+      const r = parseScan(o.content)
+      const rec = list[0]!
+      if (r.ok && r.scan) {
+        rec.scan = r.scan
+        i.checks!.prevalid = 'done'
+        if (!i.decision) i.decision = 'open'
+      } else {
+        rec.scanErrors = r.errors
+      }
+    } else if (DONE_KIND[o.stage] === o.kind) i.checks![o.stage] = 'done'
   }
   // Documents: kept in the registry (older ones stay, the newest per kind is marked when shown).
   for (const d of p.docs) {
@@ -322,7 +334,7 @@ export function applyParsed(i: Idea, p: Parsed, now: string): ApplyResult {
   }
   for (const raw of p.scores) {
     const entry = parseCriteria(raw, i.stage)
-    if (addScores(i.scores!, entry, i.stage, now)) res.scored = true
+    if (addScores(i.scores!, entry, i.stage, now, i.stage === 'prevalid')) res.scored = true
   }
   for (const g of p.gates) {
     const cur = i.gate![g.stage]

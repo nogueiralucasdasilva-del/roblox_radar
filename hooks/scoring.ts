@@ -90,11 +90,11 @@ export function hashScores(c: Record<string, Criterion>): string {
 
 // Adds a history entry when the incoming criteria differ from the latest ones. Incoming values win per criterion;
 // criteria not mentioned carry forward. Returns true when an entry was added.
-export function addScores(history: ScoreEntry[], incoming: Record<string, Criterion>, stage: string, at: string): boolean {
+export function addScores(history: ScoreEntry[], incoming: Record<string, Criterion>, stage: string, at: string, provisional = false): boolean {
   if (Object.keys(incoming).length === 0) return false
   const merged = { ...latestCriteria(history), ...incoming }
   const h = hashScores(merged)
   if (history.length > 0 && history[history.length - 1]?.h === h) return false
-  history.push({ at, stage, criteria: merged, h })
+  history.push(provisional ? { at, stage, criteria: merged, h, provisional: true } : { at, stage, criteria: merged, h })
   return true
 }

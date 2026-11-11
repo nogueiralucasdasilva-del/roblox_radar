@@ -1,0 +1,10 @@
+Brief pronto. Fantasia: entregar sopa sem derramar. Wedge: fisica de derramamento clipavel.
+
+@@OUTPUT stage=brief kind=brief gen=1
+Doc: https://docs.google.com/document/d/FAKEID1/edit
+Fantasy: delivery race with spilling physics.
+Wedge: spill moment is clippable in 2 seconds [H]
+Main risk: balance verb owned by two old games [F]
+@@END
+@@DOC stage=brief | P002-ANOMALI_02_brief_v1 | https://docs.google.com/document/d/FAKEID1/edit
+@@SCORES {"criteria":{"demand":{"v":55,"c":"medium","e":"stable outside demand, checked 2026-11-11","t":"F"},"timing":{"v":50,"c":"low","e":"mature category","t":"H"},"whitespace":{"v":40,"c":"medium","e":"verb owned by 2 games","t":"F"},"clickability":{"v":70,"c":"low","e":"promise visible in 2 s","t":"H"},"virality":{"v":75,"c":"low","e":"spill is clippable","t":"H"},"safety":{"v":95,"c":"medium","e":"no IP risk seen","t":"H"}}}

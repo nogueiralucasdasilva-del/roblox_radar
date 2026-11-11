@@ -1,0 +1,1 @@
+@@GATE stage=brief verdict=PASS WITH RISKS | mandamento 4 evidence is hypothesis only

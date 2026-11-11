@@ -3,6 +3,7 @@
 // This module lists the folders so the panel can show them and record which versions were present when a request was made.
 // The chat itself reads the files: the panel never names an individual skill.
 import type { SkillRef } from './model'
+import { unwrapDoc } from './receipts'
 
 // Id of the Drive folder roblox_radar_skills. Created in 0.7.0; /seed-skills recreates missing folders and files without overwriting.
 export const SKILLS_ROOT_ID = '1XduWjErt3wDKfUz9mLOn5B-tTbgei0CN'
@@ -50,7 +51,44 @@ async function listChildren(drive: Drive, parentId: string, folders: boolean): P
   return out
 }
 
-// Resolves the stage folder ids by name and lists the files of each. Never reads file content.
+// Every seeded skill file has `seed_version: N` right after its title, and may declare the actions it covers as (action: x).
+export function parseSeedVersion(text: string): number | null {
+  const m = /^\s*seed_version:\s*(\d+)/m.exec(text)
+  return m && m[1] ? Number(m[1]) : null
+}
+
+export function declaredActions(text: string): string[] {
+  const out: string[] = []
+  for (const m of text.matchAll(/\(actions?:\s*([a-z0-9_,\s]+)\)/gi)) {
+    for (const a of String(m[1]).split(',')) {
+      const t = a.trim().toLowerCase()
+      if (t && !out.includes(t)) out.push(t)
+    }
+  }
+  return out
+}
+
+// What each skill file says about itself, cached by file id and modified time so a refresh reads only what changed.
+const fileMeta = new Map<string, { modified: string; version: number | null; actions: string[] }>()
+
+async function describeFile(drive: Drive, f: any): Promise<SkillRef> {
+  const name = String(f.title ?? f.name ?? '')
+  const modified = String(f.modifiedTime ?? '')
+  const base: SkillRef = { name, modified, id: typeof f.id === 'string' ? f.id : undefined }
+  if (!/\.(md|txt)$/i.test(name) || typeof f.id !== 'string') return base
+  const hit = fileMeta.get(f.id)
+  if (hit && hit.modified === modified) return { ...base, version: hit.version, actions: hit.actions }
+  try {
+    const text = unwrapDoc(await drive('read_file_content', { fileId: f.id }))
+    const meta = { modified, version: parseSeedVersion(text), actions: declaredActions(text) }
+    fileMeta.set(f.id, meta)
+    return { ...base, version: meta.version, actions: meta.actions }
+  } catch {
+    return base
+  }
+}
+
+// Resolves the stage folder ids by name and lists the files of each. Reads a file only to learn its version and actions.
 export async function refreshSkills(drive: Drive, rootId: string, previous: SkillsState | null, now: string): Promise<SkillsState> {
   if (!rootId) return { at: now, ok: false, error: 'The skills folder is not set up yet. Run /seed-skills.', rootId, ids: {}, files: {} }
   try {
@@ -62,7 +100,7 @@ export async function refreshSkills(drive: Drive, rootId: string, previous: Skil
     const files: Record<string, SkillRef[]> = {}
     for (const [name, id] of Object.entries(ids)) {
       const list = await listChildren(drive, id, false)
-      files[name] = list.map(f => ({ name: String(f.title ?? f.name ?? ''), modified: String(f.modifiedTime ?? '') })).sort((a, b) => a.name.localeCompare(b.name))
+      files[name] = (await Promise.all(list.map(f => describeFile(drive, f)))).sort((a, b) => a.name.localeCompare(b.name))
     }
     return { at: now, ok: true, rootId, ids, files }
   } catch (err: any) {
@@ -136,8 +174,8 @@ export const SEED_MAP: { folder: string; name: string; src: string[] }[] = [
 
 // Creates the missing folders and the missing seed files. Never overwrites: a file whose name exists is compared, and when
 // it differs the new text goes up as <name>.new. A folder path such as reveng/_tool is created level by level.
-export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPath: string) => Promise<string | null>): Promise<{ created: string[]; skipped: string[]; missing: string[]; differs: string[] }> {
-  const out = { created: [] as string[], skipped: [] as string[], missing: [] as string[], differs: [] as string[] }
+export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPath: string) => Promise<string | null>): Promise<{ created: string[]; skipped: string[]; missing: string[]; replaced: string[]; proposed: string[] }> {
+  const out = { created: [] as string[], skipped: [] as string[], missing: [] as string[], replaced: [] as string[], proposed: [] as string[] }
   const ids: Record<string, string> = {}
   for (const f of await listChildren(drive, rootId, true)) ids[String(f.title ?? f.name ?? '')] = f.id
   const ensureFolder = async (path: string): Promise<string | null> => {
@@ -178,10 +216,11 @@ export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPat
     const have = await listChildren(drive, folderId, false)
     const same = have.find(f => String(f.title ?? f.name ?? '') === m.name)
     let title = m.name
+    let replaceId: string | null = null
     if (same) {
       let current = ''
       try {
-        current = await drive('read_file_content', { fileId: same.id })
+        current = unwrapDoc(await drive('read_file_content', { fileId: same.id }))
       } catch {
         current = ''
       }
@@ -189,14 +228,34 @@ export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPat
         out.skipped.push(m.name)
         continue
       }
-      if (have.some(f => String(f.title ?? f.name ?? '') === `${m.name}.new`)) {
-        out.skipped.push(`${m.name} (a .new already exists)`)
+      const curV = parseSeedVersion(current) ?? 0
+      const newV = parseSeedVersion(text) ?? 0
+      if (newV <= curV) {
+        out.skipped.push(`${m.name} (Drive has version ${curV}, seed has ${newV})`)
         continue
       }
-      title = `${m.name}.new`
-      out.differs.push(m.name)
+      // The Drive connector cannot edit file content, so "replace in place" is: upload the new version, then trash the old one.
+      // Only an unedited file (modified time equals created time) is replaced; an edited one gets a .proposed.md next to it.
+      if (String(same.modifiedTime ?? '') === String(same.createdTime ?? '') && String(same.modifiedTime ?? '') !== '') {
+        replaceId = String(same.id)
+        out.replaced.push(m.name)
+      } else {
+        title = m.name.replace(/\.md$/i, '') + '.proposed.md'
+        if (have.some(f => String(f.title ?? f.name ?? '') === title)) {
+          out.skipped.push(`${m.name} (a .proposed.md already exists)`)
+          continue
+        }
+        out.proposed.push(m.name)
+      }
     }
-    await drive('create_file', { title, parentId: folderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text })
+    const made = parse(await drive('create_file', { title, parentId: folderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text }))
+    if (replaceId && made && typeof made.id === 'string') {
+      try {
+        await drive('trash_file', { fileId: replaceId })
+      } catch {
+        out.proposed.push(`${m.name} (new version uploaded, the old file could not be trashed: trash it by hand)`)
+      }
+    }
     out.created.push(title)
   }
   return out

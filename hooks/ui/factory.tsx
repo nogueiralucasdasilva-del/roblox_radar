@@ -12,9 +12,13 @@ import { splitItems } from '../outputs'
 import { SAFETY, potential, safetyBlocked } from '../scoring'
 import { newest, skillsFolderName } from '../skills'
 import { refsBlock, revengPanel } from './reveng'
+import { STEP_LABEL, STEP_ORDER } from '../chatflow'
+import { scanPanel, scanSummary } from './scan'
 import { btn, cardWidth, chip, emptyState, meterColor, meterText, notice, pill, rail, rule, tierOf, tint } from './kit'
 
 const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Reverse eng.', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
+// A request that has waited this long with no new answer shows "No reply yet" and the button to ask the chat.
+export const NO_REPLY_MS = 10 * 60 * 1000
 const GATE_COLOR: Record<string, string> = { PASS: OLIVE, 'PASS WITH RISKS': AMBER, BLOCK: RUST }
 
 export function checkGlyph(i: Idea, st: string): { glyph: string; color: string } {
@@ -70,6 +74,49 @@ export function protoPicker(x: Ctx, current: Idea | undefined) {
           {btn(x.C, 'proto-menu-archived', x.showArchived ? 'Hide archived' : 'Show archived', 'quiet', () => x.toggleArchived())}
         </Box>
       ) : null}
+    </Box>
+  )
+}
+
+/* ---------- creation sequence: prototype, Drive folder, chat created, chat opened ---------- */
+
+const STEP_GLYPH: Record<string, { glyph: string; color: string }> = {
+  pending: { glyph: '○', color: SAND },
+  running: { glyph: '◐', color: AMBER },
+  done: { glyph: '●', color: OLIVE },
+  failed: { glyph: '✖', color: RUST },
+}
+
+// Shown on the prototype until all four steps are done. Each step has its own glyph and its own error text.
+export function creationBlock(x: Ctx, i: Idea) {
+  const { Box, Text, Link } = x.C
+  const c = i.creation
+  if (!c) return null
+  const all = STEP_ORDER.every(k => c.steps[k].state === 'done')
+  if (all) return null
+  const chatBad = c.steps.chat.state === 'failed' || c.steps.open.state === 'failed'
+  return (
+    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={chatBad ? RUST : LINE_SOFT} paddingX={1}>
+      <Box gap={2} flexWrap="wrap">
+        {STEP_ORDER.map((k, n) => {
+          const g = STEP_GLYPH[c.steps[k].state] ?? STEP_GLYPH.pending!
+          return (
+            <Text key={`cs-${i.id}-${k}`} bold={c.steps[k].state === 'running'} color={g.color}>
+              {`${g.glyph} ${n + 1} ${STEP_LABEL[k]}`}
+            </Text>
+          )
+        })}
+      </Box>
+      {STEP_ORDER.filter(k => c.steps[k].error).map(k => (
+        <Text key={`ce-${i.id}-${k}`} color={c.steps[k].state === 'failed' ? RUST : AMBER}>
+          {`${STEP_LABEL[k]}: ${clip(c.steps[k].error ?? '', 400)}`}
+        </Text>
+      ))}
+      {c.notice && c.steps.chat.state === 'failed' ? notice(x.C, 'error', clip(c.notice, 600)) : null}
+      <Box gap={2} flexWrap="wrap" alignItems="center">
+        {chatBad ? btn(x.C, `retry-chat-${i.id}`, 'Retry chat', 'primary', () => x.retryChat(i.id)) : null}
+        {c.link && Link ? <Link key={`chat-session-${i.id}`} href={c.link} label="open in app" /> : null}
+      </Box>
     </Box>
   )
 }
@@ -137,6 +184,7 @@ export function protoHeader(x: Ctx, i: Idea) {
         {blocked ? chip(x.C, `⚑ SAFETY BELOW ${x.scoring.safety_gate}`, RUST) : null}
         {i.driveFolderUrl && x.C.Link ? <x.C.Link key={`folder-${i.id}`} href={i.driveFolderUrl} label="Open folder" /> : null}
       </Box>
+      {creationBlock(x, i)}
       {!i.driveFolderUrl && x.folderNotice(i.id) ? notice(x.C, 'warn', x.folderNotice(i.id) as string) : null}
       <Box gap={2} flexWrap="wrap" alignItems="center">
         {chip(x.C, pctText(p.pct), pctColor(p.pct))}
@@ -144,6 +192,7 @@ export function protoHeader(x: Ctx, i: Idea) {
         {p.delta !== null ? <Text color={p.delta >= 0 ? OLIVE : RUST}>{`${p.delta >= 0 ? '+' : ''}${p.delta} vs previous stage`}</Text> : null}
         <Text color={MUTED}>{`${p.scored}/${p.total} criteria scored`}</Text>
       </Box>
+      {(i.outputs?.prevalid ?? []).find(o => o.scan)?.scan ? scanSummary(x, (i.outputs?.prevalid ?? []).find(o => o.scan)!.scan!, `scan-sum-${i.id}`) : null}
       {progressRow(x, i)}
       {criteriaColumns(x, i)}
       <Text color={MUTED}>Confidence l, m, h. Evidence F fact, H hypothesis, V needs validation.</Text>
@@ -354,6 +403,8 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
   const items = stage === 'titulo' || stage === 'thumb'
   const docs = docLinks(i, stage)
   const failed = i.failed?.[stage]
+  const noTags = !!i.requested?.[stage]?.noTags
+  const askedAge = askedAt ? x.now - Date.parse(askedAt) : 0
   const state = check === 'done' ? { t: 'DONE', c: OLIVE } : check === 'asked' || pending ? { t: 'ASKED', c: AMBER } : { t: 'NOT STARTED', c: SAND }
   return (
     <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1} paddingY={1}>
@@ -371,6 +422,17 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
       {failed ? notice(x.C, 'error', `Failed: ${failed.reason}`) : null}
       {docs.length > 0 ? docsBlock(x, i, stage, docs) : null}
       {pending ? notice(x.C, 'warn', 'Waiting for the chat. The result shows here when it answers (checked every 30 seconds).') : null}
+      {pending && noTags ? (
+        <Box gap={1} flexWrap="wrap" alignItems="center">
+          {notice(x.C, 'warn', 'The chat replied without tags.')}
+          {btn(x.C, `reformat-${i.id}-${stage}`, 'Ask chat to reformat', 'secondary', () => x.askChat(i.id, stage, 'reformat'))}
+        </Box>
+      ) : pending && askedAge > NO_REPLY_MS ? (
+        <Box gap={1} flexWrap="wrap" alignItems="center">
+          {notice(x.C, 'warn', 'No reply yet.')}
+          {btn(x.C, `status-${i.id}-${stage}`, 'Ask chat for status', 'secondary', () => x.askChat(i.id, stage, 'status'))}
+        </Box>
+      ) : null}
       {stage === 'template' ? revengPanel(x, i, enabled) : null}
       {stage === 'template' && SHOW_LIBRARY_PATH ? templateTools(x, i, enabled) : null}
       {acts.map(a => {
@@ -384,11 +446,12 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
       })}
       {stage === 'brief' ? refsBlock(x, i, false) : null}
       {stage === 'brief' && !(i.refs && i.refs.candidates.length > 0) && docs.length > 0 ? <Text color={MUTED}>The references come from the 2-page brief.</Text> : null}
-      {stage !== 'template' && !items && gens.length > 0 ? outputBlock(x, i, gens[0]!, 'Latest output') : null}
+      {stage === 'prevalid' && gens.length > 0 ? scanPanel(x, i, gens, enabled) : null}
+      {stage !== 'template' && stage !== 'prevalid' && !items && gens.length > 0 ? outputBlock(x, i, gens[0]!, 'Latest output') : null}
       {stage === 'template' && i.template ? notice(x.C, 'ok', `Library template chosen: ${i.template.name}`) : null}
       {items ? itemsBlock(x, i, stage) : null}
       {!items && stage !== 'template' && gens.length === 0 ? emptyState(x.C, 'No output yet') : null}
-      {!items && stage !== 'template' && gens.length > 1 ? (
+      {!items && stage !== 'template' && stage !== 'prevalid' && gens.length > 1 ? (
         <Box flexDirection="column" gap={1}>
           <Box>{btn(x.C, `hist-${i.id}-${stage}`, `${histOpen ? 'Hide' : 'Show'} history (${gens.length - 1} earlier)`, 'quiet', () => x.toggle(histId))}</Box>
           {histOpen ? gens.slice(1).map(o => outputBlock(x, i, o, 'Earlier output', true)) : null}
@@ -416,11 +479,21 @@ export function skillsRow(x: Ctx) {
         ? stages.map(s => {
             const own = st.files[s] ?? []
             return (
-              <Box key={`sk-${s}`} gap={1}>
-                <Text color={own.length > 0 ? OLIVE : SAND}>●</Text>
-                <Text color={FG}>{s.padEnd(12)}</Text>
-                <Text bold color={FG}>{String(own.length).padStart(2)}</Text>
-                <Text color={MUTED}>{own.length > 0 ? newest(own).slice(0, 10) : ''}</Text>
+              <Box key={`sk-${s}`} flexDirection="column">
+                <Box gap={1}>
+                  <Text color={own.length > 0 ? OLIVE : SAND}>●</Text>
+                  <Text bold color={FG}>{s.padEnd(12)}</Text>
+                  <Text bold color={FG}>{String(own.length).padStart(2)}</Text>
+                  <Text color={MUTED}>{own.length > 0 ? `newest ${newest(own).slice(0, 10)}` : ''}</Text>
+                </Box>
+                {own.map(f => (
+                  <Box key={`skf-${s}-${f.name}`} gap={1} paddingLeft={3}>
+                    <Text color={/\.proposed\.md$/.test(f.name) ? AMBER : MUTED}>{clip(f.name, 46).padEnd(46)}</Text>
+                    <Text color={f.version ? FG : SAND}>{f.version ? `v${f.version}` : 'v?'}</Text>
+                    <Text color={MUTED}>{f.modified.slice(0, 10)}</Text>
+                  </Box>
+                ))}
+                {own.some(f => /\.proposed\.md$/.test(f.name)) ? <Box paddingLeft={3}>{notice(x.C, 'warn', 'You edited a seeded file. A newer version was uploaded as .proposed.md: compare and merge by hand.')}</Box> : null}
               </Box>
             )
           })

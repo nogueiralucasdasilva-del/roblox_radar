@@ -188,7 +188,7 @@ const reset = async () => {
 // Case and padding insensitive: the look changes, the words must not.
 const squash = t => t.toLowerCase().replace(/\[\s+/g, '[').replace(/\s+\]/g, ']').replace(/\s+/g, ' ')
 const need = (...words) => (t, text) => words.filter(w => !squash(text).includes(squash(w))).map(w => `missing "${w}"`)
-await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.8.0', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
+await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.8.2', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', 'Send to Factory', 'Discard', 'add-inbox', '[← Pipeline]'))
@@ -286,6 +286,31 @@ await scenario('factory: documents give Open doc on the card and the stage, Open
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
 }, need('<link Open folder>', '<link Open doc>', 'Prototype folder'.slice(0, 0)))
+const mkScan = (pot, over = {}) => ({
+  potential: pot, reason: { text: 'clear hook but the verb is taken', tag: 'I' }, noun: 'soup', verb: 'deliver without spilling',
+  wedge: { text: 'delivery race with spill physics, clippable in 2 seconds', tag: 'H' }, engine: 'NAO AVALIADO',
+  works: { text: 'the spill is a clip moment', tag: 'I' }, fails: { text: 'balance verb owned by two old games', tag: 'F' },
+  competitors: [{ game: 'Game A', numbers: '12k now, peak 85k (14%)', implication: { text: 'slow decay', tag: 'F' }, peakPct: 14, deadClone: false }, { game: 'Game B', numbers: '1k now, peak 80k (1%)', implication: { text: 'dead', tag: 'F' }, peakPct: 1, deadClone: true }],
+  noKo: true, knockouts: [], confidence: 'media', evidence: 'radar=not found ; web=5 sources', ...over,
+})
+const scanIdea = (scan, extra = {}) => {
+  const s = rich()
+  s.ideas[1].stage = 'prevalid'
+  s.ideas[1].outputs = { prevalid: [{ at: NOW, kind: 'scan', gen: 1, content: 'POTENCIAL: MEDIO', skill: [], chosen: [], discarded: [], scan }] }
+  s.ideas[1].checks = { prevalid: 'done' }
+  Object.assign(s.ideas[1], extra)
+  return s
+}
+for (const cols of [60, 90, 130]) {
+  await scenario(`scan card ${cols}: potential, wedge, competitors, decisions`, async () => { await reset(); putStore(scanIdea(mkScan('MEDIO'))); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+    need('MEDIO', 'PROVISIONAL SCORES', 'CONF MED', 'Wedge', 'NOT ASSESSED', 'DEAD CLONE', 'NO KO', 'Write 2-page brief', 'Adjust idea', 'Stop here'), cols)
+}
+await scenario('scan card: BAIXO keeps the brief button and warns', async () => { await reset(); putStore(scanIdea(mkScan('BAIXO', { noKo: false, knockouts: [{ name: 'KO3 saturated', fix: 'other verb' }] }))); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('Chat recommends stopping', 'Write 2-page brief', 'KO3 SATURATED', 'fixable by: other verb'))
+await scenario('scan card: an unrecognized scan shows the missing keys and the raw text', async () => { await reset(); const s = scanIdea(undefined); s.ideas[1].outputs.prevalid[0].scanErrors = ['missing WEDGE, CONFIANCA']; s.ideas[1].checks = { prevalid: 'asked' }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('Scan format not recognized: missing WEDGE, CONFIANCA', 'POTENCIAL: MEDIO'))
+await scenario('scan card: the chosen decision shows as a tint', async () => { await reset(); putStore(scanIdea(mkScan('ALTO'), { decision: 'brief' })); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('BRIEF CHOSEN'))
 await scenario('factory: stage panel lists documents and the failure', async () => {
   await reset()
   const s = rich()
@@ -295,6 +320,56 @@ await scenario('factory: stage panel lists documents and the failure', async () 
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief')
 }, need('<link Open doc>', 'Documents (1)', 'P002-MONSTER2_02_brief_v1', 'not inside the prototype folder', 'Failed: no connector'))
+const creationState = (steps, notice, link) => async () => {
+  await reset()
+  const s = rich()
+  s.ideas[1].creation = { steps: { proto: { state: 'done' }, folder: { state: 'done' }, chat: { state: 'pending' }, open: { state: 'pending' }, ...steps }, notice, link, attempts: [] }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
+}
+await scenario('creation: all four steps show, chat running', creationState({ chat: { state: 'running', error: 'Waiting for the main chat to create it. Approve the request if the app asks.' } }), need('1 Prototype and ID', '2 Drive folder', '3 Chat created', '4 Chat opened', 'Waiting for the main chat'))
+await scenario('creation: chat failed shows the cause, the permission rules and Retry chat', creationState({ chat: { state: 'failed', error: 'start_session denied' } }, 'start_session denied Add these permission rules to your Claude settings: mcp__ccd_session__start_session'), need('✖ 3 Chat created', 'start_session denied', 'mcp__ccd_session__start_session', 'Retry chat'))
+await scenario('creation: open refused shows the cause, the link and Retry chat', creationState({ chat: { state: 'done' }, open: { state: 'failed', error: 'the app refused; open it from the link' } }, undefined, 'claude://x/local_a'), need('✖ 4 Chat opened', 'open it from the link', '<link open in app>', 'Retry chat'))
+await scenario('creation: all done hides the block', creationState({ chat: { state: 'done' }, open: { state: 'done' } }), (t, text) => (/Chat created/.test(text) ? ['the finished sequence is still shown'] : []))
+const OLD = new Date(Date.now() - 20 * 60 * 1000).toISOString()
+const waiting = extra => async () => {
+  await reset()
+  const s = rich()
+  Object.assign(s.ideas[1], { stage: 'brief' })
+  s.ideas[1].checks = { prevalid: 'done', brief: 'asked' }
+  s.ideas[1].askedAt = { brief: OLD }
+  s.ideas[1].requested = { brief: { kind: 'brief', gen: 1, at: OLD, skill: [], action: 'brief', ...extra } }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief')
+}
+await scenario('waiting: after 10 minutes shows No reply yet and Ask chat for status', waiting({}), need('No reply yet', 'Ask chat for status', 'Mark done'))
+await scenario('waiting: a reply without tags shows the notice and Ask chat to reformat', waiting({ noTags: true }), need('The chat replied without tags', 'Ask chat to reformat', 'Mark done'))
+await scenario('ready check section shows each check and the buttons', async () => {
+  await reset()
+  mem.set('rr1ready', { at: NOW, items: [{ id: 'drive', label: 'Drive search, read, create', level: 'green', text: 'ok' }, { id: 'skills', label: 'Skills per stage', level: 'red', text: 'no skill file in: thumb' }, { id: 'radar', label: 'Radar freshness', level: 'amber', text: 'newest collection 30 h old' }] })
+  await setAtom('more', true)
+}, need('Ready check', 'Run ready check', 'Run self-test', 'no skill file in: thumb', 'Radar freshness', 'checked'))
+{
+  // The in-app self-test: press the button, then every golden fixture must pass and every stage card must render.
+  await reset()
+  await setAtom('more', true)
+  e.viewport = { columns: 100 }
+  e.props = { bodyColumns: 100 }
+  const tree = await render($, e)
+  let press = null
+  walk(tree, n => { if (n.type === 'Button' && n.props.key === 'selftest-run') press = n.props.onPress })
+  let problems = []
+  if (!press) problems = ['no self-test button']
+  else {
+    await press()
+    const again = await render($, e)
+    const text = dump(again)
+    if (!text.includes('Show self-test files (20)')) problems.push('self-test did not report 20 files')
+    if (/✖/.test(text.split('Ready check')[1] ?? '')) problems.push('a self-test file failed in the panel')
+  }
+  results.push({ name: 'the self-test button runs all 20 fixtures (13 golden, 7 pre-validation) through the real code and the real stage cards', ok: problems.length === 0, problems, text: '' })
+  if (problems.length) failures++
+}
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))
 
 const dumpName = process.argv.includes('--dump') ? process.argv[process.argv.indexOf('--dump') + 1] : null

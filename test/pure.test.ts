@@ -108,23 +108,24 @@ test('tags tolerate JSON-wrapped transcripts with escaped newlines', () => {
   assert.equal(p.gates.length, 1)
 })
 
-test('tags inside quoted examples, code fences and placeholders are ignored', () => {
+test('tags in quoted lines and with placeholder stages are ignored; tags inside a code fence are read', () => {
   const text = [
     'End your reply with:',
     '> @@OUTPUT stage=titulo kind=titles gen=1',
-    '```',
-    '@@OUTPUT stage=titulo kind=titles gen=1',
-    'fenced',
-    '@@END',
-    '```',
+    '> 1. quoted title',
+    '> @@END',
     '@@OUTPUT stage=<stageId> kind=<kind> gen=<n>',
     'placeholder',
     '@@END',
     '@@GATE stage=<stageId> verdict=PASS | x',
-  ].join('\n')
+  ].join(String.fromCharCode(10))
   const p = parseTags(text)
   assert.equal(p.outputs.length, 0)
   assert.equal(p.gates.length, 0)
+  const fenced = ['```', '@@OUTPUT stage=titulo kind=titles gen=1', '1. Soup Dash', '@@END', '```'].join(String.fromCharCode(10))
+  const f = parseTags(fenced)
+  assert.equal(f.outputs.length, 1)
+  assert.equal(f.outputs[0]!.content, '1. Soup Dash')
 })
 
 test('an unterminated output is flagged as truncated', () => {
@@ -210,9 +211,10 @@ test('every action becomes a request only through the request builder: generic, 
     const { text, expectedDocName } = buildActionRequest(a, i, { ...ctx, stageName: a.stage })
     const lines = text.split(String.fromCharCode(10))
     assert.ok(lines[0]!.startsWith(`Prototype ${i.proto_id} (Truck). Stage: ${a.stage} (${a.stage}). Action: ${a.label} (${a.key}). Generation: `), a.key)
-    assert.ok(lines[1]!.includes('Read every file in both (ignore subfolders)'), a.key)
-    assert.ok(lines[1]!.includes('FOLDER1') && lines[1]!.includes('ALLID'), a.key)
-    assert.ok(lines[2]!.includes(`using exactly the name ${expectedDocName}`) && lines[2]!.includes('PF1'), a.key)
+    assert.equal(lines[1], 'Step 0: follow _all/skill_output_protocol.md, including the Drive check.', a.key)
+    assert.ok(lines[2]!.includes('Read every file in both (ignore subfolders)'), a.key)
+    assert.ok(lines[2]!.includes('FOLDER1') && lines[2]!.includes('ALLID'), a.key)
+    assert.ok(lines[3]!.includes(`using exactly the name ${expectedDocName}`) && lines[3]!.includes('PF1'), a.key)
     assert.ok(expectedDocName.startsWith(`${i.proto_id}_0`), a.key)
     assert.ok(!text.includes('@@'), a.key)
     const p = parseTags(text)

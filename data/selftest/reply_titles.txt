@@ -1,0 +1,7 @@
+@@OUTPUT stage=titulo kind=titles gen=1
+1. Soup Dash, short, verb first, reason: reads in one glance
+2. Spill Run, reason: names the clip moment
+3. Deliver Soup, reason: plain and searchable
+4. Hot Soup Rush, reason: urgency
+5. Don't Spill, reason: dare framing
+@@END
