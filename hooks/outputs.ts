@@ -192,3 +192,36 @@ export function splitItems(content: string): string[] {
     .map(s => s.trim())
     .filter(Boolean)
 }
+
+// The transcript of list_events is plain text: blocks that start with a line such as [assistant] or [user].
+export type Block = { role: string; text: string }
+
+export function transcriptBlocks(text: string): Block[] {
+  const blocks: Block[] = []
+  for (const line of text.split(NL)) {
+    const m = /^\[([a-zA-Z_ -]+)(?:[^\]]*)\]\s?(.*)$/.exec(line)
+    if (m && m[1]) blocks.push({ role: m[1].trim().toLowerCase(), text: m[2] ?? '' })
+    else if (blocks.length > 0) blocks[blocks.length - 1]!.text += NL + line
+  }
+  return blocks
+}
+
+const TAG_LINE = /^\s*@@(OUTPUT|END|DOC|CHOSEN|SCORES|GATE|REFS|VERDICT|FAIL)\b/
+
+// True when the chat answered the panel's request (the request header is in a user block) with a real reply that has no tag
+// line at all. Needs the role markers; without them it cannot tell and says false.
+export function repliedWithoutTags(text: string, action: string, gen: number): boolean {
+  const blocks = transcriptBlocks(text)
+  if (blocks.length === 0 || !blocks.some(b => b.role === 'assistant')) return false
+  const want = new RegExp(`Action:\\s.*\\(${action}\\)\\.\\s*Generation:\\s*${gen}\\.`)
+  let at = -1
+  blocks.forEach((b, k) => {
+    if (b.role !== 'assistant' && want.test(b.text)) at = k
+  })
+  if (at < 0) return false
+  const reply = blocks.slice(at + 1).filter(b => b.role === 'assistant')
+  if (reply.length === 0) return false
+  const body = reply.map(b => b.text).join(NL)
+  if (body.split(NL).some(l => TAG_LINE.test(l))) return false
+  return body.replace(/\s+/g, ' ').trim().length >= 200
+}

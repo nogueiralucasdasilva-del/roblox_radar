@@ -65,6 +65,12 @@ export type Ctx = {
   folderNotice: (ideaId: string) => string | null
   chooseRef: (ideaId: string, index: number) => unknown
   retryChat: (ideaId: string) => unknown
+  ready: import('./ready').ReadyReport | null
+  readyBusy: boolean
+  runReady: () => unknown
+  selfResults: import('./selftest').SelfResult[] | null
+  runSelftest: () => unknown
+  askChat: (ideaId: string, stageId: string, mode: 'status' | 'reformat') => unknown
   copyPrompt: (ideaId: string, press?: any) => unknown
   uploadDocs: (ideaId: string, raw: string) => unknown
   scanInputs: (ideaId: string) => unknown

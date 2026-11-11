@@ -1,0 +1,23 @@
+Potencial: MEDIO. Gancho visual claro, mas o verbo ja esta ocupado por jogos de nicho estavel.
+Noun / verb: sopa / entregar sem derramar.
+Wedge: corrida de entrega com fisica de derramamento, clipavel em 2 segundos. Engine: NAO AVALIADO nesta fase.
+Por que pode funcionar: o derramamento e um momento de clipe sem contexto.
+Por que pode falhar: o verbo de equilibrio e dominado por 2 jogos antigos com base fiel.
+Concorrente mais proximo: Jogo A tem 12k jogando agora contra pico de 85k (14%) e 11 meses de idade, o que sugere nicho estavel e nao categoria quente.
+Confianca: media.
+Quer que eu faca o brief completo (2 paginas, Google Doc)? Sim / Nao / Ajustar a ideia primeiro.
+
+@@OUTPUT stage=prevalid kind=scan gen=1
+POTENCIAL: MEDIO | gancho claro, mas verbo ocupado por jogos de nicho estavel [I]
+NOUN_VERB: sopa | entregar sem derramar
+WEDGE: corrida de entrega com fisica de derramamento, clipavel em 2 segundos [H]
+ENGINE: NAO AVALIADO
+FUNCIONA: o derramamento e um momento de clipe sem contexto [I]
+FALHA: verbo de equilibrio dominado por 2 jogos antigos com base fiel [F]
+CONCORRENTE: Jogo A | 12k agora, pico 85k (14%), 11 meses, dados de 2026-11-11 | decaimento lento, nicho estavel [F]
+CONCORRENTE: Jogo B | 3k agora, pico 40k (8%), 19 meses, dados de 2026-11-11 | quase morto, contraexemplo do verbo [F]
+KO: nenhum
+CONFIANCA: media
+EVIDENCIA: radar=nao encontrado ; web=5 fontes ; concorrentes abertos=3 ; data=2026-11-11
+@@END
+@@SCORES {"criteria":{"demand":{"v":55,"c":"low","e":"demanda externa estavel, sem pico recente","t":"H"},"timing":{"v":50,"c":"low","e":"categoria madura, sem urgencia","t":"H"},"whitespace":{"v":40,"c":"medium","e":"verbo ocupado por 2 jogos antigos","t":"F"},"clickability":{"v":70,"c":"low","e":"promessa visual em 2 segundos","t":"H"},"virality":{"v":75,"c":"low","e":"derramamento e clipavel","t":"H"},"safety":{"v":95,"c":"medium","e":"sem risco de IP ou politica aparente","t":"H"}}}

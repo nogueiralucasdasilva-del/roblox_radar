@@ -306,6 +306,45 @@ await scenario('creation: all four steps show, chat running', creationState({ ch
 await scenario('creation: chat failed shows the cause, the permission rules and Retry chat', creationState({ chat: { state: 'failed', error: 'start_session denied' } }, 'start_session denied Add these permission rules to your Claude settings: mcp__ccd_session__start_session'), need('✖ 3 Chat created', 'start_session denied', 'mcp__ccd_session__start_session', 'Retry chat'))
 await scenario('creation: open refused shows the cause, the link and Retry chat', creationState({ chat: { state: 'done' }, open: { state: 'failed', error: 'the app refused; open it from the link' } }, undefined, 'claude://x/local_a'), need('✖ 4 Chat opened', 'open it from the link', '<link open in app>', 'Retry chat'))
 await scenario('creation: all done hides the block', creationState({ chat: { state: 'done' }, open: { state: 'done' } }), (t, text) => (/Chat created/.test(text) ? ['the finished sequence is still shown'] : []))
+const OLD = new Date(Date.now() - 20 * 60 * 1000).toISOString()
+const waiting = extra => async () => {
+  await reset()
+  const s = rich()
+  Object.assign(s.ideas[1], { stage: 'brief' })
+  s.ideas[1].checks = { prevalid: 'done', brief: 'asked' }
+  s.ideas[1].askedAt = { brief: OLD }
+  s.ideas[1].requested = { brief: { kind: 'brief', gen: 1, at: OLD, skill: [], action: 'brief', ...extra } }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief')
+}
+await scenario('waiting: after 10 minutes shows No reply yet and Ask chat for status', waiting({}), need('No reply yet', 'Ask chat for status', 'Mark done'))
+await scenario('waiting: a reply without tags shows the notice and Ask chat to reformat', waiting({ noTags: true }), need('The chat replied without tags', 'Ask chat to reformat', 'Mark done'))
+await scenario('ready check section shows each check and the buttons', async () => {
+  await reset()
+  mem.set('rr1ready', { at: NOW, items: [{ id: 'drive', label: 'Drive search, read, create', level: 'green', text: 'ok' }, { id: 'skills', label: 'Skills per stage', level: 'red', text: 'no skill file in: thumb' }, { id: 'radar', label: 'Radar freshness', level: 'amber', text: 'newest collection 30 h old' }] })
+  await setAtom('more', true)
+}, need('Ready check', 'Run ready check', 'Run self-test', 'no skill file in: thumb', 'Radar freshness', 'checked'))
+{
+  // The in-app self-test: press the button, then every golden fixture must pass and every stage card must render.
+  await reset()
+  await setAtom('more', true)
+  e.viewport = { columns: 100 }
+  e.props = { bodyColumns: 100 }
+  const tree = await render($, e)
+  let press = null
+  walk(tree, n => { if (n.type === 'Button' && n.props.key === 'selftest-run') press = n.props.onPress })
+  let problems = []
+  if (!press) problems = ['no self-test button']
+  else {
+    await press()
+    const again = await render($, e)
+    const text = dump(again)
+    if (!text.includes('Show self-test files (13)')) problems.push('self-test did not report 13 files')
+    if (/✖/.test(text.split('Ready check')[1] ?? '')) problems.push('a self-test file failed in the panel')
+  }
+  results.push({ name: 'the self-test button runs all 13 golden fixtures through the real code and the real stage cards', ok: problems.length === 0, problems, text: '' })
+  if (problems.length) failures++
+}
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))
 
 const dumpName = process.argv.includes('--dump') ? process.argv[process.argv.indexOf('--dump') + 1] : null

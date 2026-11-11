@@ -1,0 +1,7 @@
+Tres candidatas encontradas.
+
+@@OUTPUT stage=brief kind=refs gen=1
+3 reference candidates added to the appendix. Lean: Game B (closest loop, healthy approval). Opinion.
+@@END
+@@DOC stage=brief | P002-ANOMALI_02_brief_v1 | https://docs.google.com/document/d/FAKEID1/edit
+@@REFS stage=brief | [{"name":"Game A","url":"https://www.roblox.com/games/1/a","visits":"1.2B","approval_pct":"91%","ccu":"85k","as_of":"2026-11-11","why_fit":"same loop family","risk":"fading peak","tag":"F"},{"name":"Game B","url":"https://www.roblox.com/games/2/b","visits":"400M","approval_pct":"88%","ccu":"30k","as_of":"2026-11-11","why_fit":"closest verb chain","risk":"social dependence","tag":"H"},{"name":"Game C","url":"https://www.roblox.com/games/3/c","visits":"90M","approval_pct":"84%","ccu":"8k","as_of":"2026-11-11","why_fit":"different variant","risk":"hard to replicate","tag":"V"}]

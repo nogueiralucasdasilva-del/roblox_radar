@@ -5,6 +5,7 @@ import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stag
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
 import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
+import { readyBlock, readyColor } from './ui/ready'
 import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
 import type { Comps } from './ui/kit'
 import { factoryNoteBar, inboxBox } from './ui/radar'
@@ -51,16 +52,20 @@ import { docNameMatches, isStandardName, parseDocName } from './docnames'
 import { PROMPT_FILES, clampSegment, fillPrompt, segmentLabel, tidyPrompt } from './segments'
 import { expandHome, numberFromName, planUpload, splitPaths, summarizePlan } from './upload'
 import type { RawFile } from './upload'
-import { AUTO_OPEN_CHAT_ON_SEND, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
+import { AUTO_OPEN_CHAT_ON_SEND, isPending, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
 import type { RequestCtx } from './actions'
-import { parseTags, splitItems } from './outputs'
+import { parseTags, repliedWithoutTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
+import { evalChatTools, evalDrive, evalDuplicates, evalFolders, evalRadar, evalScheduled, evalSelftest, evalSkills, PROTOCOL_FILE } from './ready'
+import type { ReadyItem, ReadyReport } from './ready'
+import { GOLDEN_FILES, runGolden } from './selftest'
+import type { SelfResult } from './selftest'
 import { createChat, openBeside, permissionHelp, sessionRows, STEP_LABEL } from './chatflow'
 import type { Attempt, ChatDeps, CreateResult, StepName } from './chatflow'
-import { ensureProtoFolders } from './protos'
+import { ensureProtoFolders, ensureProtosRoot } from './protos'
 import { SKILLS_ROOT_ID, listToolFiles, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
@@ -789,6 +794,142 @@ async function retryChat($: any, ideaId: string): Promise<void> {
   else await createProtoChat($, ideaId, true)
 }
 
+/* ---------- Ready check, self-test, and nudges to the chat ---------- */
+
+let readyReport: ReadyReport | null = null
+let readyBusy = false
+let selfResults: SelfResult[] | null = null
+// The Ctx of the last drawing: the self-test builds real stage cards with the same components.
+let lastCtx: Ctx | null = null
+
+async function loadSelftestFiles($: any, names: string[], dir = ''): Promise<{ name: string; text: string }[]> {
+  const out: { name: string; text: string }[] = []
+  for (const name of names) {
+    try {
+      out.push({ name, text: String(await $.fs.read(`${$.plugin.root}/data/selftest/${dir}${name}`)) })
+    } catch {
+      // a missing fixture shows up as "fixture file not found"
+    }
+  }
+  return out
+}
+
+// Runs every fixture through the real parser and state code in a scratch store (never the real store), then builds each
+// stage card with the real components and checks it is not empty.
+async function runSelftest($: any): Promise<SelfResult[]> {
+  const golden = await loadSelftestFiles($, GOLDEN_FILES)
+  const ctx = lastCtx
+  const render = ctx ? (idea: Idea, stage: string) => stagePanel({ ...ctx, store: { ...ctx.store, ideas: [idea] } } as Ctx, idea, stage) : undefined
+  selfResults = runGolden(golden, render)
+  await update($, rev, n => n + 1)
+  return selfResults
+}
+
+// One check per row. Probes are small, read-only calls, except the Drive create test: a file named _readycheck_<time> in
+// roblox_radar_protos that is trashed right away.
+async function runReadyCheck($: any): Promise<void> {
+  if (readyBusy) return
+  readyBusy = true
+  await update($, rev, n => n + 1)
+  const drive = (tool: string, args: Record<string, unknown>) => driveCall($, tool, args)
+  const probe = async (fn: () => Promise<unknown>): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      await fn()
+      return { ok: true }
+    } catch (err: any) {
+      return { ok: false, error: String((err && err.message) || err).slice(0, 140) }
+    }
+  }
+  try {
+    await fetchSkills($)
+    await fetchReceipts($)
+    const data = await load($)
+    const stages = (data?.stages ?? []) as Stage[]
+    const items: ReadyItem[] = []
+
+    const search = await probe(() => drive('search_files', { query: `parentId = '${SKILLS_ROOT_ID}'`, pageSize: 1, excludeContentSnippets: true }))
+    const protoRef = (skillsState?.files._all ?? []).find(f => f.name === PROTOCOL_FILE)
+    const read = protoRef?.id ? await probe(() => drive('read_file_content', { fileId: protoRef.id })) : { ok: false, error: `${PROTOCOL_FILE} not found in _all` }
+    let trashed: boolean | null = null
+    const create = await probe(async () => {
+      protosRootId = await ensureProtosRoot(drive, protosRootId)
+      const made: any = jsonOf(await drive('create_file', { title: `_readycheck_${Date.now().toString(36)}`, parentId: protosRootId, contentMimeType: 'text/plain', textContent: 'ready check, safe to delete' }))
+      try {
+        if (made && typeof made.id === 'string') {
+          await drive('trash_file', { fileId: made.id })
+          trashed = true
+        }
+      } catch {
+        trashed = false
+      }
+    })
+    items.push(evalDrive(search, read, { ...create, trashed }))
+
+    const folderProbes = [
+      ['skills root', SKILLS_ROOT_ID],
+      ['protos', protosRootId],
+      ['receipts', RECEIPT_FOLDER_ID],
+      ['memory', MEMORY_FOLDER_ID],
+      ['templates', TEMPLATE_FOLDER_ID],
+    ] as const
+    const folders: { name: string; ok: boolean; error?: string }[] = []
+    for (const [name, id] of folderProbes) {
+      const r = id ? await probe(() => drive('search_files', { query: `parentId = '${id}'`, pageSize: 1, excludeContentSnippets: true })) : { ok: false, error: 'id not resolved' }
+      folders.push({ name, ...r })
+    }
+    items.push(evalFolders(folders))
+    items.push(evalSkills(skillsState, stages))
+    items.push(evalDuplicates(skillsState))
+
+    let names: string[] = []
+    try {
+      names = ((await $.tool.list()) as { name: string }[]).map(t => t.name)
+    } catch {
+      names = []
+    }
+    items.push(evalChatTools(names))
+    items.push(evalScheduled(live && !('error' in live) ? { ok: true } : { ok: false, error: live && 'error' in live ? live.error : undefined }))
+
+    const newest = receiptsFor(rcp ? rcp.receipts : [], 'coleta').find(r => r.task_key === 'coleta') ?? null
+    items.push(evalRadar(newest ? { finished_utc: newest.finished_utc, items: newest.items.map(i => ({ name: i.name, status: i.status })) } : null, Date.now()))
+
+    items.push(evalSelftest(await runSelftest($)))
+    readyReport = { at: new Date().toISOString(), items }
+    try {
+      await $.store.set('rr1ready', readyReport)
+    } catch {
+      // the cached result is a convenience
+    }
+  } finally {
+    readyBusy = false
+    await update($, rev, n => n + 1)
+  }
+}
+
+// One line to the prototype's chat: ask for the status, or ask it to send its answer again with the tags. Never automatic.
+async function askChatLine($: any, ideaId: string, stage: string, mode: 'status' | 'reformat'): Promise<void> {
+  const key = `idea:${ideaId}`
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.chat) {
+    chatError[key] = 'This prototype has no chat yet. Use Retry chat first.'
+    await update($, rev, n => n + 1)
+    return
+  }
+  const text =
+    mode === 'reformat'
+      ? `Re-send your last answer with the tagged blocks defined in _all/skill_output_protocol.md${stage === 'prevalid' ? ' and the prevalid scan skill' : ''}.`
+      : `Status of the ${stage} request: if you finished, end your reply with the tagged blocks defined in _all/skill_output_protocol.md. If something blocks you, say what.`
+  let sent = false
+  try {
+    const r: any = await $.session.send({ to: { sessionId: i.chat.id }, text })
+    sent = !!(r && r.isDelivered)
+  } catch {
+    sent = false
+  }
+  chatError[key] = sent ? (mode === 'reformat' ? 'Asked the chat to re-send its answer with the tags.' : 'Asked the chat for its status.') : 'Could not send the line to the chat. Open the chat and ask it there.'
+  await update($, rev, n => n + 1)
+}
+
 /* ---------- Factory: prototypes, requests, gates ---------- */
 
 let factoryNote: { ideaId: string; text: string } | null = null
@@ -1513,6 +1654,10 @@ async function syncChats($: any, only?: string[], force = false): Promise<void> 
               addLog(s, i.stage, 'ideas', `${i.proto_id} advanced to ${i.stage} after the principles gate.`)
             }
             if (changed) addLog(s, i.stage, 'ideas', `Read tagged output from the chat of ${i.proto_id}.`)
+            // A pending request whose chat answered with no tag at all: the card offers to ask it to reformat.
+            for (const [stg, req] of Object.entries(i.requested ?? {})) {
+              if (req.action && isPending(i, stg)) req.noTags = repliedWithoutTags(text, req.action, req.gen)
+            }
           }
           enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at, stage: i.stage, user: 'transcript', answer: tail, purpose: 'chat', memory: memText, idea: ideaSnapshot(i) })
           if (changed) ideaEvent(s, i, at)
@@ -2111,6 +2256,11 @@ export const register: Register = on => {
 
   on('command.run', { command: 'panel' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
+    if (arg === 'selftest') {
+      const res = await runSelftest($)
+      const bad = res.filter(r => !r.ok)
+      return { text: bad.length === 0 ? `Self-test: all ${res.length} fixtures pass.` : `Self-test: ${bad.length} of ${res.length} failed. ${bad.map(b => `${b.file}: ${b.detail}`).join(' | ')}` }
+    }
     if (arg === 'radar' || arg === 'factory') await update($, modeAtom, () => arg)
     await $.ui.open({ id: PANE, title: 'Roblox Radar', rows: 50, columns: 170 })
     void loadScoring($)
@@ -2134,7 +2284,7 @@ export const register: Register = on => {
         },
       )
       void fetchSkills($)
-      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.differs.length > 0 ? `, ${r.differs.length} differ from Drive and were uploaded as .new (${r.differs.join(', ')})` : ''}${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
+      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.replaced.length > 0 ? `, ${r.replaced.length} replaced by a newer version (${r.replaced.join(', ')})` : ''}${r.proposed.length > 0 ? `, ${r.proposed.length} edited by you, new version uploaded as .proposed.md (${r.proposed.join(', ')})` : ''}${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
     } catch (err: any) {
       return { text: `Skills seed failed: ${String((err && err.message) || err).slice(0, 300)}` }
     }
@@ -2321,6 +2471,14 @@ async function renderPane($: any, e: any) {
     }
 
     const store = await loadStore($)
+    if (!readyReport) {
+      try {
+        const saved: any = await $.store.get('rr1ready')
+        if (saved && Array.isArray(saved.items)) readyReport = saved as ReadyReport
+      } catch {
+        // the cached result is a convenience
+      }
+    }
     if (!store.seeded) void ensureSeed($)
     // First draw of a session that did not fire session.start: read the receipts once.
     if (!rcp && !rcpBusy) void fetchReceipts($)
@@ -2404,6 +2562,10 @@ async function renderPane($: any, e: any) {
         <Box gap={2} flexWrap="wrap">
           {btn(K, 'refresh', 'Refresh', 'secondary', () => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)]))}
           {btn(K, 'map-more', moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}
+          <Button key="ready-toggle" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
+            <Text color={readyReport ? readyColor({ ready: readyReport } as Ctx) : SAND}>{'● '}</Text>
+            <Text color={MUTED}>Ready check</Text>
+          </Button>
         </Box>
         {rule(K, nodeW)}
       </Box>
@@ -2467,6 +2629,12 @@ async function renderPane($: any, e: any) {
       folderNotice: id => folderNotes[id] ?? null,
       chooseRef: (id, n) => chooseRef($, id, n),
       retryChat: id => retryChat($, id),
+      ready: readyReport,
+      readyBusy,
+      runReady: () => runReadyCheck($),
+      selfResults,
+      runSelftest: () => runSelftest($),
+      askChat: (id, st, mode) => askChatLine($, id, st, mode),
       copyPrompt: (id, press) => copyPrompt($, id, press),
       uploadDocs: (id, raw) => uploadReveng($, id, raw),
       scanInputs: id => scanInputs($, id),
@@ -2474,6 +2642,7 @@ async function renderPane($: any, e: any) {
       revengNote: id => revengNotes[id] ?? null,
     }
 
+    lastCtx = vctx
     /* the body of one tab of one stage */
     const bodyFor = (current: Stage, tabId: string) => {
       const tone = toneOf(current)
@@ -2675,6 +2844,7 @@ async function renderPane($: any, e: any) {
     ) : null
     const skillsBlock = moreOpen ? (
       <Box flexDirection="column" borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
+        {readyBlock(vctx)}
         {skillsRow(vctx)}
       </Box>
     ) : null
@@ -2703,6 +2873,7 @@ async function renderPane($: any, e: any) {
               {rule(K, nodeW - 6)}
               <Box flexDirection="column" gap={1} paddingX={1}>
                 {bodyFor(st, active)}
+                {readyBlock(vctx)}
                 {skillsRow(vctx)}
               </Box>
             </Box>

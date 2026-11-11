@@ -1,0 +1,3 @@
+@@OUTPUT stage=metricas kind=results gen=1
+Prediction versus result compared. Decision proposed: kill listing, keep concept, change thumbnail angle.
+@@END

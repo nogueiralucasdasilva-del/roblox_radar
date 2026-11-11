@@ -20,6 +20,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -128,6 +134,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -232,6 +244,12 @@
    {
     "key": "prev",
     "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -452,6 +470,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -544,6 +568,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -594,6 +624,12 @@
    {
     "key": "mode-radar",
     "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -712,6 +748,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -766,8 +808,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -834,6 +894,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -936,6 +1002,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -1060,6 +1132,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -1152,6 +1230,12 @@
    {
     "key": "proto-menu",
     "text": "choose a prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -1318,6 +1402,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -1440,6 +1530,12 @@
    {
     "key": "next",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -1583,6 +1679,12 @@
    {
     "key": "prev",
     "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -1762,6 +1864,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -1989,6 +2097,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -2128,6 +2242,12 @@
    {
     "key": "prev",
     "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -2293,6 +2413,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -2426,6 +2552,12 @@
    {
     "key": "prev",
     "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -2567,6 +2699,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -2694,6 +2832,12 @@
    {
     "key": "prev",
     "text": "publish and traffic",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -2843,6 +2987,12 @@
    {
     "key": "prev",
     "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -3047,6 +3197,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -3336,6 +3492,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -3603,6 +3765,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -3886,6 +4054,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -4181,6 +4355,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -4468,6 +4648,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -4763,6 +4949,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -5044,6 +5236,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -5347,6 +5545,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -5590,6 +5794,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -5655,6 +5865,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -5907,6 +6123,12 @@
    {
     "key": "prev",
     "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -6202,6 +6424,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -6445,6 +6673,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -6600,6 +6834,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -6643,6 +6883,12 @@
    {
     "key": "proto-menu",
     "text": "choose a prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -6749,8 +6995,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -6851,6 +7115,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -6937,6 +7207,12 @@
    {
     "key": "mode-radar",
     "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -7049,6 +7325,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -7153,6 +7435,12 @@
    {
     "key": "prev",
     "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -7373,6 +7661,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -7425,6 +7719,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -7545,6 +7845,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -7759,6 +8065,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -7904,6 +8216,12 @@
    {
     "key": "prev",
     "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -8070,8 +8388,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -8159,8 +8495,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -8233,6 +8587,12 @@
    {
     "key": "mode-radar",
     "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -8345,6 +8705,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -8449,6 +8815,12 @@
    {
     "key": "prev",
     "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -8669,6 +9041,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -8721,6 +9099,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -8841,6 +9225,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -9055,6 +9445,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -9200,6 +9596,12 @@
    {
     "key": "prev",
     "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -9366,8 +9768,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -9455,8 +9875,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -9529,6 +9967,12 @@
    {
     "key": "mode-radar",
     "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -9641,6 +10085,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -9745,6 +10195,12 @@
    {
     "key": "prev",
     "text": "radar and collection",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -9965,6 +10421,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -10017,6 +10479,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -10137,6 +10605,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -10351,6 +10825,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -10496,6 +10976,12 @@
    {
     "key": "prev",
     "text": "title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -10662,8 +11148,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -10751,8 +11255,26 @@
     "press": true
    },
    {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
     "hotkey": null,
     "press": true
    },
@@ -10837,6 +11359,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -11048,6 +11576,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -11105,6 +11639,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -11207,6 +11747,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -11315,6 +11861,12 @@
    {
     "key": "proto-menu",
     "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
     "hotkey": null,
     "press": true
    },
@@ -11432,6 +11984,12 @@
     "press": true
    },
    {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "refresh",
     "text": "refresh",
     "hotkey": null,
@@ -11489,6 +12047,430 @@
     "key": "stage-titulo",
     "text": "6 title not started",
     "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "waiting: after 10 minutes shows No reply yet and Ask chat for status": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh-p2",
+    "text": "refresh now",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-p2-brief",
+    "text": "ask chat for status",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "waiting: a reply without tags shows the notice and Ask chat to reformat": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "reformat-p2-brief",
+    "text": "ask chat to reformat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh-p2",
+    "text": "refresh now",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "ready check section shows each check and the buttons": {
+  "buttons": [
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-run",
+    "text": "run ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "selftest-run",
+    "text": "run self-test",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-auditor",
+    "text": "auditor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-coleta",
+    "text": "1 radar and collection attention",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-inbox",
+    "text": "3 loose ideas 0 waiting",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-triagem",
+    "text": "2 screening and advisor ok",
+    "hotkey": "2",
     "press": true
    },
    {

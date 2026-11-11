@@ -1,0 +1,5 @@
+@@OUTPUT stage=doccompleto kind=fulldoc gen=1
+Doc: https://docs.google.com/document/d/FAKEID4/edit
+Riskiest assumptions: (1) spill physics feels fair on mobile, (2) 3 minute rounds hold D1, (3) pricing slots.
+@@END
+@@DOC stage=doccompleto | P002-ANOMALI_04_fulldoc_v1 | https://docs.google.com/document/d/FAKEID4/edit

@@ -1,0 +1,4 @@
+@@OUTPUT stage=template kind=template_doc gen=1
+Template doc built from the validated extraction. Tunables listed: 24. Gaps entered as H.
+@@END
+@@DOC stage=template | P002-ANOMALI_03_template_v1 | https://docs.google.com/document/d/FAKEID3/edit

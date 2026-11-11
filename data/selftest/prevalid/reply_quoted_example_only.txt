@@ -1,0 +1,4 @@
+O formato e assim:
+> @@OUTPUT stage=prevalid kind=scan gen=9
+> POTENCIAL: ALTO | exemplo
+> @@END

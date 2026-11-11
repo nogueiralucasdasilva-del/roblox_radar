@@ -16,6 +16,8 @@ import { STEP_LABEL, STEP_ORDER } from '../chatflow'
 import { btn, cardWidth, chip, emptyState, meterColor, meterText, notice, pill, rail, rule, tierOf, tint } from './kit'
 
 const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Reverse eng.', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
+// A request that has waited this long with no new answer shows "No reply yet" and the button to ask the chat.
+export const NO_REPLY_MS = 10 * 60 * 1000
 const GATE_COLOR: Record<string, string> = { PASS: OLIVE, 'PASS WITH RISKS': AMBER, BLOCK: RUST }
 
 export function checkGlyph(i: Idea, st: string): { glyph: string; color: string } {
@@ -399,6 +401,8 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
   const items = stage === 'titulo' || stage === 'thumb'
   const docs = docLinks(i, stage)
   const failed = i.failed?.[stage]
+  const noTags = !!i.requested?.[stage]?.noTags
+  const askedAge = askedAt ? x.now - Date.parse(askedAt) : 0
   const state = check === 'done' ? { t: 'DONE', c: OLIVE } : check === 'asked' || pending ? { t: 'ASKED', c: AMBER } : { t: 'NOT STARTED', c: SAND }
   return (
     <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1} paddingY={1}>
@@ -416,6 +420,17 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
       {failed ? notice(x.C, 'error', `Failed: ${failed.reason}`) : null}
       {docs.length > 0 ? docsBlock(x, i, stage, docs) : null}
       {pending ? notice(x.C, 'warn', 'Waiting for the chat. The result shows here when it answers (checked every 30 seconds).') : null}
+      {pending && noTags ? (
+        <Box gap={1} flexWrap="wrap" alignItems="center">
+          {notice(x.C, 'warn', 'The chat replied without tags.')}
+          {btn(x.C, `reformat-${i.id}-${stage}`, 'Ask chat to reformat', 'secondary', () => x.askChat(i.id, stage, 'reformat'))}
+        </Box>
+      ) : pending && askedAge > NO_REPLY_MS ? (
+        <Box gap={1} flexWrap="wrap" alignItems="center">
+          {notice(x.C, 'warn', 'No reply yet.')}
+          {btn(x.C, `status-${i.id}-${stage}`, 'Ask chat for status', 'secondary', () => x.askChat(i.id, stage, 'status'))}
+        </Box>
+      ) : null}
       {stage === 'template' ? revengPanel(x, i, enabled) : null}
       {stage === 'template' && SHOW_LIBRARY_PATH ? templateTools(x, i, enabled) : null}
       {acts.map(a => {
@@ -461,11 +476,21 @@ export function skillsRow(x: Ctx) {
         ? stages.map(s => {
             const own = st.files[s] ?? []
             return (
-              <Box key={`sk-${s}`} gap={1}>
-                <Text color={own.length > 0 ? OLIVE : SAND}>●</Text>
-                <Text color={FG}>{s.padEnd(12)}</Text>
-                <Text bold color={FG}>{String(own.length).padStart(2)}</Text>
-                <Text color={MUTED}>{own.length > 0 ? newest(own).slice(0, 10) : ''}</Text>
+              <Box key={`sk-${s}`} flexDirection="column">
+                <Box gap={1}>
+                  <Text color={own.length > 0 ? OLIVE : SAND}>●</Text>
+                  <Text bold color={FG}>{s.padEnd(12)}</Text>
+                  <Text bold color={FG}>{String(own.length).padStart(2)}</Text>
+                  <Text color={MUTED}>{own.length > 0 ? `newest ${newest(own).slice(0, 10)}` : ''}</Text>
+                </Box>
+                {own.map(f => (
+                  <Box key={`skf-${s}-${f.name}`} gap={1} paddingLeft={3}>
+                    <Text color={/\.proposed\.md$/.test(f.name) ? AMBER : MUTED}>{clip(f.name, 46).padEnd(46)}</Text>
+                    <Text color={f.version ? FG : SAND}>{f.version ? `v${f.version}` : 'v?'}</Text>
+                    <Text color={MUTED}>{f.modified.slice(0, 10)}</Text>
+                  </Box>
+                ))}
+                {own.some(f => /\.proposed\.md$/.test(f.name)) ? <Box paddingLeft={3}>{notice(x.C, 'warn', 'You edited a seeded file. A newer version was uploaded as .proposed.md: compare and merge by hand.')}</Box> : null}
               </Box>
             )
           })

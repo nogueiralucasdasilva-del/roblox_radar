@@ -1,0 +1,4 @@
+@@OUTPUT stage=build kind=build_plan gen=1
+Plan in 5 passes. Now: baseplate, spawn, tray physics prototype with Studio tools. Needs Lucas: audio choice, one 3D asset decision. Never published.
+@@END
+@@DOC stage=build | P002-ANOMALI_05_build_plan_v1 | https://docs.google.com/document/d/FAKEID5/edit

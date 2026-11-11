@@ -6,7 +6,7 @@ import { test } from 'node:test'
 import { DOC_KINDS, docName, fileIdOf, kindOfName, parseDocName, stageNN } from '../hooks/docnames'
 import { applyParsed, createPrototype, docLinks, ensureReveng, markAsked, newestDocs, templateDone } from '../hooks/factory'
 import { emptyStore } from '../hooks/model'
-import { parseRefs, parseTags } from '../hooks/outputs'
+import { parseRefs, parseTags, repliedWithoutTags, transcriptBlocks } from '../hooks/outputs'
 import { ensureProtoFolders } from '../hooks/protos'
 import { unwrapDoc } from '../hooks/receipts'
 import { buildRequest } from '../hooks/request'
@@ -70,14 +70,15 @@ test('the request has the same structure for every action', () => {
   const lines = (s: string) => s.split(String.fromCharCode(10))
   const a = lines(buildRequest(base))
   const b = lines(buildRequest({ ...base, stageId: 'template', stageName: 'Reverse engineering', actionId: 'reveng_validate', actionLabel: 'Validate doc', skills: { folder: 'reveng', stageFolderId: 'R1', allId: 'ALL1' }, params: { batch: 3, no_economy: false } }))
-  for (const k of [0, 1, 2]) assert.equal(a[k]!.split(' ')[0], b[k]!.split(' ')[0])
+  for (const k of [0, 1, 2, 3]) assert.equal(a[k]!.split(' ')[0], b[k]!.split(' ')[0])
+  assert.equal(a[1], 'Step 0: follow _all/skill_output_protocol.md, including the Drive check.')
   assert.ok(a[0]!.startsWith('Prototype P003-MONSTER (Monster Truck). Stage: 2-page brief (brief). Action: Write 2-page brief (brief). Generation: 2.'))
-  assert.ok(a[1]!.startsWith('Skills: before starting, list the Drive folder brief (id FOLD1) and the folder _all (id ALL1). Read every file in both (ignore subfolders)'))
-  assert.ok(a[1]!.includes('use the installed skill of the same name if one exists.'))
-  assert.ok(a[2]!.includes('Drive folder P003-MONSTER (id PF1), using exactly the name P003-MONSTER_02_brief_v2'))
-  assert.ok(a[2]!.includes('defined in _all/skill_output_protocol.md.'))
-  assert.equal(a[3], 'Context:')
-  assert.equal(a[4], '- prevalid | P003-MONSTER_01_scan_v1 | https://x.test/a')
+  assert.ok(a[2]!.startsWith('Skills: before starting, list the Drive folder brief (id FOLD1) and the folder _all (id ALL1). Read every file in both (ignore subfolders)'))
+  assert.ok(a[2]!.includes('use the installed skill of the same name if one exists.'))
+  assert.ok(a[3]!.includes('Drive folder P003-MONSTER (id PF1), using exactly the name P003-MONSTER_02_brief_v2'))
+  assert.ok(a[3]!.includes('defined in _all/skill_output_protocol.md.'))
+  assert.equal(a[4], 'Context:')
+  assert.equal(a[5], '- prevalid | P003-MONSTER_01_scan_v1 | https://x.test/a')
   assert.ok(b.some(l => l === 'Params: batch=3; no_economy=false'))
 })
 
@@ -397,4 +398,33 @@ test('a prompt read back from the connector is restored: escapes undone, hard br
   const text = tidyPrompt(unwrapDoc(raw))
   assert.equal(text, ['index: {INDEX}', '1. Use <int> and video_quality', '', 'from: {START} to: {END}'].join(NL))
   assert.equal(fillPrompt(text, 1).includes('from: 00:00 to: 10:10'), true)
+})
+
+/* ---------- replies without tags (waiting and diagnostics) ---------- */
+
+const NLX = String.fromCharCode(10)
+const HEADER = 'Prototype P1-A (x). Stage: Pre-validation (prevalid). Action: Run quick scan (scan). Generation: 2.'
+const LONG = 'Potencial medio. '.repeat(20)
+
+test('transcript blocks follow the [role] markers of list_events', () => {
+  const b = transcriptBlocks(['[user] ' + HEADER, 'Step 0: follow the protocol.', '[assistant] ' + LONG, '[result] done (success), 1 turns'].join(NLX))
+  assert.deepEqual(b.map(x => x.role), ['user', 'assistant', 'result'])
+  assert.ok(b[0]!.text.includes('Step 0'))
+})
+
+test('a long reply after the request with no tag line counts as a reply without tags', () => {
+  const text = ['[user] ' + HEADER, '[assistant] ' + LONG].join(NLX)
+  assert.equal(repliedWithoutTags(text, 'scan', 2), true)
+  assert.equal(repliedWithoutTags(text, 'scan', 3), false)
+  assert.equal(repliedWithoutTags(text, 'brief', 2), false)
+})
+
+test('tags, short replies, no reply, an old request or no role markers are not reported', () => {
+  const tagged = ['[user] ' + HEADER, '[assistant] ' + LONG + NLX + '@@OUTPUT stage=prevalid kind=scan gen=2' + NLX + 'x' + NLX + '@@END'].join(NLX)
+  assert.equal(repliedWithoutTags(tagged, 'scan', 2), false)
+  assert.equal(repliedWithoutTags(['[user] ' + HEADER, '[assistant] ok'].join(NLX), 'scan', 2), false)
+  assert.equal(repliedWithoutTags('[user] ' + HEADER, 'scan', 2), false)
+  assert.equal(repliedWithoutTags(HEADER + NLX + LONG, 'scan', 2), false)
+  const answeredThenAskedAgain = ['[user] ' + HEADER, '[assistant] ' + LONG + NLX + '@@FAIL stage=prevalid | no drive', '[user] ' + HEADER].join(NLX)
+  assert.equal(repliedWithoutTags(answeredThenAskedAgain, 'scan', 2), false)
 })
