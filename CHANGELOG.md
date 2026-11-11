@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.5
+
+Design polish only. No behavior change.
+
+- New design tokens (`hooks/theme.ts`, additions only) and a presentational kit (`hooks/ui/kit.tsx`): chip, tint, pill, button kinds, meter, rule, kv, notice, empty state, rail, section title, width tiers.
+- Header, segmented Radar/Factory control, unified cards with a state chip and connectors, full screen shell with a segmented stepper.
+- Radar: sources, advisor reports, loose ideas, tasks, receipts restyled with chips, tints and aligned tables.
+- Factory: picker menu with aligned columns, hero card (ID chip, potential chip, stage progress meter, criteria), compact two-line cards for stages that are not current and not done (`COMPACT_CARDS`), stage panel with one primary button per block, numbered template steps, chosen items marked.
+- More section, knowledge, templates, skills table and the error view restyled.
+- Parity guard (`npm run parity`): buttons, hotkeys, inputs and links of 60 smoke scenarios match the 0.7.4 baseline.
+- Not used because the host types are not available here: hover, alignSelf, space-between, a stretching rail. The rail is a glyph column, and the template steps use indentation instead of a vertical line.
+
 ## 0.7.4
 
 - A proto ID never changes once created. The ABBR editor, its button and the rename logic are removed. Archive stays.

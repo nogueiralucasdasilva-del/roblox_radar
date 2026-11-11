@@ -5,7 +5,7 @@ import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stag
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
 import { checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
-import { btn, btnText, cardWidth, chip as kitChip, kv, pill, rail, rule, tierOf } from './ui/kit'
+import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
 import type { Comps } from './ui/kit'
 import { factoryNoteBar, inboxBox } from './ui/radar'
 import type { Ctx } from './views'
@@ -1937,6 +1937,7 @@ export const register: Register = on => {
 // Never leave Lucas with a blank pane: a drawing error shows its cause and a way back.
 function errorPane($: any, e: any, err: any) {
   const { Box, Text, Button } = $.ui.resolve(e) as any
+  const K: Comps = { Box, Text, Button, Input: undefined, Link: undefined }
   const reset = () =>
     Promise.all([
       update($, modeAtom, () => 'radar'),
@@ -1949,11 +1950,16 @@ function errorPane($: any, e: any, err: any) {
     ])
   return (
     <Box flexDirection="column" gap={1} paddingX={1} paddingY={1}>
-      <Text bold color={RUST}>The panel hit an error and could not draw this view.</Text>
-      <Text color={MUTED}>{String((err && err.message) || err).slice(0, 300)}</Text>
-      <Box gap={1}>
-        <Button key="err-radar" label="Back to Radar" onPress={reset} />
-        <Button key="err-retry" label="Try again" onPress={() => update($, rev, (n: number) => n + 1)} />
+      <Box flexDirection="column" gap={1} borderStyle="round" borderColor={RUST} backgroundColor={PANEL} paddingX={1} paddingY={1}>
+        <Box gap={1}>
+          <Text bold color={RUST}>✖</Text>
+          <Text bold color={FG}>The panel hit an error and could not draw this view.</Text>
+        </Box>
+        <Text color={FG}>{String((err && err.message) || err).slice(0, 300)}</Text>
+        <Box gap={1}>
+          {btn(K, 'err-radar', 'Back to Radar', 'secondary', reset)}
+          {btn(K, 'err-retry', 'Try again', 'primary', () => update($, rev, (n: number) => n + 1))}
+        </Box>
       </Box>
     </Box>
   )
@@ -1985,8 +1991,8 @@ async function renderPane($: any, e: any) {
 
     if (!data) {
       return (
-        <Box flexDirection="column">
-          <Text color={RUST}>Could not read {dataPath($)}.</Text>
+        <Box flexDirection="column" paddingX={1}>
+          {notice({ Box, Text, Button, Input, Link }, 'error', `Could not read ${dataPath($)}.`)}
         </Box>
       )
     }
@@ -2152,33 +2158,36 @@ async function renderPane($: any, e: any) {
       if (tabId === 'templates') return templatesView(vctx)
       if (tabId === 'overview') {
         return (
-          <Box flexDirection="column">
-            <Box gap={1}>
+          <Box flexDirection="column" gap={1}>
+            <Box gap={2} alignItems="center" flexWrap="wrap">
               <Text color={tone.color}>{tone.glyph}</Text>
               <Text bold color={FG}>{current.name}</Text>
-              <Text color={MUTED}>{tone.label}</Text>
+              {kitChip(K, tone.label, tone.color)}
             </Box>
             <Text color={FG}>{current.desc}</Text>
-            <Text color={MUTED}>In: {current.inputs}</Text>
-            <Text color={MUTED}>Out: {current.outputs}</Text>
-            <Text color={FG}>Build: {current.build_note || current.build}</Text>
-            {current.flag ? <Text color={current.flag.level === 'err' ? RUST : AMBER}>{current.flag.text}</Text> : null}
-            {current.gate_note ? <Text color={SKY}>Your call: {current.gate_note}</Text> : null}
-            <Text bold color={FG}>Standing instructions</Text>
+            {kv(
+              K,
+              [
+                { k: 'In', v: current.inputs, color: MUTED },
+                { k: 'Out', v: current.outputs, color: MUTED },
+                { k: 'Build', v: current.build_note || current.build, color: FG },
+              ],
+              7,
+              'ov',
+            )}
+            {current.flag ? notice(K, current.flag.level === 'err' ? 'error' : 'warn', current.flag.text) : null}
+            {current.gate_note ? notice(K, 'info', `Your call: ${current.gate_note}`) : null}
+            {sectionTitle(K, 'Standing instructions', instructions.length, nodeW - 8)}
             {instructions.length === 0 ? <Text color={MUTED}>None yet. Rules you give in a stage chat are saved here.</Text> : null}
             {instructions.map((r, i) => (
-              <Box key={`ins-${i}`} gap={1}>
+              <Box key={`ins-${i}`} gap={1} alignItems="center" flexWrap="wrap">
                 <Text color={FG}>- {r}</Text>
-                <Button
-                  key={`rm-${i}`}
-                  label="Remove"
-                  onPress={() =>
-                    mutate($, s => {
-                      s.instructions[current.id] = (s.instructions[current.id] ?? []).filter((_, k) => k !== i)
-                      addLog(s, current.id, 'instruction', `Standing instruction removed: ${r}`)
-                    })
-                  }
-                />
+                {btn(K, `rm-${i}`, 'Remove', 'danger', () =>
+                  mutate($, s => {
+                    s.instructions[current.id] = (s.instructions[current.id] ?? []).filter((_, k) => k !== i)
+                    addLog(s, current.id, 'instruction', `Standing instruction removed: ${r}`)
+                  }),
+                )}
               </Box>
             ))}
             <Text color={MUTED}>{current.checked_at ? `Checked live on ${current.checked_at}` : 'Never checked live.'}</Text>
@@ -2188,33 +2197,35 @@ async function renderPane($: any, e: any) {
       if (tabId === 'tasks') {
         const lines = liveOf(current).lines
         return (
-          <Box flexDirection="column">
+          <Box flexDirection="column" gap={1}>
             {current.trigger_ids.length === 0 ? <Text color={MUTED}>{current.no_task_note || 'No automated task.'}</Text> : null}
             {current.trigger_ids.length > 0 && live && 'error' in live ? <Text color={MUTED}>Live task status unavailable (optional connector).</Text> : null}
             {current.trigger_ids.length > 0 ? (
               <Box gap={1} flexWrap="wrap">
                 {current.trigger_ids.map(tid => {
                   const entry = live && !('error' in live) ? live.byId[tid] : undefined
-                  return <Button key={`run-${tid}`} label={`Run now: ${entry ? entry.name.replace(/^Radar Roblox: /, '') : tid}`} onPress={() => runTask($, tid)} />
+                  return btn(K, `run-${tid}`, `Run now: ${entry ? entry.name.replace(/^Radar Roblox: /, '') : tid}`, 'secondary', () => runTask($, tid))
                 })}
               </Box>
             ) : null}
-            {lines.map(l => (
-              <Text key={l} dimColor>
-                {l}
-              </Text>
-            ))}
+            <Box flexDirection="column">
+              {lines.map(l => (
+                <Text key={l} dimColor>
+                  {l}
+                </Text>
+              ))}
+            </Box>
             {current.status_doc ? <Text color={MUTED}>Daily report: {current.status_doc} (Drive).</Text> : null}
           </Box>
         )
       }
       if (tabId === 'pending') {
         return (
-          <Box flexDirection="column">
-            {openPend.length === 0 ? <Text color={MUTED}>Nothing open.</Text> : null}
+          <Box flexDirection="column" gap={1}>
+            {openPend.length === 0 ? emptyState(K, 'Nothing open') : null}
             {openPend.map(p => (
-              <Box key={`p-${p.id}`} gap={1}>
-                <Text color={p.owner === 'Lucas' ? CLAY : SAND}>[{p.owner}]</Text>
+              <Box key={`p-${p.id}`} gap={1} flexWrap="wrap" alignItems="center">
+                {tint(K, p.owner === 'Lucas' ? 'Lucas' : p.owner, p.owner === 'Lucas' ? CLAY : SAND)}
                 <Text color={FG}>{p.text}</Text>
                 <Text color={MUTED}>since {p.since}</Text>
               </Box>
@@ -2226,14 +2237,12 @@ async function renderPane($: any, e: any) {
         const items = [...current.skills.map(i => ({ ...i, kind: 'skill' })), ...current.docs.map(i => ({ ...i, kind: 'doc' }))]
         return (
           <Box flexDirection="column">
-            {items.length === 0 ? <Text color={MUTED}>Nothing registered.</Text> : null}
+            {items.length === 0 ? emptyState(K, 'Nothing registered') : null}
             {items.map(i => (
               <Box key={`a-${i.kind}-${i.name}`} gap={1}>
                 <Text color={stateColor(i.state)}>●</Text>
                 <Text color={FG}>{i.name}</Text>
-                <Text color={MUTED}>
-                  {i.kind}, {i.state}
-                </Text>
+                {tint(K, `${i.kind}, ${i.state}`, stateColor(i.state))}
               </Box>
             ))}
           </Box>
@@ -2241,23 +2250,27 @@ async function renderPane($: any, e: any) {
       }
       // log
       return (
-        <Box flexDirection="column">
-          {liveOf(current).lines.map(l => (
-            <Text key={`lv-${l}`} dimColor>
-              {l}
-            </Text>
-          ))}
-          {logs.length === 0 ? <Text color={MUTED}>No events yet.</Text> : null}
-          {[...logs]
-            .reverse()
-            .slice(0, 40)
-            .map((l, i) => (
-              <Box key={`lg-${i}`} gap={1}>
-                <Text color={MUTED}>{l.at.slice(5, 16).replace('T', ' ')}</Text>
-                <Text color={l.kind === 'error' ? RUST : l.kind === 'instruction' ? SKY : FG}>{l.text}</Text>
-              </Box>
+        <Box flexDirection="column" gap={1}>
+          <Box flexDirection="column">
+            {liveOf(current).lines.map(l => (
+              <Text key={`lv-${l}`} dimColor>
+                {l}
+              </Text>
             ))}
-          {archive.length > 0 ? <Text bold color={FG}>Earlier chats</Text> : null}
+          </Box>
+          {logs.length === 0 ? emptyState(K, 'No events yet') : null}
+          <Box flexDirection="column">
+            {[...logs]
+              .reverse()
+              .slice(0, 40)
+              .map((l, i) => (
+                <Box key={`lg-${i}`} gap={1}>
+                  <Text color={MUTED}>{l.at.slice(5, 16).replace('T', ' ').padEnd(11)}</Text>
+                  <Text color={l.kind === 'error' ? RUST : l.kind === 'instruction' ? SKY : FG}>{l.text}</Text>
+                </Box>
+              ))}
+          </Box>
+          {archive.length > 0 ? sectionTitle(K, 'Earlier chats', archive.length, nodeW - 8) : null}
           {[...archive].reverse().map(a => (
             <Box key={`ar-${a.id}`} flexDirection="column">
               <Text color={MUTED}>
@@ -2278,19 +2291,17 @@ async function renderPane($: any, e: any) {
     ]
     const setTab = (key: string, t: string) => update($, tabsAtom, (m: Record<string, string>) => ({ ...m, [key]: t }))
 
-    // Tab bar: the main tabs, then one "More" toggle that reveals the rarely used ones.
+    // Tab bar: the main tabs, a divider, then one "More" toggle that reveals the rarely used ones.
     const tabBarOf = (key: string, main: TabDef[], extra: TabDef[], active: string) => (
-      <Box gap={2} paddingX={1} flexWrap="wrap">
-        {[...main, ...(moreOpen ? extra : [])].map(t => (
-          <Button key={`tab-${key}-${t.id}`} onPress={() => setTab(key, t.id)}>
-            <Text bold={t.id === active} underline={t.id === active} color={t.id === active ? NEON : MUTED}>
-              {t.label}
-            </Text>
-          </Button>
+      <Box gap={2} paddingX={1} flexWrap="wrap" alignItems="center">
+        {[...main, ...(moreOpen ? extra : [])].map((t, k) => (
+          <Box key={`tabwrap-${key}-${t.id}`} gap={2}>
+            {moreOpen && k === main.length ? <Text color={LINE_SOFT}>│</Text> : null}
+            {btn(K, `tab-${key}-${t.id}`, t.label, 'tab', () => setTab(key, t.id), { active: t.id === active })}
+          </Box>
         ))}
-        <Button key={`more-${key}`} onPress={() => update($, moreAtom, (v: boolean) => !v)}>
-          <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
-        </Button>
+        <Text color={LINE_SOFT}>│</Text>
+        {btn(K, `more-${key}`, moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}
       </Box>
     )
 
@@ -2307,6 +2318,7 @@ async function renderPane($: any, e: any) {
       return (
         <Box key={`rbox-${st.id}`} flexDirection="column" gap={1} borderStyle="round" borderColor={tone.color} backgroundColor={PANEL} paddingY={1}>
           {tabBarOf(st.id, main, MORE_TABS, shown)}
+          {rule(K, nodeW - 6)}
           <Box flexDirection="column" paddingX={1}>
             {bodyFor(st, shown)}
           </Box>
@@ -2331,7 +2343,11 @@ async function renderPane($: any, e: any) {
         })()}
       </Box>
     ) : null
-    const skillsBlock = moreOpen ? <Box flexDirection="column" paddingX={1}>{skillsRow(vctx)}</Box> : null
+    const skillsBlock = moreOpen ? (
+      <Box flexDirection="column" borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
+        {skillsRow(vctx)}
+      </Box>
+    ) : null
     const coleta = data.stages.find(s => s.id === 'coleta')
     const triagem = data.stages.find(s => s.id === 'triagem')
 
@@ -2348,19 +2364,14 @@ async function renderPane($: any, e: any) {
       const active = tabsMap[key] && extra.some(t => t.id === tabsMap[key]) ? (tabsMap[key] as string) : (extra[0]?.id ?? 'overview')
       return (
         <Box flexDirection="column" gap={1}>
-          <Button key="factory-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
-            <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
-          </Button>
+          <Box>{btn(K, 'factory-more', moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}</Box>
           {moreOpen ? (
-            <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingY={1}>
+            <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingY={1}>
               <Box gap={2} paddingX={1} flexWrap="wrap">
-                {extra.map(t => (
-                  <Button key={`mtab-${t.id}`} onPress={() => setTab(key, t.id)}>
-                    <Text bold={t.id === active} underline={t.id === active} color={t.id === active ? NEON : MUTED}>{t.label}</Text>
-                  </Button>
-                ))}
+                {extra.map(t => btn(K, `mtab-${t.id}`, t.label, 'tab', () => setTab(key, t.id), { active: t.id === active }))}
               </Box>
-              <Box flexDirection="column" paddingX={1}>
+              {rule(K, nodeW - 6)}
+              <Box flexDirection="column" gap={1} paddingX={1}>
                 {bodyFor(st, active)}
                 {skillsRow(vctx)}
               </Box>
@@ -2492,7 +2503,7 @@ async function renderPane($: any, e: any) {
               rname(rstage),
               rstage === 'inbox' ? 'raw ideas, no proto ID and no chat yet' : (st?.sub ?? ''),
               <Box gap={2} alignItems="center">
-                {tone ? <Text bold color={tone.color}>{`${tone.glyph} ${tone.label}`}</Text> : null}
+                {tone ? kitChip(K, tone.label, tone.color) : null}
                 {st && rstage !== 'inbox' ? openChatButton(vctx, 'stage', st.id, store.stageChats[st.id] ?? null, () => openChat($, 'stage', st.id)) : null}
               </Box>,
             ),
