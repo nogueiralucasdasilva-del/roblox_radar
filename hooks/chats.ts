@@ -6,7 +6,7 @@ import { clip } from './model'
 export type { ChatLink }
 import { MEMORY_FOLDER_ID, ideaFacts } from './memory'
 import { chatTitleOf } from './factory'
-import { protoFacts } from './prompts'
+import { protoFacts } from './actions'
 
 
 const STYLE =
@@ -40,35 +40,8 @@ export function protoOpening(i: Idea, task?: string): string {
     .join('\n\n')
 }
 
-export function ideaOpening(i: Idea, scan: boolean, task?: string): string {
-  if (i.proto_id) return protoOpening(i, task)
-  const lines = [
-    `This is the chat for the idea "${i.title}" in the Roblox Radar pipeline. Lucas will come back to this same conversation every time he opens the card. ${STYLE}`,
-    `Idea: ${ideaFacts(i)}`,
-    i.memory ? `Memory of this idea so far:\n${i.memory}` : '',
-    `Older material lives in the Drive folder roblox_radar_memory (id ${MEMORY_FOLDER_ID}); search there when you need it.`,
-  ]
-  if (scan) {
-    lines.push(
-      'Start now with the quick scan. Use the roblox-concept-validator skill (quick scan only, concept only, never loop design) if it is available. Check the latest dated files in the roblox_trends Drive folder for radar signal, and live Roblox numbers (concurrent players, visits, peaks, dates) for the closest existing games. Use real numbers with dates; if a tool is missing, say which and lower the confidence.',
-      `Reply in exactly this format:
-Potential: HIGH, MEDIUM or LOW, with high, medium or low confidence. One short sentence saying what you evaluated.
-
-* Noun / verb: the noun and the verb of the fantasy. Whether the hook explains itself in one image, and who the audience is.
-* Why it could work: whitespace, proof of demand with numbers, the clip moment.
-* Why it could fail: weak or IP-driven demand, falling peaks, saturation, with numbers and dates.
-* Radar: what the radar shows for this theme, by name. Say so plainly if it shows nothing.
-
-To move up to the next level: the one change to the hook that would raise the potential.
-Should I write the full brief (2 pages, Google Doc)? Yes, No, or Adjust the idea first.`,
-      'After that, keep talking with Lucas about this idea. If he says yes, write the full 2-page brief as a Google Doc with the roblox-concept-validator skill and give him the link.',
-    )
-  } else if (task) {
-    lines.push(`Lucas clicked the main action of the "${i.stage}" stage on the card. Do it now:\n${task}`)
-  } else {
-    lines.push('Say in two lines where this idea stands, then wait for Lucas.')
-  }
-  return lines.filter(Boolean).join('\n\n')
+export function ideaOpening(i: Idea, task?: string): string {
+  return protoOpening(i, task)
 }
 
 export function stageBackground(): string {

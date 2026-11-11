@@ -60,7 +60,6 @@ export type Ctx = {
   advanceNoGate: (ideaId: string) => unknown
   refreshNow: (ideaId: string) => unknown
   pickItem: (ideaId: string, stageId: string, item: string, mode: 'choose' | 'discard') => unknown
-  registerResearch: (ideaId: string, text: string) => unknown
   setTemplateMode: (ideaId: string, mode: 'library' | 'custom') => unknown
   archive: (ideaId: string, on: boolean) => unknown
 }

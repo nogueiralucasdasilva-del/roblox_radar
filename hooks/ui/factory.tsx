@@ -6,8 +6,8 @@ import type { Ctx } from '../views'
 import { IDEA_STAGES, clip, nextStageOf } from '../model'
 import type { Idea, Output } from '../model'
 import { isArchived, isPending, latestOf, outputsOf } from '../factory'
-import { actionsFor } from '../prompts'
-import type { FAction } from '../prompts'
+import { actionsFor } from '../actions'
+import type { FAction } from '../actions'
 import { splitItems } from '../outputs'
 import { SAFETY, potential, safetyBlocked } from '../scoring'
 import { newest } from '../skills'
@@ -254,69 +254,23 @@ function stepTitle(x: Ctx, n: number, text: string) {
   )
 }
 
+// The library path of the old Template match stage. Hidden: the Reverse engineering panel replaces it.
+export const SHOW_LIBRARY_PATH = false
+
 function templateTools(x: Ctx, i: Idea, enabled: boolean) {
-  const { Box, Text, Button, Input } = x.C
-  const mode = i.template_mode ?? null
+  const { Box, Text, Button } = x.C
   const list = x.templates ? x.templates.list : []
-  const acts = actionsFor('template')
-  const byKey = (k: string) => acts.find(a => a.key === k)!
+  if (!SHOW_LIBRARY_PATH) return <Text color={MUTED}>Reverse engineering panel is built in the next phase.</Text>
   return (
-    <Box flexDirection="column" gap={1}>
-      <Box gap={2} flexWrap="wrap" alignItems="center">
-        <Text color={MUTED}>Template path</Text>
-        <Box gap={0}>
-          <Button key="tm-custom" onPress={() => x.setTemplateMode(i.id, 'custom')}>
-            {pill(x.C, ' Build my own ', mode === 'custom')}
+    <Box gap={1} flexWrap="wrap">
+      {list.map(t => {
+        const on = i.template?.id === t.id
+        return (
+          <Button key={`pick-${i.id}-${t.id}`} onPress={() => (enabled ? x.chooseTemplate(i.id, on ? null : t.id) : undefined)}>
+            {pill(x.C, ` ${on ? '● ' : ''}${t.name} `, on)}
           </Button>
-          <Button key="tm-library" onPress={() => x.setTemplateMode(i.id, 'library')}>
-            {pill(x.C, ' Use existing template ', mode === 'library')}
-          </Button>
-        </Box>
-      </Box>
-      {mode === 'library' ? (
-        <Box flexDirection="column" gap={1}>
-          {list.length === 0 ? <Text color={MUTED}>No template doc in the library yet (Drive folder roblox_radar_templates).</Text> : null}
-          <Box gap={1} flexWrap="wrap">
-            {list.map(t => {
-              const on = i.template?.id === t.id
-              return (
-                <Button key={`pick-${i.id}-${t.id}`} onPress={() => (enabled ? x.chooseTemplate(i.id, on ? null : t.id) : undefined)}>
-                  {pill(x.C, ` ${on ? '● ' : ''}${t.name} `, on)}
-                  {t.status === 'draft' ? tint(x.C, 'draft', AMBER) : null}
-                </Button>
-              )
-            })}
-          </Box>
-        </Box>
-      ) : null}
-      {mode === 'custom' ? (
-        <Box flexDirection="column" gap={1}>
-          {stepTitle(x, 1, 'Reference games')}
-          <Box flexDirection="column" gap={1} paddingLeft={2}>
-            {actionButton(x, i, byKey('refs'), enabled)}
-            {latestOf(i, 'template', 'refs') ? outputBlock(x, i, latestOf(i, 'template', 'refs')!, 'References') : null}
-          </Box>
-          {stepTitle(x, 2, 'Reverse-engineering packet')}
-          <Box flexDirection="column" gap={1} paddingLeft={2}>
-            {actionButton(x, i, byKey('packet'), enabled)}
-            {latestOf(i, 'template', 're_packet') ? outputBlock(x, i, latestOf(i, 'template', 're_packet')!, 'Research prompts') : null}
-          </Box>
-          {stepTitle(x, 3, 'Register research')}
-          <Box flexDirection="column" gap={1} paddingLeft={2}>
-            <Text color={MUTED}>Run the research outside the panel, then paste the links or the text here.</Text>
-            <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
-              <Input key={`research-${i.id}`} placeholder="Paste links or text of the finished research" rows={3} submitLabel="register" onSubmit={(v: string) => void x.registerResearch(i.id, v)} />
-            </Box>
-            {i.research ? notice(x.C, 'ok', `Research registered (${i.research.length} characters).`) : null}
-          </Box>
-          {stepTitle(x, 4, 'Template doc')}
-          <Box flexDirection="column" gap={1} paddingLeft={2}>
-            {actionButton(x, i, byKey('template_doc'), enabled)}
-            {latestOf(i, 'template', 'template_doc') ? outputBlock(x, i, latestOf(i, 'template', 'template_doc')!, 'Template doc') : null}
-          </Box>
-        </Box>
-      ) : null}
-      {!mode ? <Text color={MUTED}>Pick a path. Build my own works with research on three reference games; Use existing picks a template from the Drive library.</Text> : null}
+        )
+      })}
     </Box>
   )
 }

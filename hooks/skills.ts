@@ -8,7 +8,8 @@ import type { SkillRef } from './model'
 export const SKILLS_ROOT_ID = '1XduWjErt3wDKfUz9mLOn5B-tTbgei0CN'
 export const SKILLS_ROOT_NAME = 'roblox_radar_skills'
 export const SHARED = '_all'
-export const SKILL_STAGES = ['coleta', 'triagem', 'prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
+export const SKILL_STAGES = ['coleta', 'triagem', 'prevalid', 'brief', 'template', 'reveng', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
+export const TOOL_FOLDER = '_tool'
 const FOLDER_MIME = 'application/vnd.google-apps.folder'
 
 export type SkillsState = { at: string; ok: boolean; error?: string; rootId: string; ids: Record<string, string>; files: Record<string, SkillRef[]> }
@@ -69,15 +70,35 @@ export async function refreshSkills(drive: Drive, rootId: string, previous: Skil
   }
 }
 
-// The stage folder id plus the shared folder id.
-export function skillFolders(st: SkillsState | null, stageId: string): { stage: string | null; all: string | null } {
-  return { stage: st?.ids[stageId] ?? null, all: st?.ids[SHARED] ?? null }
+// The Drive skills folder name of a stage: its `skills_folder` when that folder exists (or nothing is known yet),
+// else the folder named by the stage id when that one exists, else `skills_folder` or the id.
+export function skillsFolderName(st: SkillsState | null, stage: { id: string; skills_folder?: string }): string {
+  const wanted = stage.skills_folder
+  if (!wanted) return stage.id
+  if (!st || !st.ok) return wanted
+  if (st.ids[wanted]) return wanted
+  return st.ids[stage.id] ? stage.id : wanted
 }
 
-// Files in the stage folder and in _all, with their modified times.
-export function skillFiles(st: SkillsState | null, stageId: string): SkillRef[] {
+// The stage folder id plus the shared folder id. `folder` is the skills folder name (see skillsFolderName).
+export function skillFolders(st: SkillsState | null, folder: string): { stage: string | null; all: string | null } {
+  return { stage: st?.ids[folder] ?? null, all: st?.ids[SHARED] ?? null }
+}
+
+// Direct files in the stage folder and in _all (subfolders such as _tool are never counted), with their modified times.
+export function skillFiles(st: SkillsState | null, folder: string): SkillRef[] {
   if (!st) return []
-  return [...(st.files[stageId] ?? []), ...(st.files[SHARED] ?? [])]
+  return [...(st.files[folder] ?? []), ...(st.files[SHARED] ?? [])]
+}
+
+// The panel's own tool files (the Gemini prompts) in <folder>/_tool, found and cached by modified time.
+export type ToolFile = { id: string; name: string; modified: string }
+export async function listToolFiles(drive: Drive, st: SkillsState | null, folder: string): Promise<ToolFile[]> {
+  const parent = st?.ids[folder]
+  if (!parent) return []
+  const sub = (await listChildren(drive, parent, true)).find(f => String(f.title ?? f.name ?? '') === TOOL_FOLDER)
+  if (!sub) return []
+  return (await listChildren(drive, sub.id, false)).map(f => ({ id: String(f.id), name: String(f.title ?? f.name ?? ''), modified: String(f.modifiedTime ?? '') }))
 }
 
 export function newest(files: readonly SkillRef[]): string {
@@ -93,30 +114,58 @@ export const SEED_MAP: { folder: string; name: string; src: string[] }[] = [
   { folder: 'titulo', name: 'skill_roblox_title_craft.md', src: ['roblox-title-craft/SKILL.md', 'skill_roblox_title_craft.md'] },
   { folder: SHARED, name: 'skill_roblox_principles_gate.md', src: ['roblox-principles-gate/SKILL.md', 'skill_roblox_principles_gate.md'] },
   { folder: 'template', name: 'skill_template_reverse_engineering_schema.md', src: ['template/skill_template_reverse_engineering_schema.md', 'skill_template_reverse_engineering_schema.md'] },
+  { folder: 'prevalid', name: 'skill_prevalid_scan.md', src: ['prevalid/skill_prevalid_scan.md'] },
+  { folder: 'brief', name: 'skill_brief_document.md', src: ['brief/skill_brief_document.md'] },
+  { folder: 'doccompleto', name: 'skill_fulldoc.md', src: ['doccompleto/skill_fulldoc.md'] },
+  { folder: 'build', name: 'skill_build_plan_output.md', src: ['build/skill_build_plan_output.md'] },
+  { folder: 'titulo', name: 'skill_titulo_output.md', src: ['titulo/skill_titulo_output.md'] },
+  { folder: 'thumb', name: 'skill_thumb_output.md', src: ['thumb/skill_thumb_output.md'] },
+  { folder: 'publicar', name: 'skill_launch_output.md', src: ['publicar/skill_launch_output.md'] },
+  { folder: 'metricas', name: 'skill_results_output.md', src: ['metricas/skill_results_output.md'] },
+  { folder: SHARED, name: 'skill_gate_request.md', src: ['_all/skill_gate_request.md'] },
+  { folder: SHARED, name: 'skill_output_protocol.md', src: ['_all/skill_output_protocol.md'] },
+  { folder: 'brief', name: 'skill_brief_reference_candidates.md', src: ['brief/skill_brief_reference_candidates.md'] },
+  { folder: 'reveng', name: 'skill_reveng_validate.md', src: ['reveng/skill_reveng_validate.md'] },
+  { folder: 'reveng', name: 'skill_reveng_build_template.md', src: ['reveng/skill_reveng_build_template.md'] },
+  { folder: 'reveng', name: 'validate_extraction.py', src: ['reveng/validate_extraction.py'] },
+  { folder: 'reveng', name: 'ref_how_to_reverse_engineer_roblox_games.md', src: ['reveng/ref_how_to_reverse_engineer_roblox_games.md'] },
+  { folder: 'reveng/_tool', name: 'prompt_gemini_extract.txt', src: ['reveng/_tool/prompt_gemini_extract.txt'] },
+  { folder: 'reveng/_tool', name: 'prompt_gemini_audit.txt', src: ['reveng/_tool/prompt_gemini_audit.txt'] },
   { folder: SHARED, name: 'skill_scoring_rubric.md', src: ['_all/skill_scoring_rubric.md', 'skill_scoring_rubric.md'] },
 ]
 
-// Creates the missing stage folders and the missing seed files. Never overwrites: a file whose title exists is skipped.
-export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPath: string) => Promise<string | null>): Promise<{ created: string[]; skipped: string[]; missing: string[] }> {
-  const out = { created: [] as string[], skipped: [] as string[], missing: [] as string[] }
+// Creates the missing folders and the missing seed files. Never overwrites: a file whose name exists is compared, and when
+// it differs the new text goes up as <name>.new. A folder path such as reveng/_tool is created level by level.
+export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPath: string) => Promise<string | null>): Promise<{ created: string[]; skipped: string[]; missing: string[]; differs: string[] }> {
+  const out = { created: [] as string[], skipped: [] as string[], missing: [] as string[], differs: [] as string[] }
   const ids: Record<string, string> = {}
   for (const f of await listChildren(drive, rootId, true)) ids[String(f.title ?? f.name ?? '')] = f.id
-  for (const name of [...SKILL_STAGES, SHARED]) {
-    if (ids[name]) continue
-    const made = parse(await drive('create_file', { title: name, parentId: rootId, contentMimeType: FOLDER_MIME }))
+  const ensureFolder = async (path: string): Promise<string | null> => {
+    if (ids[path]) return ids[path] as string
+    const parts = path.split('/')
+    const name = parts[parts.length - 1] as string
+    const parentPath = parts.slice(0, -1).join('/')
+    const parentId = parentPath ? await ensureFolder(parentPath) : rootId
+    if (!parentId) return null
+    if (parentPath) {
+      const sub = (await listChildren(drive, parentId, true)).find(f => String(f.title ?? f.name ?? '') === name)
+      if (sub) {
+        ids[path] = sub.id
+        return sub.id
+      }
+    }
+    const made = parse(await drive('create_file', { title: name, parentId, contentMimeType: FOLDER_MIME }))
     if (made && typeof made.id === 'string') {
-      ids[name] = made.id
-      out.created.push(`folder ${name}`)
+      ids[path] = made.id
+      out.created.push(`folder ${path}`)
+      return made.id
     }
+    return null
   }
+  for (const name of [...SKILL_STAGES, SHARED]) await ensureFolder(name)
   for (const m of SEED_MAP) {
-    const folderId = ids[m.folder]
+    const folderId = await ensureFolder(m.folder)
     if (!folderId) continue
-    const have = await listChildren(drive, folderId, false)
-    if (have.some(f => String(f.title ?? f.name ?? '') === m.name)) {
-      out.skipped.push(m.name)
-      continue
-    }
     let text: string | null = null
     for (const src of m.src) {
       text = await readSeed(src)
@@ -126,8 +175,29 @@ export async function seedSkills(drive: Drive, rootId: string, readSeed: (relPat
       out.missing.push(m.name)
       continue
     }
-    await drive('create_file', { title: m.name, parentId: folderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text })
-    out.created.push(m.name)
+    const have = await listChildren(drive, folderId, false)
+    const same = have.find(f => String(f.title ?? f.name ?? '') === m.name)
+    let title = m.name
+    if (same) {
+      let current = ''
+      try {
+        current = await drive('read_file_content', { fileId: same.id })
+      } catch {
+        current = ''
+      }
+      if (current && current.trim() === text.trim()) {
+        out.skipped.push(m.name)
+        continue
+      }
+      if (have.some(f => String(f.title ?? f.name ?? '') === `${m.name}.new`)) {
+        out.skipped.push(`${m.name} (a .new already exists)`)
+        continue
+      }
+      title = `${m.name}.new`
+      out.differs.push(m.name)
+    }
+    await drive('create_file', { title, parentId: folderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text })
+    out.created.push(title)
   }
   return out
 }

@@ -38,27 +38,23 @@ import {
   KEEP_MESSAGES,
   MEMORY_FOLDER_ID,
   applyEvents,
-  briefPrompt,
   crudeMemory,
   eventTitle,
-  ideaChatPrompt,
-  ideaHistory,
   ideaSnapshot,
   memoryPrompt,
   parseMemEvent,
   parsePotential,
-  scanPrompt,
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
 import { AUTO_OPEN_CHAT_ON_SEND, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
-import { actionByKey, buildActionPrompt, gatePrompt, researchMessage } from './prompts'
-import type { PromptCtx } from './prompts'
+import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
+import type { RequestCtx } from './actions'
 import { parseTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
-import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders } from './skills'
+import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
 import type { Template } from './templates'
@@ -390,11 +386,7 @@ function stageContext(data: Data, s: Store, stageId: string): string[] {
 
 /* ---------- idea cards: quick scan, chat and brief ---------- */
 
-const PURPOSE_LINE: Record<Job['purpose'], string> = {
-  scan: 'Quick scan started.',
-  brief: 'Full brief started.',
-  chat: '',
-}
+/* ---------- legacy stage-thread fallback (submits a job as a turn of the main chat) ---------- */
 
 // Fallback when the session refuses to start a background agent from a click (auto mode has no request to judge):
 // the panel submits the job as a turn of the main chat, and the answer is copied back into the panel.
@@ -424,105 +416,6 @@ async function submitMain($: any, job: Job, prompt: string, label: string): Prom
     throw new Error(`The main chat refused the job: ${String(r.drop).slice(0, 200)}`)
   }
   return key
-}
-
-async function startIdeaJob($: any, ideaId: string, purpose: Job['purpose'], text: string): Promise<void> {
-  const data = await load($)
-  const s0 = await loadStore($)
-  const idea = s0.ideas.find(i => i.id === ideaId)
-  if (!data || !idea) return
-  if (idea.busy && Date.now() - Date.parse(idea.busy.at) < STALE_BUSY_MS) {
-    $.ui.toast('The agent is still working on this idea.')
-    return
-  }
-  const stage = data.stages.find(x => x.id === idea.stage)
-  const stageMem = s0.memory[idea.stage]?.text ?? ''
-  const prompt =
-    purpose === 'scan'
-      ? scanPrompt(idea, stageMem)
-      : purpose === 'brief'
-        ? briefPrompt(idea)
-        : ideaChatPrompt(idea, stage?.name ?? idea.stage, stageMem, ideaHistory(idea), text)
-  const now = new Date().toISOString()
-  await mutate($, s => {
-    const i = s.ideas.find(x => x.id === ideaId)
-    if (!i) return
-    const msgs = i.messages ?? []
-    msgs.push(purpose === 'chat' ? { role: 'user', text, at: now } : { role: 'system', text: PURPOSE_LINE[purpose], at: now })
-    i.messages = msgs.slice(-KEEP_MESSAGES)
-    i.busy = { agentId: 'pending', at: now }
-  })
-  const job: Job = { kind: 'idea', scope: ideaId, purpose }
-  try {
-    let agentId = ''
-    let via = 'background agent'
-    try {
-      const started = await $.agent.spawn({ prompt, description: `Radar idea: ${clip(idea.title, 40)}`, subagentType: 'general-purpose' })
-      if (started.deny) throw new Error(String(started.deny))
-      agentId = String(started.agentId)
-    } catch (err: any) {
-      const msg = String((err && err.message) || err)
-      if (!refusedByMode(msg)) throw err
-      agentId = await submitMain($, job, prompt, `${purpose} for the idea "${clip(idea.title, 60)}"`)
-      via = 'main chat'
-    }
-    await mutate($, s => {
-      const i = s.ideas.find(x => x.id === ideaId)
-      if (i) i.busy = { agentId, at: new Date().toISOString() }
-      s.jobs[agentId] = job
-      addLog(s, idea.stage, 'agent', `Idea agent started for "${clip(idea.title, 40)}" (${purpose}, ${via}).`)
-      if (via === 'main chat' && i) i.messages = [...(i.messages ?? []), { role: 'system', text: 'Running in the main chat, the answer lands here when it ends.', at: new Date().toISOString() }]
-    })
-  } catch (err: any) {
-    await mutate($, s => {
-      const i = s.ideas.find(x => x.id === ideaId)
-      if (!i) return
-      i.busy = null
-      i.messages = [...(i.messages ?? []), { role: 'system', text: `Could not start the agent: ${String((err && err.message) || err).slice(0, 200)}`, at: new Date().toISOString() }]
-    })
-  }
-}
-
-async function onIdeaDone($: any, agentId: string, job: Job, answer: string, reason: string): Promise<void> {
-  let user = ''
-  let clean = ''
-  let ok = false
-  const now = new Date().toISOString()
-  await mutate($, s => {
-    delete s.jobs[agentId]
-    const i = s.ideas.find(x => x.id === job.scope)
-    if (!i) return
-    i.busy = null
-    const msgs = i.messages ?? []
-    if (reason !== 'answer') {
-      msgs.push({ role: 'system', text: `The agent stopped (${reason}). Try again.`, at: now })
-      i.messages = msgs
-      return
-    }
-    clean = answer.trim() || '(empty answer)'
-    user = job.purpose === 'chat' ? ([...msgs].reverse().find(m => m.role === 'user')?.text ?? '') : PURPOSE_LINE[job.purpose]
-    msgs.push({ role: 'assistant', text: clean, at: now })
-    i.messages = msgs.slice(-KEEP_MESSAGES)
-    if (job.purpose === 'scan') {
-      const level = parsePotential(clean)
-      if (level) i.scan = { level, at: now }
-    }
-    i.updated = now
-    ok = true
-    addLog(s, i.stage, 'ideas', `Agent answered on "${clip(i.title, 40)}" (${job.purpose}).`)
-  })
-  if (!ok) return
-  const s1 = await loadStore($)
-  const idea = s1.ideas.find(x => x.id === job.scope)
-  if (!idea) return
-  const memText = await rewriteMemory($, `the idea "${idea.title}"`, idea.memory ?? '', user, clean)
-  await mutate($, s => {
-    const i = s.ideas.find(x => x.id === job.scope)
-    if (!i) return
-    i.memory = memText
-    enqueue(s, { v: 1, kind: 'exchange', scope: `idea:${i.id}`, at: now, stage: i.stage, user, answer: clean, purpose: job.purpose, memory: memText, idea: ideaSnapshot(i) })
-  })
-  void flushOutbox($)
 }
 
 /* ---------- real chats: one app conversation per idea card and per stage ---------- */
@@ -712,7 +605,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
       const idea = s0.ideas.find(i => i.id === scope)
       if (!idea) throw new Error('Idea not found.')
       title = ideaChatTitle(idea)
-      prompt = ideaOpening(idea, !task && idea.stage === 'prevalid' && !idea.scan, task)
+      prompt = ideaOpening(idea, task)
       background = ideaBackground()
       logStage = idea.stage
     } else {
@@ -811,15 +704,14 @@ async function fetchSkills($: any): Promise<void> {
   }
 }
 
-function promptCtx(data: Data, s: Store, stageId: string): PromptCtx {
-  const next = nextStageOf(stageId)
+// What the request builder needs besides the idea: the stage name, where its skills live, and the prototype's Drive folder.
+function requestCtx(data: Data, stageId: string, idea: Idea): RequestCtx {
+  const stage = data.stages.find(x => x.id === stageId)
+  const folder = stage ? skillsFolderName(skillsState, stage) : stageId
   return {
-    stageName: data.stages.find(x => x.id === stageId)?.name ?? stageId,
-    folders: skillFolders(skillsState, stageId),
-    criteria: Object.keys(scoringCfg.weights),
-    knowledge: s.knowledge[stageId] ?? [],
-    nextStage: next,
-    nextStageName: next ? (data.stages.find(x => x.id === next)?.name ?? next) : null,
+    stageName: stage?.name ?? stageId,
+    skills: { folder, ...(() => { const f = skillFolders(skillsState, folder); return { stageFolderId: f.stage, allId: f.all } })() },
+    protoFolder: { name: idea.proto_id ?? '', id: idea.driveFolderId ?? null },
   }
 }
 
@@ -990,13 +882,13 @@ async function runFactory($: any, ideaId: string, key: string): Promise<void> {
     await update($, rev, n => n + 1)
     return
   }
-  const { text, gen } = buildActionPrompt(a, i, promptCtx(data, s0, a.stage))
-  const refs = skillFiles(skillsState, a.stage)
+  const { text, gen } = buildActionRequest(a, i, requestCtx(data, a.stage, i))
+  const refs = skillFiles(skillsState, skillsFolderName(skillsState, data.stages.find(x => x.id === a.stage) ?? { id: a.stage }))
   await mutate($, s => {
     const x = s.ideas.find(y => y.id === ideaId)
     if (!x) return
     const now = new Date().toISOString()
-    markAsked(x, a.stage, a.kind, gen, refs, now)
+    markAsked(x, a.stage, a.kind, gen, refs, now, a.key)
     x.lastAction = { stage: a.stage, label: a.label, at: now }
     addLog(s, a.stage, 'ideas', `${a.label}: requested for ${x.proto_id}.`)
     ideaEvent(s, x, now)
@@ -1047,31 +939,6 @@ async function pickItem($: any, ideaId: string, stageId: string, item: string, m
   void flushOutbox($)
 }
 
-async function registerResearch($: any, ideaId: string, text: string): Promise<void> {
-  const t = text.trim()
-  if (!t) return
-  let chat: ChatLink | null = null
-  let msg = ''
-  await mutate($, s => {
-    const i = s.ideas.find(x => x.id === ideaId)
-    if (!i) return
-    i.research = t.slice(0, 20000)
-    i.updated = new Date().toISOString()
-    chat = i.chat ?? null
-    msg = researchMessage(i, t)
-    addLog(s, 'template', 'ideas', `${i.proto_id}: research registered.`)
-    ideaEvent(s, i, i.updated)
-  })
-  if (chat) {
-    try {
-      await $.session.send({ to: { sessionId: (chat as ChatLink).id }, text: msg })
-    } catch {
-      // the research is on the card either way
-    }
-  }
-  void flushOutbox($)
-}
-
 async function setTemplateMode($: any, ideaId: string, mode: 'library' | 'custom'): Promise<void> {
   await mutate($, s => {
     const i = s.ideas.find(x => x.id === ideaId)
@@ -1094,7 +961,7 @@ async function requestAdvance($: any, ideaId: string, force: boolean): Promise<v
   }
   const from = data.stages.find(x => x.id === i.stage)?.name ?? i.stage
   const to = data.stages.find(x => x.id === next)?.name ?? next
-  const text = gatePrompt(i, from, to, promptCtx(data, s0, i.stage))
+  const text = buildGateRequest(i, from, to, requestCtx(data, i.stage, i))
   await mutate($, s => {
     const x = s.ideas.find(y => y.id === ideaId)
     if (!x) return
@@ -1696,7 +1563,13 @@ async function sendMessage($: any, stageId: string, raw: string): Promise<void> 
 async function onAgentDone($: any, agentId: string, answer: string, reason: string): Promise<void> {
   const s0 = await loadStore($)
   const job = s0.jobs[agentId]
-  if (job && job.kind === 'idea') return onIdeaDone($, agentId, job, answer, reason)
+  if (job && job.kind === 'idea') {
+    // Idea agents were replaced by the prototype chat; a job left in an old store is just dropped.
+    await mutate($, s => {
+      delete s.jobs[agentId]
+    })
+    return
+  }
   const stageId = job ? job.scope : Object.keys(s0.threads).find(k => s0.threads[k]?.busy?.agentId === agentId)
   if (!stageId) return
   let shouldRoll = false
@@ -2139,7 +2012,6 @@ async function renderPane($: any, e: any) {
       advanceNoGate: id => advanceNoGate($, id),
       refreshNow: id => syncChats($, [id], true).then(() => update($, rev, n => n + 1)),
       pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
-      registerResearch: (id, t) => registerResearch($, id, t),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       archive: (id, archived) => archiveProto($, id, archived),
     }

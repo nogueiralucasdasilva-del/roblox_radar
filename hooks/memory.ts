@@ -76,55 +76,6 @@ export function ideaFacts(i: Idea): string {
   })
 }
 
-export function scanPrompt(i: Idea, stageMemory: string): string {
-  return [
-    `You are the pre-validation agent of the Roblox Radar pipeline, working for Lucas Nogueira (Ritz Deli Games). Run a quick scan of the idea below. ${STYLE}`,
-    `Idea: ${ideaFacts(i)}`,
-    stageMemory ? `Memory of the pre-validation stage:\n${stageMemory}` : '',
-    'How to work: use the roblox-concept-validator skill (quick scan only, concept only, never loop design) if it is available. Check the latest dated files in the roblox_trends Drive folder for radar signal, and check live Roblox numbers (concurrent players, visits, peaks, dates) for the closest existing games with the tools this session has. Use real numbers with dates. If a tool is missing, say which, and lower the confidence.',
-    `Reply in exactly this format, nothing before or after:
-Potential: HIGH, MEDIUM or LOW, with high, medium or low confidence. One short sentence saying what you evaluated (for example: I re-evaluated only the concept, without looking at the loop).
-
-* Noun / verb: the noun and the verb of the fantasy. Whether the hook explains itself in one image, and who the audience is.
-* Why it could work: whitespace, proof of demand with numbers, the clip moment.
-* Why it could fail: weak or IP-driven demand, falling peaks, saturation, with numbers and dates.
-* Radar: what the radar shows for this theme, by name. Say so plainly if it shows nothing.
-
-To move up to the next level: the one change to the hook that would raise the potential.
-Should I write the full brief (2 pages, Google Doc)? Yes, No, or Adjust the idea first.`,
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-}
-
-export function ideaChatPrompt(i: Idea, stageName: string, stageMemory: string, history: readonly Msg[], text: string): string {
-  return [
-    `You are the agent for one idea card in the "${stageName}" stage of the Roblox Radar pipeline, talking with Lucas Nogueira (Ritz Deli Games). Help him explore and sharpen this idea. ${STYLE}`,
-    `Idea: ${ideaFacts(i)}`,
-    i.memory ? `Memory of this idea (everything decided so far, in every stage):\n${i.memory}` : '',
-    stageMemory ? `Memory of the ${stageName} stage:\n${stageMemory}` : '',
-    `Full transcripts are kept as files in the Drive folder roblox_radar_memory (id ${MEMORY_FOLDER_ID}). Search there if you need something older than the memory above.`,
-    history.length > 0 ? `Recent messages on this card:\n${history.map(m => `${m.role === 'user' ? 'Lucas' : 'Agent'}: ${m.text}`).join('\n')}` : '',
-    `Lucas now writes: ${text}`,
-    'Use the tools this session has when a fact needs checking. Keep it short.',
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-}
-
-export function briefPrompt(i: Idea): string {
-  return [
-    `You are the brief agent of the Roblox Radar pipeline, working for Lucas Nogueira (Ritz Deli Games). Lucas said yes to the full brief for the idea below. ${STYLE}`,
-    `Idea: ${ideaFacts(i)}`,
-    i.memory ? `Memory of this idea:\n${i.memory}` : '',
-    `Quick scan and discussion so far:\n${(i.messages ?? []).filter(m => m.role !== 'system').slice(-6).map(m => `${m.role === 'user' ? 'Lucas' : 'Agent'}: ${clip(m.text, 2500)}`).join('\n')}`,
-    `Use the roblox-concept-validator skill to write the full 2-page concept brief as a Google Doc in Lucas's Drive. Put the proto_id ${i.proto_id ?? '(none yet)'} in the title. Concept only, never loop design.`,
-    'Reply with the doc link, then three lines: the fantasy, the wedge, the main risk.',
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-}
-
 export function parsePotential(answer: string): string | null {
   const m = answer.match(/potential\s*:\s*\**\s*(high|medium|low)/i)
   return m && m[1] ? m[1].toUpperCase() : null

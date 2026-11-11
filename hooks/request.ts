@@ -13,7 +13,7 @@ export type RequestInput = {
   gen: number
   skills: { folder: string; stageFolderId: string | null; allId: string | null }
   protoFolder: { name: string; id: string | null }
-  expectedDocName: string
+  expectedDocName: string | null
   docs: readonly RequestDoc[]
   chosenReference?: string | null
   params?: Record<string, string | number | boolean | null | undefined>
@@ -25,7 +25,7 @@ const idText = (id: string | null, fallback: string) => (id ? `id ${id}` : `id n
 export function buildRequest(r: RequestInput): string {
   const head = `Prototype ${r.protoId} (${r.title}). Stage: ${r.stageName} (${r.stageId}). Action: ${r.actionLabel} (${r.actionId}). Generation: ${r.gen}.`
   const skills = `Skills: before starting, list the Drive folder ${r.skills.folder} (${idText(r.skills.stageFolderId, `find it inside the Drive folder ${SKILLS_ROOT}`)}) and the folder _all (${idText(r.skills.allId, `find it inside the Drive folder ${SKILLS_ROOT}`)}). Read every file in both (ignore subfolders) and follow them as the skills for this action. If a folder cannot be read, say so and use the installed skill of the same name if one exists.`
-  const output = `Output: save every document you create in the Drive folder ${r.protoFolder.name} (${idText(r.protoFolder.id, 'find it inside the Drive folder roblox_radar_protos and create it if it is missing')}), using exactly the name ${r.expectedDocName}. End your reply with the tagged blocks defined in _all/skill_output_protocol.md.`
+  const output = `Output: save every document you create in the Drive folder ${r.protoFolder.name} (${idText(r.protoFolder.id, 'find it inside the Drive folder roblox_radar_protos and create it if it is missing')}), ${r.expectedDocName ? `using exactly the name ${r.expectedDocName}` : 'if a skill asks for a document'}. End your reply with the tagged blocks defined in _all/skill_output_protocol.md.`
   const params = Object.entries(r.params ?? {})
     .filter(([, v]) => v !== null && v !== undefined && String(v) !== '')
     .map(([k, v]) => `${k}=${String(v)}`)

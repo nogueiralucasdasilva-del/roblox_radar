@@ -198,24 +198,28 @@ test('advancing moves one stage up and keeps the proto ID; ensureProto fills old
   assert.deepEqual(old.checks, {})
 })
 
-import { ACTIONS, buildActionPrompt, gatePrompt } from '../hooks/prompts'
+import { ACTIONS, buildActionRequest, buildGateRequest } from '../hooks/actions'
 
-test('every action prompt tells the chat to read its Drive stage folder and _all, and its own example is not parsed as output', () => {
+test('every action becomes a request only through the request builder: generic, no tags, no work instructions', () => {
   const s = emptyStore()
   const i = createPrototype(s, { title: 'Truck', note: '', origin: 'own', from: null, now: NOW })
-  i.refs = { candidates: [{ name: 'A' }], chosenIndex: 0, history: [] }
-  i.research = 'r'
-  const ctx = { stageName: 'Stage', folders: { stage: 'FOLDER1', all: 'ALLID' }, criteria: ['demand'], knowledge: [], nextStage: 'brief', nextStageName: 'Brief' }
+  i.refs = { candidates: [{ name: 'A', url: 'https://a.test' }], chosenIndex: 0, history: [] }
+  i.reveng = { gen: 1, uploads: { 1: { at: NOW, files: [], rejected: [] } }, segment: 1, mode: 'extract', noEconomy: false, verdict: 'PASS' }
+  const ctx = { stageName: 'Stage', skills: { folder: 'FOLDERNAME', stageFolderId: 'FOLDER1', allId: 'ALLID' }, protoFolder: { name: i.proto_id!, id: 'PF1' } }
   for (const a of ACTIONS) {
-    const { text } = buildActionPrompt(a, i, ctx)
-    assert.ok(text.includes('Read every file in both'), a.key)
-    assert.ok(text.includes('FOLDER1') && text.includes('ALLID'), a.key)
+    const { text, expectedDocName } = buildActionRequest(a, i, { ...ctx, stageName: a.stage })
+    const lines = text.split(String.fromCharCode(10))
+    assert.ok(lines[0]!.startsWith(`Prototype ${i.proto_id} (Truck). Stage: ${a.stage} (${a.stage}). Action: ${a.label} (${a.key}). Generation: `), a.key)
+    assert.ok(lines[1]!.includes('Read every file in both (ignore subfolders)'), a.key)
+    assert.ok(lines[1]!.includes('FOLDER1') && lines[1]!.includes('ALLID'), a.key)
+    assert.ok(lines[2]!.includes(`using exactly the name ${expectedDocName}`) && lines[2]!.includes('PF1'), a.key)
+    assert.ok(expectedDocName.startsWith(`${i.proto_id}_0`), a.key)
+    assert.ok(!text.includes('@@'), a.key)
     const p = parseTags(text)
-    assert.equal(p.outputs.length, 0, a.key)
-    assert.equal(p.gates.length, 0, a.key)
+    assert.equal(p.outputs.length + p.gates.length + p.verdicts.length + p.fails.length + p.refs.length, 0, a.key)
     assert.ok(!text.includes(String.fromCharCode(0x2013)) && !text.includes(String.fromCharCode(0x2014)), a.key)
   }
-  const g = gatePrompt(i, 'Pre-validation', 'Brief', ctx)
-  assert.ok(g.includes('roblox-principles-gate'))
+  const g = buildGateRequest(i, 'Pre-validation', 'Brief', { ...ctx, stageName: 'Pre-validation' })
+  assert.ok(g.includes('Action: Principles gate (gate)') && g.includes('Params: from=Pre-validation; to=Brief'))
   assert.equal(parseTags(g).gates.length, 0)
 })
