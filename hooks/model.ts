@@ -48,6 +48,16 @@ export type Idea = {
   refs?: Refs
   reveng?: Reveng
   failed?: Record<string, { reason: string; at: string }>
+  creation?: Creation
+}
+export type StepStateName = 'pending' | 'running' | 'done' | 'failed'
+export type CreationStep = { state: StepStateName; error?: string }
+// The visible sequence of creating a prototype: prototype and ID, Drive folder, chat created, chat opened.
+export type Creation = {
+  steps: Record<'proto' | 'folder' | 'chat' | 'open', CreationStep>
+  notice?: string
+  link?: string | null
+  attempts: { step: string; ok: boolean; detail: string; at: string }[]
 }
 export type DocRef = { name: string; url: string; fileId: string | null; at: string; gen: number; kind: string; checked?: boolean }
 export type RefCandidate = { name: string; url?: string; universe_id?: string; visits?: string; approval_pct?: string; ccu?: string; as_of?: string; why_fit?: string; risk?: string; tag?: string }

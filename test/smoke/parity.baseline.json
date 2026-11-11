@@ -11076,6 +11076,431 @@
    }
   ]
  },
+ "creation: all four steps show, chat running": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "creation: chat failed shows the cause, the permission rules and Retry chat": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "retry-chat-p2",
+    "text": "retry chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "creation: open refused shows the cause, the link and Retry chat": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "retry-chat-p2",
+    "text": "retry chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x/local_a",
+    "label": "open in app"
+   }
+  ]
+ },
+ "creation: all done hides the block": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
  "a drawing error never leaves a blank pane": {
   "buttons": [
    {

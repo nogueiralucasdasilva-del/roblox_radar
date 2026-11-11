@@ -64,6 +64,7 @@ export type Ctx = {
   archive: (ideaId: string, on: boolean) => unknown
   folderNotice: (ideaId: string) => string | null
   chooseRef: (ideaId: string, index: number) => unknown
+  retryChat: (ideaId: string) => unknown
   copyPrompt: (ideaId: string, press?: any) => unknown
   uploadDocs: (ideaId: string, raw: string) => unknown
   scanInputs: (ideaId: string) => unknown

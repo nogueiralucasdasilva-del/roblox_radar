@@ -295,6 +295,17 @@ await scenario('factory: stage panel lists documents and the failure', async () 
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief')
 }, need('<link Open doc>', 'Documents (1)', 'P002-MONSTER2_02_brief_v1', 'not inside the prototype folder', 'Failed: no connector'))
+const creationState = (steps, notice, link) => async () => {
+  await reset()
+  const s = rich()
+  s.ideas[1].creation = { steps: { proto: { state: 'done' }, folder: { state: 'done' }, chat: { state: 'pending' }, open: { state: 'pending' }, ...steps }, notice, link, attempts: [] }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
+}
+await scenario('creation: all four steps show, chat running', creationState({ chat: { state: 'running', error: 'Waiting for the main chat to create it. Approve the request if the app asks.' } }), need('1 Prototype and ID', '2 Drive folder', '3 Chat created', '4 Chat opened', 'Waiting for the main chat'))
+await scenario('creation: chat failed shows the cause, the permission rules and Retry chat', creationState({ chat: { state: 'failed', error: 'start_session denied' } }, 'start_session denied Add these permission rules to your Claude settings: mcp__ccd_session__start_session'), need('✖ 3 Chat created', 'start_session denied', 'mcp__ccd_session__start_session', 'Retry chat'))
+await scenario('creation: open refused shows the cause, the link and Retry chat', creationState({ chat: { state: 'done' }, open: { state: 'failed', error: 'the app refused; open it from the link' } }, undefined, 'claude://x/local_a'), need('✖ 4 Chat opened', 'open it from the link', '<link open in app>', 'Retry chat'))
+await scenario('creation: all done hides the block', creationState({ chat: { state: 'done' }, open: { state: 'done' } }), (t, text) => (/Chat created/.test(text) ? ['the finished sequence is still shown'] : []))
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))
 
 const dumpName = process.argv.includes('--dump') ? process.argv[process.argv.indexOf('--dump') + 1] : null

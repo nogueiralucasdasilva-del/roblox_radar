@@ -12,6 +12,7 @@ import { splitItems } from '../outputs'
 import { SAFETY, potential, safetyBlocked } from '../scoring'
 import { newest, skillsFolderName } from '../skills'
 import { refsBlock, revengPanel } from './reveng'
+import { STEP_LABEL, STEP_ORDER } from '../chatflow'
 import { btn, cardWidth, chip, emptyState, meterColor, meterText, notice, pill, rail, rule, tierOf, tint } from './kit'
 
 const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Reverse eng.', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
@@ -70,6 +71,49 @@ export function protoPicker(x: Ctx, current: Idea | undefined) {
           {btn(x.C, 'proto-menu-archived', x.showArchived ? 'Hide archived' : 'Show archived', 'quiet', () => x.toggleArchived())}
         </Box>
       ) : null}
+    </Box>
+  )
+}
+
+/* ---------- creation sequence: prototype, Drive folder, chat created, chat opened ---------- */
+
+const STEP_GLYPH: Record<string, { glyph: string; color: string }> = {
+  pending: { glyph: '○', color: SAND },
+  running: { glyph: '◐', color: AMBER },
+  done: { glyph: '●', color: OLIVE },
+  failed: { glyph: '✖', color: RUST },
+}
+
+// Shown on the prototype until all four steps are done. Each step has its own glyph and its own error text.
+export function creationBlock(x: Ctx, i: Idea) {
+  const { Box, Text, Link } = x.C
+  const c = i.creation
+  if (!c) return null
+  const all = STEP_ORDER.every(k => c.steps[k].state === 'done')
+  if (all) return null
+  const chatBad = c.steps.chat.state === 'failed' || c.steps.open.state === 'failed'
+  return (
+    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={chatBad ? RUST : LINE_SOFT} paddingX={1}>
+      <Box gap={2} flexWrap="wrap">
+        {STEP_ORDER.map((k, n) => {
+          const g = STEP_GLYPH[c.steps[k].state] ?? STEP_GLYPH.pending!
+          return (
+            <Text key={`cs-${i.id}-${k}`} bold={c.steps[k].state === 'running'} color={g.color}>
+              {`${g.glyph} ${n + 1} ${STEP_LABEL[k]}`}
+            </Text>
+          )
+        })}
+      </Box>
+      {STEP_ORDER.filter(k => c.steps[k].error).map(k => (
+        <Text key={`ce-${i.id}-${k}`} color={c.steps[k].state === 'failed' ? RUST : AMBER}>
+          {`${STEP_LABEL[k]}: ${clip(c.steps[k].error ?? '', 400)}`}
+        </Text>
+      ))}
+      {c.notice && c.steps.chat.state === 'failed' ? notice(x.C, 'error', clip(c.notice, 600)) : null}
+      <Box gap={2} flexWrap="wrap" alignItems="center">
+        {chatBad ? btn(x.C, `retry-chat-${i.id}`, 'Retry chat', 'primary', () => x.retryChat(i.id)) : null}
+        {c.link && Link ? <Link key={`chat-session-${i.id}`} href={c.link} label="open in app" /> : null}
+      </Box>
     </Box>
   )
 }
@@ -137,6 +181,7 @@ export function protoHeader(x: Ctx, i: Idea) {
         {blocked ? chip(x.C, `⚑ SAFETY BELOW ${x.scoring.safety_gate}`, RUST) : null}
         {i.driveFolderUrl && x.C.Link ? <x.C.Link key={`folder-${i.id}`} href={i.driveFolderUrl} label="Open folder" /> : null}
       </Box>
+      {creationBlock(x, i)}
       {!i.driveFolderUrl && x.folderNotice(i.id) ? notice(x.C, 'warn', x.folderNotice(i.id) as string) : null}
       <Box gap={2} flexWrap="wrap" alignItems="center">
         {chip(x.C, pctText(p.pct), pctColor(p.pct))}

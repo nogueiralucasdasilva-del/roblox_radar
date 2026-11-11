@@ -33,7 +33,7 @@ import {
   summarizerPrompt,
 } from './model'
 import { STALE_BUSY_MS } from './model'
-import type { Idea, Job, Knowledge, LogEntry, Msg, Store, Thread, UploadFile } from './model'
+import type { Creation, Idea, Job, Knowledge, LogEntry, Msg, Store, StepStateName, Thread, UploadFile } from './model'
 import {
   KEEP_MESSAGES,
   MEMORY_FOLDER_ID,
@@ -58,6 +58,8 @@ import { parseTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
+import { createChat, openBeside, permissionHelp, sessionRows, STEP_LABEL } from './chatflow'
+import type { Attempt, ChatDeps, CreateResult, StepName } from './chatflow'
 import { ensureProtoFolders } from './protos'
 import { SKILLS_ROOT_ID, listToolFiles, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
@@ -456,6 +458,10 @@ async function saveStartedChat($: any, p: PendingChat, id: string): Promise<void
   pendingChats.delete(p.key)
   delete chatError[p.key]
   void fileInGroup($, id)
+  if (p.kind === 'idea') {
+    await setStep($, p.scope, 'chat', 'done', undefined, { notice: undefined, link })
+    if (!p.noOpen) await openStep($, p.scope)
+  }
 }
 const chatError: Record<string, string> = {}
 let syncBusy = false
@@ -508,24 +514,6 @@ async function showChat($: any, chat: ChatLink, key?: string): Promise<boolean> 
 // whatever way it was started, and how it never starts a second one for the same card.
 let listError = ''
 const norm = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').trim()
-
-// The rows of a list_sessions answer, whatever wraps them: a JSON array, {sessions: [...]}, or an array inside text.
-function sessionRows(text: string): any[] {
-  const tryParse = (t: string): any => {
-    try {
-      return JSON.parse(t)
-    } catch {
-      return null
-    }
-  }
-  let o: any = tryParse(text) ?? jsonOf(text)
-  if (!o) {
-    const a = text.indexOf('[')
-    const b = text.lastIndexOf(']')
-    if (a >= 0 && b > a) o = tryParse(text.slice(a, b + 1))
-  }
-  return Array.isArray(o) ? o : Array.isArray(o?.sessions) ? o.sessions : Array.isArray(o?.data) ? o.data : []
-}
 
 // Every app conversation by normalized title, from one list_sessions call.
 async function sessionsByTitle($: any): Promise<Map<string, string>> {
@@ -596,7 +584,13 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     const data = await load($)
     const s0 = await loadStore($)
     if (!data) throw new Error('Could not read the stage data.')
-    const existing = kind === 'idea' ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
+    if ((kind as string) === 'idea') {
+      chatBusy.delete(key)
+      await createProtoChat($, scope, show, task)
+      return
+    }
+    const isIdea = (kind as string) === 'idea'
+    const existing = isIdea ? s0.ideas.find(i => i.id === scope)?.chat : s0.stageChats[scope]
     if (existing) {
       if (show) await showChat($, existing, key)
       void resolvePending($).then(() => syncChats($))
@@ -606,7 +600,7 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     let prompt = ''
     let background = ''
     let logStage = scope
-    if (kind === 'idea') {
+    if (isIdea) {
       const idea = s0.ideas.find(i => i.id === scope)
       if (!idea) throw new Error('Idea not found.')
       title = ideaChatTitle(idea)
@@ -629,11 +623,11 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     if (known) {
       await saveStartedChat($, pendingChats.get(key)!, known.id)
       const saved = (await loadStore($))
-      const chat = kind === 'idea' ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
+      const chat = isIdea ? saved.ideas.find(i => i.id === scope)?.chat : saved.stageChats[scope]
       if (chat && show) await showChat($, chat, key)
       return
     }
-    const label = kind === 'idea' ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
+    const label = isIdea ? `the idea "${title.replace(/^Radar idea: /, '')}"` : `the ${title.replace(/^Radar stage: /, '')} stage`
     const request = `Open the Roblox Radar chat for ${label} [radar:${key}]`
     // The click sends the request as a message of the main chat, so the app judges a real request.
     // Direct start, only on Lucas's click: works when he allowed start_session in his settings. Otherwise the
@@ -647,10 +641,10 @@ async function openChat($: any, kind: 'idea' | 'stage', scope: string, task?: st
     // Fire and forget: the panel never waits for the main chat's whole turn.
     void Promise.resolve($.prompt.submit({ text: request }))
       .then((r: any) => {
-        if (r && r.drop) chatError[key] = 'The main chat refused the request. Type "abrir chat" in the Claude message box at the bottom of the window.'
+        if (r && r.drop) chatError[key] = 'The main chat refused the request. Press Open chat again after allowing it, or open the stage chat from the sidebar.'
       })
       .catch(() => {
-        chatError[key] = 'Could not start it from here. Type "abrir chat" in the Claude message box at the bottom of the window.'
+        chatError[key] = 'Could not start the stage chat from here. Press Open chat again, or open it from the sidebar.'
       })
     chatError[key] = `Starting the chat in the main conversation (first time only; later clicks are instant).${listError ? ` Could not look for an existing one: ${listError}` : ''}`
   } catch (err: any) {
@@ -680,6 +674,119 @@ async function startDirect($: any, p: PendingChat): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+/* ---------- prototype chat: a visible sequence (prototype, Drive folder, chat created, chat opened) ---------- */
+
+const newCreation = (): Creation => ({
+  steps: { proto: { state: 'done' }, folder: { state: 'pending' }, chat: { state: 'pending' }, open: { state: 'pending' } },
+  attempts: [],
+})
+
+// Sets one step of the creation sequence on the card and logs it. A failure keeps its cause on the card.
+async function setStep($: any, ideaId: string, step: StepName, state: StepStateName, error?: string, extra?: Partial<Creation>): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const c = i.creation ?? newCreation()
+    c.steps[step] = error ? { state, error } : { state }
+    if (extra) Object.assign(c, extra)
+    i.creation = c
+    addLog(s, 'prevalid', 'chat', `${i.proto_id}: ${STEP_LABEL[step]} ${state}${error ? `: ${error}` : ''}`)
+  })
+}
+
+// Every attempt of the creation goes to the card's Log and to diag.json (no secrets: tool names, titles and raw errors only).
+async function recordAttempts($: any, ideaId: string, attempts: Attempt[]): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const c = i.creation ?? newCreation()
+    c.attempts = [...c.attempts, ...attempts].slice(-30)
+    i.creation = c
+    for (const a of attempts) addLog(s, 'prevalid', 'chat', `${i.proto_id}: ${a.step} ${a.ok ? 'ok' : 'failed'}: ${a.detail}`)
+  })
+  void note($, `chat_${ideaId}`, attempts)
+}
+
+function chatDeps($: any, ideaId: string, show: boolean): ChatDeps {
+  return {
+    call: (server, tool, args) => ccdCall($, server, tool, args),
+    // The main chat route: register the request, send it, and report a refusal on the card when it comes back.
+    askMain: async req => {
+      const key = `idea:${ideaId}`
+      pendingChats.set(key, { key, kind: 'idea', scope: ideaId, title: req.title, prompt: req.prompt, background: req.background, noOpen: !show })
+      lastPending = key
+      void Promise.resolve($.prompt.submit({ text: `Open the Roblox Radar chat for the prototype "${req.title}" [radar:${key}]` }))
+        .then(async (r: any) => {
+          if (r && r.drop) await failChat($, ideaId, `The main chat refused the request: ${String(r.drop).slice(0, 160)}`)
+        })
+        .catch(async (err: any) => failChat($, ideaId, `Could not ask the main chat: ${String((err && err.message) || err).slice(0, 160)}`))
+    },
+    now: () => new Date().toISOString(),
+  }
+}
+
+// A chat that could not be created: the cause stays on the prototype, with a Retry button and the rules that fix permissions.
+async function failChat($: any, ideaId: string, cause: string, permission = true): Promise<void> {
+  pendingChats.delete(`idea:${ideaId}`)
+  await setStep($, ideaId, 'chat', 'failed', cause, { notice: permission ? `${cause} ${permissionHelp()}` : cause })
+  await update($, rev, n => n + 1)
+}
+
+// Step 4: open the chat beside the panel. If the app refuses, the cause and the session link stay on the card.
+async function openStep($: any, ideaId: string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.chat) return
+  await setStep($, ideaId, 'open', 'running')
+  const r = await openBeside(chatDeps($, ideaId, true), i.chat.id)
+  await recordAttempts($, ideaId, [r.attempt])
+  if (r.ok) await setStep($, ideaId, 'open', 'done', undefined, { link: i.chat.link ?? null })
+  else await setStep($, ideaId, 'open', 'failed', `${r.error ?? 'The app refused to open it'}. It was started in another session: open it from the link or from the Roblox Radar group in the sidebar.`, { link: i.chat.link ?? null })
+  await update($, rev, n => n + 1)
+}
+
+// Steps 3 and 4 for a prototype: finds or creates its one chat, then opens it. Never makes a second chat.
+async function createProtoChat($: any, ideaId: string, show: boolean, task?: string): Promise<void> {
+  const key = `idea:${ideaId}`
+  if (chatBusy.has(key)) return
+  chatBusy.add(key)
+  await update($, rev, n => n + 1)
+  try {
+    const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+    if (!i || !i.proto_id) return
+    if (i.chat) {
+      await setStep($, ideaId, 'chat', 'done')
+      if (show) await openStep($, ideaId)
+      return
+    }
+    await setStep($, ideaId, 'chat', 'running', undefined, { notice: undefined })
+    const title = ideaChatTitle(i)
+    const res = await createChat(chatDeps($, ideaId, show), { protoId: i.proto_id, title, prompt: ideaOpening(i, task), background: ideaBackground(), storedId: null })
+    await recordAttempts($, ideaId, res.attempts)
+    if (res.status === 'existing' || res.status === 'created') {
+      await saveStartedChat($, { key, kind: 'idea', scope: ideaId, title, prompt: '', background: '', noOpen: !show }, (res as { id: string }).id)
+    } else if (res.status === 'main-pending') {
+      await setStep($, ideaId, 'chat', 'running', 'Waiting for the main chat to create it. Approve the request if the app asks.')
+      void resolvePending($)
+    } else {
+      const f = res as Extract<CreateResult, { status: 'failed' }>
+      await failChat($, ideaId, f.error, f.permission)
+    }
+  } catch (err: any) {
+    await failChat($, ideaId, String((err && err.message) || err).slice(0, 300), false)
+  } finally {
+    chatBusy.delete(key)
+    await update($, rev, n => n + 1)
+  }
+}
+
+// "Retry chat": starts again where it failed.
+async function retryChat($: any, ideaId: string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i) return
+  if (i.chat) await openStep($, ideaId)
+  else await createProtoChat($, ideaId, true)
 }
 
 /* ---------- Factory: prototypes, requests, gates ---------- */
@@ -863,6 +970,7 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
     ideaId = idea.id
     protoId = idea.proto_id ?? ''
     title = idea.title
+    idea.creation = newCreation()
     ideaEvent(s, idea, now)
     addLog(s, 'prevalid', 'ideas', `Created ${protoId} "${clip(idea.title, 40)}" in the Factory.`)
   })
@@ -871,19 +979,21 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
     return
   }
   await update($, protoAtom, () => ideaId)
-  // The Drive folder first, so the chat's first message already knows it. A failure only adds a note: the chat is still created.
+  factoryNote = { ideaId, text: `Created ${protoId}` }
+  $.ui.toast(`Created ${protoId}. Setting up its folder and chat...`)
+  await update($, rev, n => n + 1)
+  // Step 2, the Drive folder: first, so the chat's first message already knows it. A failure only shows on the card.
+  await setStep($, ideaId, 'folder', 'running')
   const folderOk = await ensureProtoFolder($, ideaId)
-  factoryNote = { ideaId, text: `Created ${protoId} and its chat${folderOk ? '' : '. Drive folder not created yet, it is retried before the next action'}` }
-  $.ui.toast(`Created ${protoId} and its chat`)
+  if (folderOk) await setStep($, ideaId, 'folder', 'done')
+  else await setStep($, ideaId, 'folder', 'failed', folderNotes[ideaId] ?? 'Drive folder not created.')
   void flushOutbox($)
+  // Steps 3 and 4 never depend on step 2: a failed folder does not stop the chat.
   const idea = (await loadStore($)).ideas.find(x => x.id === ideaId)
-  if (idea?.chat) {
-    // A migrated idea brings its old chat: keep it, rename it when the app lets us.
-    await syncChatTitle($, ideaId)
-    if (AUTO_OPEN_CHAT_ON_SEND) await showChat($, idea.chat, `idea:${ideaId}`)
-  } else {
-    await openChat($, 'idea', ideaId, undefined, { show: AUTO_OPEN_CHAT_ON_SEND })
-  }
+  if (idea?.chat) await syncChatTitle($, ideaId)
+  await createProtoChat($, ideaId, AUTO_OPEN_CHAT_ON_SEND)
+  const done = (await loadStore($)).ideas.find(x => x.id === ideaId)?.creation
+  factoryNote = { ideaId, text: done && done.steps.chat.state === 'done' ? `Created ${protoId} and its chat` : `Created ${protoId}. See the steps below.` }
   await update($, rev, n => n + 1)
 }
 
@@ -2356,6 +2466,7 @@ async function renderPane($: any, e: any) {
       archive: (id, archived) => archiveProto($, id, archived),
       folderNotice: id => folderNotes[id] ?? null,
       chooseRef: (id, n) => chooseRef($, id, n),
+      retryChat: id => retryChat($, id),
       copyPrompt: (id, press) => copyPrompt($, id, press),
       uploadDocs: (id, raw) => uploadReveng($, id, raw),
       scanInputs: id => scanInputs($, id),

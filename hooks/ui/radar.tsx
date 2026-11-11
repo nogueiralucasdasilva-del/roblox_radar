@@ -3,6 +3,7 @@ import { AMBER, BG, CLAY, FG, LINE_SOFT, MUTED, OLIVE, PANEL, SKY } from '../the
 import { ago } from '../views'
 import type { Ctx } from '../views'
 import { clip } from '../model'
+import { creationBlock } from './factory'
 import { btn, cardWidth, emptyState, notice, rail, sectionTitle, tint } from './kit'
 
 // Shown after "Send to Factory": what was created, with buttons to open its chat or go to the Factory.
@@ -12,11 +13,14 @@ export function factoryNoteBar(x: Ctx) {
   if (!n) return null
   const idea = x.store.ideas.find(i => i.id === n.ideaId)
   return (
-    <Box gap={1} flexWrap="wrap" alignItems="center" borderStyle="round" borderColor={CLAY} paddingX={1}>
-      <Text bold color={OLIVE}>{'✔'}</Text>
-      <Text bold color={FG}>{n.text}</Text>
-      {idea ? btn(x.C, 'note-open-chat', 'Open chat', 'secondary', () => x.openProtoChat(idea.id, idea.stage)) : null}
-      {idea ? btn(x.C, 'note-open-factory', 'Go to the Factory', 'secondary', () => x.selectProto(idea.id)) : null}
+    <Box flexDirection="column" gap={1}>
+      <Box gap={1} flexWrap="wrap" alignItems="center" borderStyle="round" borderColor={CLAY} paddingX={1}>
+        <Text bold color={OLIVE}>{'✔'}</Text>
+        <Text bold color={FG}>{n.text}</Text>
+        {idea ? btn(x.C, 'note-open-chat', 'Open chat', 'secondary', () => x.openProtoChat(idea.id, idea.stage)) : null}
+        {idea ? btn(x.C, 'note-open-factory', 'Go to the Factory', 'secondary', () => x.selectProto(idea.id)) : null}
+      </Box>
+      {idea ? creationBlock(x, idea) : null}
     </Box>
   )
 }
