@@ -13,3 +13,12 @@ export const USER_BG = '#393733'
 export const LINE = '#4A4843'
 export const FG = '#FAF9F5'
 export const MUTED = '#B0AEA5'
+
+// 0.7.5 design tokens. Roles: RAISED is a hovered or selected surface; the _BG colors are quiet fills for tinted labels.
+export const RAISED = '#34322F'
+export const LINE_SOFT = '#383630'
+export const OLIVE_BG = '#262E1F'
+export const AMBER_BG = '#33281A'
+export const RUST_BG = '#38211F'
+export const SKY_BG = '#1F2A35'
+export const CLAY_BG = '#3A241B'

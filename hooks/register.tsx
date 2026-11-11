@@ -2,9 +2,11 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
-import { AMBER, BG, CLAY, FG, LINE, MUTED, NEON, NEON_BG, OLIVE, PANEL, RUST, SAND, SKY, USER_BG } from './theme'
+import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
 import { checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
+import { btn, btnText, cardWidth, chip as kitChip, kv, pill, rail, rule, tierOf } from './ui/kit'
+import type { Comps } from './ui/kit'
 import { factoryNoteBar, inboxBox } from './ui/radar'
 import type { Ctx } from './views'
 import {
@@ -97,6 +99,8 @@ const openIds = atom({ plugin: 'radar-panel', key: 'open' } as const, [] as stri
 
 type TabDef = { id: string; label: string }
 const SYNC_EVENTS = 120
+// Factory stages that are not selected and not done render as a two-line card. Set to false for full cards.
+const COMPACT_CARDS = true
 
 /* ---------- live scheduled tasks ---------- */
 
@@ -2013,60 +2017,66 @@ async function renderPane($: any, e: any) {
       if (id) await setMode('factory')
     }
 
-    /* header: title, the two main tabs, one status line with a click-to-expand detail */
+    /* header: name, general status, the two big mode buttons, the other buttons */
     const statusOpen_ = await read($, statusOpen)
     const bad = (rcp && !rcp.ok) || !!memError
     const statusColor = bad ? AMBER : !rcp ? MUTED : OLIVE
     const statusLine = bad ? 'Drive or memory needs attention (click for detail)' : !rcp ? 'Reading Drive...' : 'Drive and memory OK'
-    const modeTab = (id: 'radar' | 'factory', label: string) => {
-      const on = mode === id
-      return (
-        <Button key={`mode-${id}`} onPress={() => setMode(id)}>
-          <Text bold color={on ? BG : FG} backgroundColor={on ? NEON : USER_BG}>{`        ${label.toUpperCase()}        `}</Text>
-        </Button>
-      )
-    }
+    const K: Comps = { Box, Text, Button, Input, Link }
+    const nodeW = cardWidth(columns)
+    const tier = tierOf(columns)
+    const modeTab = (id: 'radar' | 'factory', label: string) => (
+      <Button key={`mode-${id}`} onPress={() => setMode(id)}>
+        {pill(K, `        ${label.toUpperCase()}        `, mode === id)}
+      </Button>
+    )
     const activeProtos = store.ideas.filter(i => i.status !== 'rejected').length
+    const receiptsDetail = !rcp
+      ? 'reading Drive...'
+      : rcp.ok
+        ? `${receipts.length} read from Drive at ${rcp.at.slice(11, 16)} UTC, newest ${receipts[0] ? `${receipts[0].task_key} ${receipts[0].finished_utc.slice(0, 16).replace('T', ' ')} UTC` : 'none yet'}.`
+        : `Drive check failed (${rcp.error}). Showing ${receipts.length} read earlier.`
+    const memoryDetail = memError
+      ? `${store.memSaved} saved to Drive, ${store.outbox.length} waiting. Last error: ${memError}`
+      : `${store.memSaved} events saved to Drive${store.outbox.length > 0 ? `, ${store.outbox.length} waiting` : ''}${store.restoredAt ? '' : ', checking Drive for earlier memory'}.`
     const header = (
       <Box flexDirection="column" gap={1}>
         <Box gap={2} alignItems="center" flexWrap="wrap">
           {Svg ? <Svg source={ICON_SVG} alt="Roblox Radar" width={28} height={28} /> : null}
           <Text bold color={CLAY}>
-            {Svg ? 'Roblox Radar' : '▣ Roblox Radar'}
+            {Svg ? 'ROBLOX RADAR' : '▣ ROBLOX RADAR'}
           </Text>
           <Text color={MUTED}>{`v${ver}`}</Text>
         </Box>
-        <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
-          <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
-          <Text color={MUTED}>{` ${statusLine}`}</Text>
-        </Button>
-        {statusOpen_ ? (
-          <Box flexDirection="column" paddingLeft={2}>
-            <Text color={rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED}>
-              {!rcp
-                ? 'Receipts: reading Drive...'
-                : rcp.ok
-                  ? `Receipts: ${receipts.length} read from Drive at ${rcp.at.slice(11, 16)} UTC, newest ${receipts[0] ? `${receipts[0].task_key} ${receipts[0].finished_utc.slice(0, 16).replace('T', ' ')} UTC` : 'none yet'}.`
-                  : `Receipts: Drive check failed (${rcp.error}). Showing ${receipts.length} read earlier.`}
-            </Text>
-            <Text color={memError ? AMBER : store.outbox.length > 0 ? MUTED : OLIVE}>
-              {memError
-                ? `Memory: ${store.memSaved} saved to Drive, ${store.outbox.length} waiting. Last error: ${memError}`
-                : `Memory: ${store.memSaved} events saved to Drive${store.outbox.length > 0 ? `, ${store.outbox.length} waiting` : ''}${store.restoredAt ? '' : ', checking Drive for earlier memory'}.`}
-            </Text>
-            <Text color={MUTED}>{`Stage descriptions come from the data file (${data.updated}).`}</Text>
-          </Box>
-        ) : null}
-        <Box gap={2} flexWrap="wrap">
+        <Box flexDirection="column">
+          <Button key="status-toggle" onPress={() => update($, statusOpen, (v: boolean) => !v)}>
+            <Text color={statusColor}>{statusOpen_ ? '▾ ' : '▸ '}●</Text>
+            <Text color={MUTED}>{` ${statusLine}`}</Text>
+          </Button>
+          {statusOpen_ ? (
+            <Box paddingLeft={2}>
+              {kv(
+                K,
+                [
+                  { k: 'Receipts', v: receiptsDetail, color: rcp ? (rcp.ok ? OLIVE : AMBER) : MUTED },
+                  { k: 'Memory', v: memoryDetail, color: memError ? AMBER : store.outbox.length > 0 ? MUTED : OLIVE },
+                  { k: 'Stages', v: `descriptions come from the data file (${data.updated}).`, color: MUTED },
+                ],
+                10,
+                'status',
+              )}
+            </Box>
+          ) : null}
+        </Box>
+        <Box gap={0} flexWrap="wrap">
           {modeTab('radar', 'Radar')}
           {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
         </Box>
         <Box gap={2} flexWrap="wrap">
-          <Button key="refresh" label="Refresh" onPress={() => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)])} />
-          <Button key="map-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
-            <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
-          </Button>
+          {btn(K, 'refresh', 'Refresh', 'secondary', () => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)]))}
+          {btn(K, 'map-more', moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}
         </Box>
+        {rule(K, nodeW)}
       </Box>
     )
 
@@ -2305,9 +2315,10 @@ async function renderPane($: any, e: any) {
     }
     const auditor = data.stages.find(s => s.id === 'auditor')
     const auditorBar = auditor ? (
-      <Box key="auditor-bar" borderStyle="round" borderColor={toneOf(auditor).color} backgroundColor={PANEL} paddingX={1} gap={1} flexWrap="wrap">
+      <Box key="auditor-bar" borderStyle="round" borderColor={toneOf(auditor).color} backgroundColor={PANEL} paddingX={1} gap={1} flexWrap="wrap" width={nodeW}>
+        {rail(K, toneOf(auditor).color, 'aud-rail')}
         <Button key="stage-auditor" onPress={() => setRstage('auditor')}>
-          <Text bold color={rstageRaw === 'auditor' ? NEON : FG}>Auditor</Text>
+          <Text bold color={rstageRaw === 'auditor' ? NEON : FG}>AUDITOR</Text>
         </Button>
         <Text color={MUTED}>{auditor.sub}</Text>
         {(() => {
@@ -2358,35 +2369,63 @@ async function renderPane($: any, e: any) {
         </Box>
       )
     }
-    /* ---- the map of numbered cards (as in 0.6.x) and the full screen view of one card ---- */
-    // One card per row, full width, the same look in Radar and in the Factory.
-    const perRow = 1
-    const nodeW = Math.max(30, Math.min(110, columns - 4))
-    type Card = { id: string; n: number; name: string; sub: string; lines: { text: string; color: string; bold?: boolean }[]; border: string; selected: boolean; done?: boolean; onPress: () => unknown }
-    const cardNode = (c: Card) => (
-      <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
-        <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
-          <Text bold color={c.selected ? BG : FG} backgroundColor={c.selected ? NEON : CLAY}>
-            {` ${c.n} `}
-          </Text>
-          <Text bold color={c.selected ? NEON : FG}>
-            {` ${clip(c.name, nodeW - 12)}`}
-          </Text>
-          {c.done ? (
-            <Text bold color={OLIVE}>
-              {'  ✔'}
+    /* ---- the map of numbered cards and the full screen view of one card ---- */
+    // One card per row, full width, the same card in Radar and in the Factory.
+    type Card = {
+      id: string
+      n: number
+      name: string
+      sub: string
+      lines: { text: string; color: string; bold?: boolean }[]
+      border: string
+      selected: boolean
+      done?: boolean
+      state: { label: string; color: string; dim?: boolean }
+      connector?: string
+      onPress: () => unknown
+    }
+    const cardNode = (c: Card) => {
+      const inner = nodeW - 4
+      const chipText = ` ${c.state.label.toUpperCase()} `
+      const nameW = Math.max(8, inner - 4 - chipText.length - (c.done ? 3 : 0) - 1)
+      return (
+        <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
+          <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
+            <Text bold color={BG} backgroundColor={c.selected ? NEON : CLAY}>
+              {` ${c.n} `}
             </Text>
-          ) : null}
-        </Button>
-        <Text color={c.selected ? FG : MUTED}>{clip(c.sub, nodeW - 4)}</Text>
-        {c.lines.map((l, k) => (
-          <Text key={`cl-${c.id}-${k}`} bold={l.bold} color={l.color}>
-            {clip(l.text, nodeW - 4)}
-          </Text>
+            <Text bold color={c.selected ? NEON : FG}>
+              {` ${clip(c.name, nameW).padEnd(nameW, '\u00a0')}`}
+            </Text>
+            {c.done ? (
+              <Text bold color={OLIVE}>
+                {' ✔ '}
+              </Text>
+            ) : null}
+            <Text bold dimColor={c.state.dim} color={BG} backgroundColor={c.state.color}>
+              {chipText}
+            </Text>
+          </Button>
+          <Text color={c.selected ? FG : MUTED}>{clip(c.sub, inner)}</Text>
+          {c.lines.map((l, k) => (
+            <Text key={`cl-${c.id}-${k}`} bold={l.bold} color={l.color}>
+              {clip(l.text, inner)}
+            </Text>
+          ))}
+        </Box>
+      )
+    }
+    // A one-cell connector under every card but the last, so the list reads as a pipeline.
+    const flowMap = (cards: Card[]) => (
+      <Box flexDirection="column">
+        {cards.map((c, k) => (
+          <Box key={`fm-${c.id}`} flexDirection="column">
+            {cardNode(c)}
+            {k < cards.length - 1 ? <Text color={c.connector ?? LINE_SOFT}>{'   │'}</Text> : null}
+          </Box>
         ))}
       </Box>
     )
-    const flowMap = (cards: Card[]) => <Box flexDirection="column">{cards.map(c => cardNode(c))}</Box>
     // Full screen view: back to the map, previous and next card, the numbered stepper, then the card's own content.
     const shell = (o: { ids: string[]; numOf: (id: string) => string; nameOf: (id: string) => string; current: string; go: (id: string) => unknown; back: () => unknown; title: any; body: any }) => {
       const k = o.ids.indexOf(o.current)
@@ -2395,23 +2434,19 @@ async function renderPane($: any, e: any) {
       return (
         <Box flexDirection="column" gap={1}>
           <Box gap={2} flexWrap="wrap">
-            <Button key="back" label="← Pipeline" onPress={o.back} />
-            {prev ? <Button key="prev" label={`‹ ${o.nameOf(prev)}`} onPress={() => o.go(prev)} /> : null}
-            {next ? <Button key="next" label={`${o.nameOf(next)} ›`} onPress={() => o.go(next)} /> : null}
+            {btn(K, 'back', '← Pipeline', 'secondary', o.back)}
+            {prev ? btn(K, 'prev', `‹ ${o.nameOf(prev)}`, 'quiet', () => o.go(prev)) : null}
+            {next ? btn(K, 'next', `${o.nameOf(next)} ›`, 'quiet', () => o.go(next)) : null}
           </Box>
-          <Box gap={1} flexWrap="wrap">
-            {o.ids.map(id => {
-              const here = id === o.current
-              return (
-                <Button key={`jump-${id}`} onPress={() => o.go(id)}>
-                  <Text bold color={here ? BG : FG} backgroundColor={here ? NEON : PANEL}>
-                    {` ${o.numOf(id)} `}
-                  </Text>
-                </Button>
-              )
-            })}
+          <Box gap={0} flexWrap="wrap">
+            {o.ids.map(id => (
+              <Button key={`jump-${id}`} onPress={() => o.go(id)}>
+                {pill(K, ` ${o.numOf(id)} `, id === o.current)}
+              </Button>
+            ))}
           </Box>
           {o.title}
+          {rule(K, nodeW)}
           {o.body}
         </Box>
       )
@@ -2427,11 +2462,6 @@ async function renderPane($: any, e: any) {
         <Text color={MUTED}>{sub}</Text>
         {extra}
       </Box>
-    )
-    const moreButton = (
-      <Button key="map-more" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
-        <Text color={SKY}>{moreOpen ? 'More ▾' : 'More ▸'}</Text>
-      </Button>
     )
     const frame = (...children: any[]) => (
       <Box flexDirection="column" gap={1} backgroundColor={BG} paddingX={1} paddingY={1}>
@@ -2487,8 +2517,9 @@ async function renderPane($: any, e: any) {
           sub: st.sub,
           lines: [
             ...(lastR ? [{ text: `${lastR.task_key} ${ago(lastR.finished_utc, Date.now())}${late ? ', late' : ''}`, color: lastColor }] : []),
-            { text: `${tone.glyph} ${tone.label}${open > 0 ? `  ${open} open` : ''}`, color: tone.color, bold: true },
+            ...(open > 0 ? [{ text: `${open} open`, color: MUTED }] : []),
           ],
+          state: { label: tone.label, color: tone.color },
           border: tone.color,
           selected: false,
           onPress: () => setRstage(id),
@@ -2502,7 +2533,8 @@ async function renderPane($: any, e: any) {
           n: 3,
           name: 'Loose ideas',
           sub: 'raw ideas, no chat yet',
-          lines: [{ text: `${store.inbox.length} waiting`, color: store.inbox.length > 0 ? CLAY : MUTED, bold: true }],
+          lines: [],
+          state: { label: `${store.inbox.length} waiting`, color: store.inbox.length > 0 ? CLAY : SAND },
           border: LINE,
           selected: false,
           onPress: () => setRstage('inbox'),
@@ -2549,23 +2581,27 @@ async function renderPane($: any, e: any) {
 
     const cardsF: Card[] = FIDS.map((id, k) => {
       const s = stageOf(id) as Stage
+      const doneAbove = k > 0 && idea ? idea.checks?.[FIDS[k - 1] as string] === 'done' : false
       if (idea) {
         const g = checkGlyph(idea, id)
         const reached = IDEA_STAGES.indexOf(id) <= IDEA_STAGES.indexOf(idea.stage)
-        const state = idea.checks?.[id] === 'done' ? 'DONE' : g.glyph === '◐' ? 'ASKED' : reached ? 'NOT STARTED' : 'NOT REACHED'
+        const isDone = idea.checks?.[id] === 'done'
+        const state = isDone ? { label: 'Done', color: OLIVE } : g.glyph === '◐' ? { label: 'Asked', color: AMBER } : reached ? { label: 'Not started', color: SAND } : { label: 'Not reached', color: SAND, dim: true }
         const last = latestOf(idea, id)
+        const lastText = last ? clip(last.doc ? last.doc.title : (last.content.split(String.fromCharCode(10))[0] ?? ''), 60) : ''
+        const here = id === idea.stage
+        const compact = COMPACT_CARDS && !here && !isDone
         return {
           id,
           n: k + 1,
           name: `${s.gate ? '◆ ' : ''}${s.name}`,
-          sub: s.sub,
-          lines: [
-            { text: `${g.glyph} ${state}${id === idea.stage ? '  ▶ here' : ''}`, color: g.color, bold: true },
-            ...(last ? [{ text: clip(last.doc ? last.doc.title : (last.content.split(String.fromCharCode(10))[0] ?? ''), 60), color: FG }] : []),
-          ],
+          sub: compact ? (lastText || s.sub) : s.sub,
+          lines: compact ? [] : [...(here ? [{ text: '▶ here', color: NEON, bold: true }] : []), ...(lastText ? [{ text: lastText, color: FG }] : [])],
+          state,
           border: g.color,
-          selected: id === idea.stage,
-          done: idea.checks?.[id] === 'done',
+          selected: here,
+          done: isDone,
+          connector: doneAbove ? OLIVE : undefined,
           onPress: () => goF(id),
         }
       }
@@ -2575,7 +2611,8 @@ async function renderPane($: any, e: any) {
         n: k + 1,
         name: `${s.gate ? '◆ ' : ''}${s.name}`,
         sub: s.sub,
-        lines: [{ text: here > 0 ? `${here} prototype${here === 1 ? '' : 's'} here` : 'none here', color: here > 0 ? CLAY : MUTED, bold: here > 0 }],
+        lines: [],
+        state: { label: here > 0 ? `${here} prototype${here === 1 ? '' : 's'} here` : 'none here', color: here > 0 ? CLAY : SAND },
         border: LINE,
         selected: false,
         onPress: () => goF(id),

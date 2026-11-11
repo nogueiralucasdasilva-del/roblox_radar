@@ -158,7 +158,9 @@ const reset = async () => {
   putStore(base())
 }
 
-const need = (...words) => (t, text) => words.filter(w => !text.includes(w)).map(w => `missing "${w}"`)
+// Case and padding insensitive: the look changes, the words must not.
+const squash = t => t.toLowerCase().replace(/\[\s+/g, '[').replace(/\s+\]/g, ']').replace(/\s+/g, ' ')
+const need = (...words) => (t, text) => words.filter(w => !squash(text).includes(squash(w))).map(w => `missing "${w}"`)
 await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.7.4', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
@@ -167,8 +169,8 @@ await scenario('radar: auditor opens', async () => { await reset(); await setAto
 await scenario('radar: garbage values fall back to the map', async () => { await reset(); await setAtom('rstage', 'zzz'); await setAtom('mode', 'nope') }, need('[ 1  Radar and collection'))
 await scenario('radar: more open', async () => { await reset(); await setAtom('more', true) })
 await scenario('factory: order is title, status, big tabs, buttons, then picker, potential and stacked stages', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory') }, (t, text) => {
-  const order = ['Roblox Radar', 'Drive', '[        RADAR        ]', '[        FACTORY (2)        ]', '[Refresh]', '[More ▸]', 'Prototype', 'Potential', '[ 1  ◆ Pre-validation', '[ 2  ◆ 2-page brief', '[ 9  ◆ Metrics']
-  const at = order.map(w => text.indexOf(w))
+  const order = ['▣ Roblox Radar', 'Drive', '[        RADAR        ]', '[        FACTORY (2)        ]', '[Refresh]', '[More ▸]', 'Prototype', 'Potential', '[ 1  ◆ Pre-validation', '[ 2  ◆ 2-page brief', '[ 9  ◆ Metrics']
+  const at = order.map(w => squash(text).indexOf(squash(w)))
   const probs = order.filter((w, k) => at[k] < 0).map(w => `missing "${w}"`)
   for (let k = 1; k < at.length; k++) if (at[k] >= 0 && at[k - 1] >= 0 && at[k] < at[k - 1]) probs.push(`"${order[k]}" appears before "${order[k - 1]}"`)
   return probs
