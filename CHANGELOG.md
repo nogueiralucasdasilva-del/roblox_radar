@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.3
+
+- The main-chat route marks the prompt and background as data for `start_session` (the main chat used to answer them as if it were the new chat). If the main chat ends its turn without starting the chat, the card shows the failure with `Retry chat`.
+- Version bump so the plugin cache picks the fix up (0.8.2 was already cached).
+
 ## 0.8.2
 
 Factory readiness: Lucas can start a prototype and go through all nine stages with no silent failure. Every failure shows its cause and the next step.
