@@ -1,5 +1,6 @@
 import type { Report, ReportItem, SourceStatus, SourcesFile, ReportsFile, Stage } from '../types'
-import { AMBER, CLAY, FG, LINE, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY, BG } from './theme'
+import { AMBER, BG, CLAY, FG, LINE_SOFT, MUTED, NEON, OLIVE, PANEL, RUST, SAND, SKY } from './theme'
+import { btn, cardWidth, chip as kitChip, emptyState, kv, notice, rail, sectionTitle, tierOf, tint } from './ui/kit'
 import { KNOWLEDGE_KINDS, clip } from './model'
 import type { ChatLink, IdeaStatus, Knowledge, KnowledgeKind, Store } from './model'
 import { isLate, latestPerTask, receiptsFor } from './receipts'
@@ -97,21 +98,18 @@ export function nameOf(stages: Stage[], id: string): string {
 export function sourcesView(x: Ctx) {
   const { Box, Text } = x.C
   const f = x.sources
-  if (!f) return <Text color={RUST}>Could not read data/sources.json.</Text>
+  if (!f) return notice(x.C, 'error', 'Could not read data/sources.json.')
   const counts: Record<string, number> = {}
   for (const s of f.sources) counts[s.status] = (counts[s.status] ?? 0) + 1
-  const perRow = x.columns >= 110 ? 2 : 1
+  const tier = tierOf(x.columns)
+  const perRow = tier === 'wide' ? 2 : 1
   const w = Math.floor((x.columns - 8 - (perRow - 1)) / perRow)
   return (
     <Box flexDirection="column" gap={1}>
-      <Box gap={2} flexWrap="wrap">
+      <Box gap={1} flexWrap="wrap">
         {(Object.keys(STATUS_META) as SourceStatus[])
           .filter(k => (counts[k] ?? 0) > 0)
-          .map(k => (
-            <Text key={`cnt-${k}`} bold color={STATUS_META[k].color}>
-              {STATUS_META[k].glyph} {counts[k]} {STATUS_META[k].label.toLowerCase()}
-            </Text>
-          ))}
+          .map(k => tint(x.C, `${STATUS_META[k].glyph} ${counts[k]} ${STATUS_META[k].label}`, STATUS_META[k].color, `cnt-${k}`))}
       </Box>
       <Text color={FG}>{f.summary}</Text>
       <Text color={MUTED}>{f.origin}</Text>
@@ -119,33 +117,17 @@ export function sourcesView(x: Ctx) {
         {f.sources.map(s => {
           const m = STATUS_META[s.status] ?? STATUS_META.unknown
           return (
-            <Box
-              key={`src-${s.id}`}
-              flexDirection="column"
-              borderStyle="round"
-              borderColor={m.color}
-              backgroundColor={PANEL}
-              paddingX={1}
-              width={w}
-            >
+            <Box key={`src-${s.id}`} flexDirection="column" borderStyle="round" borderColor={m.color} backgroundColor={PANEL} paddingX={1} width={w}>
               <Box gap={1}>
-                <Text bold color={m.color}>
-                  {m.glyph}
-                </Text>
+                {rail(x.C, m.color, `rail-${s.id}`)}
                 <Text bold color={FG}>
-                  {s.name}
+                  {clip(s.name, Math.max(10, w - 18))}
                 </Text>
-                <Text bold color={m.color}>
-                  {m.label}
-                </Text>
+                {tint(x.C, m.label, m.color)}
               </Box>
-              <Text color={MUTED}>
-                {s.family}, {s.cadence}
-              </Text>
-              <Text color={FG}>
-                Collected {s.collected_label} ({ago(s.collected_at, x.now)})
-              </Text>
-              <Text color={MUTED}>{s.note}</Text>
+              <Text color={MUTED}>{clip(`${s.family}, ${s.cadence}`, w - 4)}</Text>
+              <Text color={FG}>{clip(`Collected ${s.collected_label} (${ago(s.collected_at, x.now)})`, w - 4)}</Text>
+              <Text color={MUTED}>{clip(s.note, w - 4)}</Text>
             </Box>
           )
         })}
@@ -159,8 +141,9 @@ export function sourcesView(x: Ctx) {
 export function reportsView(x: Ctx) {
   const { Box, Text, Button } = x.C
   const f = x.reports
-  if (!f) return <Text color={RUST}>Could not read data/reports.json.</Text>
+  if (!f) return notice(x.C, 'error', 'Could not read data/reports.json.')
   const reports = [...f.reports].sort((a, b) => b.date.localeCompare(a.date))
+  const wide = cardWidth(x.columns) - 8
   // The latest report starts expanded; clicking its header collapses it (the toggle list flips the default).
   const latestId = reports[0] ? `rep:${reports[0].id}` : ''
   return (
@@ -171,26 +154,18 @@ export function reportsView(x: Ctx) {
         const id = `rep:${r.id}`
         const isOpen = x.open.includes(id) !== (id === latestId)
         return (
-          <Box
-            key={`rep-${r.id}`}
-            flexDirection="column"
-            borderStyle="round"
-            borderColor={isOpen ? CLAY : LINE}
-            backgroundColor={PANEL}
-            paddingX={1}
-          >
+          <Box key={`rep-${r.id}`} flexDirection="column" borderStyle="round" borderColor={isOpen ? CLAY : LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
             <Button key={`rep-toggle-${r.id}`} onPress={() => x.toggle(id)}>
               <Text bold color={isOpen ? CLAY : FG}>
                 {isOpen ? '▾ ' : '▸ '}
                 {r.date}
               </Text>
-              <Text bold color={r.kind === 'themes' ? OLIVE : SKY}>
-                {'  '}
-                {r.title}
+              {tint(x.C, r.kind === 'themes' ? 'THEMES' : 'HOOKS', r.kind === 'themes' ? OLIVE : SKY)}
+              <Text bold color={FG}>
+                {` ${r.title}`}
               </Text>
               <Text color={MUTED}>
-                {'  '}
-                {r.summary}
+                {`  ${clip(r.summary, Math.max(10, wide - r.title.length - 24))}`}
               </Text>
             </Button>
             {isOpen ? (
@@ -198,14 +173,10 @@ export function reportsView(x: Ctx) {
                 <Text color={MUTED}>
                   Posted {r.posted} in {r.channel}.
                 </Text>
-                {r.kind === 'hooks' ? (
-                  <Text color={MUTED}>Hooks are art ideas for existing games. You can still send one as a raw idea.</Text>
-                ) : null}
+                {r.kind === 'hooks' ? <Text color={MUTED}>Hooks are art ideas for existing games. You can still send one as a raw idea.</Text> : null}
                 {r.sections.map((sec, si) => (
-                  <Box key={`sec-${r.id}-${si}`} flexDirection="column">
-                    <Text bold color={FG}>
-                      {sec.name}
-                    </Text>
+                  <Box key={`sec-${r.id}-${si}`} flexDirection="column" gap={1}>
+                    {sectionTitle(x.C, sec.name, sec.items.length, wide, `sect-${r.id}-${si}`)}
                     {sec.items.map((it, ii) => {
                       const from = `${r.id}#${si}.${ii}`
                       const sent = x.store.ideas.find(i => i.from === from)
@@ -213,36 +184,32 @@ export function reportsView(x: Ctx) {
                       const vc = VERDICT_COLOR[it.verdict] ?? MUTED
                       return (
                         <Box key={`it-${from}`} flexDirection="column" paddingLeft={1}>
-                          <Box gap={1} flexWrap="wrap">
-                            <Text color={vc}>●</Text>
+                          <Box gap={1} flexWrap="wrap" alignItems="center">
+                            {kitChip(x.C, it.verdict, vc)}
                             <Text bold color={FG}>
                               {it.title}
                             </Text>
-                            {it.ip ? <Text color={AMBER}>third-party IP</Text> : null}
+                            {it.ip ? tint(x.C, 'third-party IP', AMBER) : null}
                             {sent ? (
-                              <Text bold color={SKY}>
-                                {`In the Factory as ${sent.proto_id ?? sent.title}, ${nameOf(x.stages, sent.stage)}`}
-                              </Text>
+                              tint(x.C, `In the Factory as ${sent.proto_id ?? sent.title}, ${nameOf(x.stages, sent.stage)}`, SKY)
                             ) : inInbox ? (
-                              <Text bold color={SKY}>
-                                In loose ideas
-                              </Text>
+                              tint(x.C, 'In loose ideas', SKY)
                             ) : it.verdict !== 'REJECT' ? (
                               <Box gap={1}>
-                                <Button key={`send-${from}`} label="Send to Factory" onPress={() => x.sendItem(r, si, ii)} />
-                                {r.kind === 'hooks' ? (
-                                  <Button key={`hook-${from}`} label="Save to Thumbnail repository" onPress={() => x.saveHook(r, it)} />
-                                ) : null}
+                                {btn(x.C, `send-${from}`, 'Send to Factory', 'secondary', () => x.sendItem(r, si, ii))}
+                                {r.kind === 'hooks' ? btn(x.C, `hook-${from}`, 'Save to Thumbnail repository', 'secondary', () => x.saveHook(r, it)) : null}
                               </Box>
                             ) : null}
                           </Box>
-                          <Text color={MUTED}>{clip(it.note, 400)}</Text>
+                          <Box paddingLeft={2}>
+                            <Text color={MUTED}>{clip(it.note, 400)}</Text>
+                          </Box>
                         </Box>
                       )
                     })}
                   </Box>
                 ))}
-                {r.gaps ? <Text color={AMBER}>{r.gaps}</Text> : null}
+                {r.gaps ? notice(x.C, 'warn', r.gaps) : null}
               </Box>
             ) : null}
           </Box>
@@ -254,28 +221,24 @@ export function reportsView(x: Ctx) {
 
 /* ---------- shared bits ---------- */
 
+// Kept for callers that pass the whole Ctx: delegates to the kit.
 export function chip(x: Ctx, label: string, color: string, key: string) {
-  const { Text } = x.C
-  return (
-    <Text key={key} bold color={BG} backgroundColor={color}>
-      {` ${label} `}
-    </Text>
-  )
+  return kitChip(x.C, label, color, key)
 }
 
 // "Open chat" for a stage or a prototype: the chat is a real app conversation opened beside the panel.
 export function openChatButton(x: Ctx, kind: 'idea' | 'stage', scope: string, chat: ChatLink | null, onPress: () => unknown) {
-  const { Box, Text, Button, Link } = x.C
+  const { Box, Text, Link } = x.C
   const key = `${kind}:${scope}`
   const err = x.chatError(key)
   return (
     <Box flexDirection="column">
-      <Box gap={1} flexWrap="wrap">
-        <Button key={`chat-open-${key}`} label="Open chat" onPress={onPress} />
+      <Box gap={1} flexWrap="wrap" alignItems="center">
+        {btn(x.C, `chat-open-${key}`, 'Open chat', 'secondary', onPress)}
         {x.chatBusy(key) ? <Text color={CLAY}>opening...</Text> : null}
         {chat && chat.link && Link ? <Link key={`chat-link-${key}`} href={chat.link} label="open in app" /> : null}
       </Box>
-      {err ? <Text color={AMBER}>{err}</Text> : null}
+      {err ? notice(x.C, 'warn', err) : null}
     </Box>
   )
 }
@@ -283,33 +246,36 @@ export function openChatButton(x: Ctx, kind: 'idea' | 'stage', scope: string, ch
 /* ---------- Template library (Drive) ---------- */
 
 export function templatesView(x: Ctx) {
-  const { Box, Text, Button, Link } = x.C
+  const { Box, Text, Link } = x.C
   const t = x.templates
+  const w = cardWidth(x.columns) - 8
   return (
     <Box flexDirection="column" gap={1}>
       <Text color={FG}>
         The template library is the Drive folder roblox_radar_templates. Each Google Doc whose title starts with template_ is one template; a new or edited doc appears here on its own.
       </Text>
-      <Box gap={2}>
+      <Box gap={2} alignItems="center" flexWrap="wrap">
         <Text color={t ? (t.ok ? OLIVE : AMBER) : MUTED}>
           {!t ? 'Reading Drive...' : t.ok ? `${t.list.length} template(s), read at ${t.at.slice(11, 16)} UTC.` : `Drive read failed: ${t.error ?? 'unknown'}`}
         </Text>
-        <Button key="tpl-refresh" label="Read again" onPress={() => x.refreshTemplates()} />
+        {btn(x.C, 'tpl-refresh', 'Read again', 'secondary', () => x.refreshTemplates())}
       </Box>
-      {t && t.list.length === 0 ? <Text color={MUTED}>No template yet. The first one is written in the central chat and saved here.</Text> : null}
+      {t && t.list.length === 0 ? emptyState(x.C, 'No template yet', 'The first one is written in the central chat and saved here.') : null}
       {(t ? t.list : []).map(tp => {
         const used = x.store.ideas.filter(i => i.template?.id === tp.id).length
+        const color = tp.status === 'ready' ? OLIVE : AMBER
         return (
-          <Box key={`tp-${tp.id}`} flexDirection="column" borderStyle="round" borderColor={tp.status === 'ready' ? OLIVE : LINE} backgroundColor={PANEL} paddingX={1}>
-            <Box gap={1} flexWrap="wrap">
+          <Box key={`tp-${tp.id}`} flexDirection="column" borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
+            <Box gap={1} flexWrap="wrap" alignItems="center">
+              {rail(x.C, color, `rail-${tp.id}`)}
               <Text bold color={FG}>
                 {tp.name}
               </Text>
-              {chip(x, tp.status.toUpperCase(), tp.status === 'ready' ? OLIVE : AMBER, `tps-${tp.id}`)}
+              {kitChip(x.C, tp.status, color, `tps-${tp.id}`)}
               <Text color={MUTED}>{`family ${tp.family}${used > 0 ? `, used by ${used} idea(s)` : ''}`}</Text>
               {tp.link && Link ? <Link key={`tpl-link-${tp.id}`} href={tp.link} label="open doc" /> : null}
             </Box>
-            {tp.summary ? <Text color={FG}>{tp.summary}</Text> : null}
+            {tp.summary ? <Text color={FG}>{clip(tp.summary, w)}</Text> : null}
           </Box>
         )
       })}
@@ -319,55 +285,49 @@ export function templatesView(x: Ctx) {
 
 /* ---------- Knowledge repository (title and thumbnail) ---------- */
 
+const TAG_COLOR: Record<string, string> = { F: OLIVE, I: SKY, H: AMBER, V: RUST }
+
 export function knowledgeView(x: Ctx, stage: Stage) {
-  const { Box, Text, Button, Input } = x.C
+  const { Box, Text, Input } = x.C
   const entries: Knowledge[] = x.store.knowledge[stage.id] ?? []
+  const w = cardWidth(x.columns) - 8
   return (
     <Box flexDirection="column" gap={1}>
       <Text color={FG}>
-        Repository of principles, patterns and techniques for this stage. It grows from what you add, from what the stage chat
-        establishes, and from what gets launched.
+        Repository of principles, patterns and techniques for this stage. It grows from what you add, from what the stage chat establishes, and from what gets launched.
       </Text>
-      <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
-        <Input
-          key={`add-know-${stage.id}`}
-          placeholder="Add an entry. Start with principle:, technique:, pattern:, pitfall: or result:"
-          rows={1}
-          submitLabel="add"
-          onSubmit={(v: string) => void x.addKnowledge(stage.id, v)}
-        />
+      <Box gap={1} alignItems="center">
+        <Text bold color={BG} backgroundColor={CLAY}>
+          {' + '}
+        </Text>
+        <Box borderStyle="round" borderColor={CLAY} paddingX={1}>
+          <Input key={`add-know-${stage.id}`} placeholder="Add an entry. Start with principle:, technique:, pattern:, pitfall: or result:" rows={1} submitLabel="add" onSubmit={(v: string) => void x.addKnowledge(stage.id, v)} />
+        </Box>
       </Box>
-      {entries.length === 0 ? <Text color={MUTED}>Nothing here yet.</Text> : null}
+      {entries.length === 0 ? emptyState(x.C, 'Nothing here yet') : null}
       {KNOWLEDGE_KINDS.map(kind => {
         const list = entries.filter(e => e.kind === kind)
         if (list.length === 0) return null
         return (
-          <Box key={`kind-${kind}`} flexDirection="column">
-            <Text bold color={KIND_COLOR[kind]}>
-              {kind.toUpperCase()} ({list.length})
-            </Text>
+          <Box key={`kind-${kind}`} flexDirection="column" gap={1}>
+            <Box gap={1} alignItems="center">
+              {tint(x.C, kind.toUpperCase(), KIND_COLOR[kind])}
+              <Text color={MUTED}>{String(list.length)}</Text>
+            </Box>
             {list.map(e => (
-              <Box
-                key={`k-${e.id}`}
-                flexDirection="column"
-                borderStyle="round"
-                borderColor={LINE}
-                backgroundColor={PANEL}
-                paddingX={1}
-              >
+              <Box key={`k-${e.id}`} flexDirection="column" borderStyle="round" borderColor={LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
                 <Text color={FG}>{e.text}</Text>
-                <Box gap={1} flexWrap="wrap">
-                  <Text color={MUTED}>
-                    {e.source}, evidence tag {e.tag}
-                  </Text>
-                  <Button key={`k-rm-${e.id}`} label="Remove" onPress={() => x.removeKnowledge(stage.id, e.id)} />
+                <Box gap={1} flexWrap="wrap" alignItems="center">
+                  {tint(x.C, `evidence ${e.tag}`, TAG_COLOR[e.tag] ?? SAND)}
+                  <Text color={MUTED}>{clip(e.source, Math.max(10, w - 30))}</Text>
+                  {btn(x.C, `k-rm-${e.id}`, 'Remove', 'danger', () => x.removeKnowledge(stage.id, e.id))}
                 </Box>
               </Box>
             ))}
           </Box>
         )
       })}
-      <Text color={MUTED}>Evidence tags: F fact with a source, I inference, H hypothesis, V to validate, unrated means nobody rated it yet.</Text>
+      <Text color={MUTED}>Evidence: F fact with a source, I inference, H hypothesis, V to validate, unrated means nobody rated it yet.</Text>
     </Box>
   )
 }
@@ -390,67 +350,63 @@ export function receiptsView(x: Ctx, stage: Stage) {
   const list = receiptsFor(x.receipts, stage.id)
   const late = latestPerTask(list).filter(r => isLate(r, x.now))
   const reader = x.rcp
+  const w = cardWidth(x.columns) - 8
   return (
     <Box flexDirection="column" gap={1}>
-      <Text color={FG}>
-        Every scheduled run ends by writing a receipt to Drive. This list is what the runs said they did, newest first.
-      </Text>
+      <Text color={FG}>Every scheduled run ends by writing a receipt to Drive. This list is what the runs said they did, newest first.</Text>
       {reader ? (
         reader.ok ? (
           <Text color={MUTED}>{`Drive checked at ${reader.at.slice(11, 16)} UTC, ${x.receipts.length} receipts in the last 8 days.`}</Text>
         ) : (
-          <Text color={AMBER}>{`Drive check failed at ${reader.at.slice(11, 16)} UTC: ${reader.error ?? 'unknown error'}. Showing the receipts read earlier.`}</Text>
+          notice(x.C, 'warn', `Drive check failed at ${reader.at.slice(11, 16)} UTC: ${reader.error ?? 'unknown error'}. Showing the receipts read earlier.`)
         )
       ) : (
         <Text color={MUTED}>Reading Drive...</Text>
       )}
-      {late.map(r => (
-        <Text key={`late-${r.task_key}`} color={AMBER}>
-          {`▲ ${r.task_key}: no new receipt since the run expected at ${String(r.next_run_utc).slice(0, 16).replace('T', ' ')} UTC.`}
-        </Text>
-      ))}
-      {list.length === 0 ? <Text color={MUTED}>No receipts yet for this stage. The first ones arrive after the next scheduled runs.</Text> : null}
+      {late.map(r => notice(x.C, 'warn', `${r.task_key}: no new receipt since the run expected at ${String(r.next_run_utc).slice(0, 16).replace('T', ' ')} UTC.`, `late-${r.task_key}`))}
+      {list.length === 0 ? emptyState(x.C, 'No receipts yet for this stage', 'The first ones arrive after the next scheduled runs.') : null}
       {list.map(r => {
         const id = `rcp:${r.run_id}`
         const isOpen = x.open.includes(id)
         const m = OUTCOME_META[r.outcome]
         const counts = Object.entries(r.counts).filter(([, v]) => v !== null)
         return (
-          <Box key={`rcp-${r.run_id}`} flexDirection="column" borderStyle="round" borderColor={isOpen ? CLAY : m.color} backgroundColor={PANEL} paddingX={1}>
+          <Box key={`rcp-${r.run_id}`} flexDirection="column" borderStyle="round" borderColor={isOpen ? CLAY : LINE_SOFT} backgroundColor={PANEL} paddingX={1}>
             <Button key={`rcp-toggle-${r.run_id}`} onPress={() => x.toggle(id)}>
-              <Text bold color={m.color}>
-                {isOpen ? '▾ ' : '▸ '}
-                {m.glyph} {r.task_key}
+              <Text bold color={BG} backgroundColor={m.color}>
+                {` ${m.glyph} `}
               </Text>
-              <Text color={MUTED}>
-                {'  '}
-                {ago(r.finished_utc, x.now)}
+              <Text bold color={FG}>
+                {` ${r.task_key}`}
               </Text>
-              <Text color={FG}>
-                {'  '}
-                {clip(r.summary, 110)}
-              </Text>
+              <Text color={MUTED}>{`  ${ago(r.finished_utc, x.now)}`}</Text>
+              <Text color={FG}>{`  ${clip(r.summary, Math.max(12, w - r.task_key.length - 24))}`}</Text>
             </Button>
             {isOpen ? (
-              <Box flexDirection="column" paddingTop={1}>
-                <Text color={MUTED}>
-                  {`${m.label}. Finished ${r.finished_utc.slice(0, 16).replace('T', ' ')} UTC${r.started_utc ? `, started ${r.started_utc.slice(11, 16)}` : ''}. Run ${r.run_id}.`}
-                </Text>
-                <Text color={FG}>{r.summary}</Text>
-                {counts.length > 0 ? <Text color={MUTED}>{counts.map(([k, v]) => `${k} ${v}`).join(', ')}</Text> : null}
-                {r.problems.map((p, i) => (
-                  <Text key={`p-${r.run_id}-${i}`} color={AMBER}>
-                    {`▲ ${p}`}
-                  </Text>
-                ))}
-                {r.items.slice(0, 40).map((it, i) => (
-                  <Box key={`i-${r.run_id}-${i}`} gap={1} paddingLeft={1}>
-                    <Text color={ITEM_COLOR[it.status] ?? MUTED}>●</Text>
-                    <Text color={FG}>{it.name}</Text>
-                    <Text color={ITEM_COLOR[it.status] ?? MUTED}>{it.status}</Text>
-                    <Text color={MUTED}>{`${it.rows !== null ? `${it.rows} rows. ` : ''}${clip(it.note, 120)}`}</Text>
-                  </Box>
-                ))}
+              <Box flexDirection="column" gap={1} paddingTop={1}>
+                {kv(
+                  x.C,
+                  [
+                    { k: 'Outcome', v: m.label, color: m.color },
+                    { k: 'Finished', v: `${r.finished_utc.slice(0, 16).replace('T', ' ')} UTC${r.started_utc ? `, started ${r.started_utc.slice(11, 16)}` : ''}` },
+                    { k: 'Run', v: r.run_id, color: MUTED },
+                    { k: 'Summary', v: r.summary },
+                    ...(counts.length > 0 ? [{ k: 'Counts', v: counts.map(([k, v]) => `${k} ${v}`).join(', '), color: MUTED }] : []),
+                  ],
+                  10,
+                  `rkv-${r.run_id}`,
+                )}
+                {r.problems.map((p, i) => notice(x.C, 'warn', p, `p-${r.run_id}-${i}`))}
+                <Box flexDirection="column">
+                  {r.items.slice(0, 40).map((it, i) => (
+                    <Box key={`i-${r.run_id}-${i}`} gap={1} paddingLeft={1}>
+                      <Text color={ITEM_COLOR[it.status] ?? MUTED}>●</Text>
+                      <Text color={FG}>{clip(it.name, 24).padEnd(24)}</Text>
+                      <Text color={ITEM_COLOR[it.status] ?? MUTED}>{clip(it.status, 14).padEnd(14)}</Text>
+                      <Text color={MUTED}>{`${it.rows !== null ? `${it.rows} rows. ` : ''}${clip(it.note, 120)}`}</Text>
+                    </Box>
+                  ))}
+                </Box>
                 {r.outputs.length > 0 ? <Text color={MUTED}>{`Outputs: ${r.outputs.map(o => `${o.kind} ${o.name}`).join('; ')}`}</Text> : null}
               </Box>
             ) : null}

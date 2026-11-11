@@ -51,7 +51,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "reading drive...",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -135,13 +135,13 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -351,7 +351,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -459,7 +459,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -551,7 +551,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -629,7 +629,115 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "radar: receipts tab, one receipt open": {
+  "buttons": [
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-stage:coleta",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-auditor",
+    "text": "au",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-coleta",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-inbox",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-triagem",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "more-coleta",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "screening and advisor",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "rcp-toggle-coleta-fake-1",
+    "text": "▲ coleta 1 min ago 18 legs ok, 1 stale, 1 degraded_size.",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-receipts",
+    "text": "receipts (1)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-sources",
+    "text": "sources",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "tab-coleta-tasks",
+    "text": "tasks",
     "hotkey": null,
     "press": true
    }
@@ -689,7 +797,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -791,7 +899,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -893,7 +1001,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1013,7 +1121,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1109,7 +1217,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1217,7 +1325,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1343,7 +1451,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1486,7 +1594,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1623,7 +1731,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -1778,7 +1886,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -1921,7 +2029,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2082,7 +2190,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2219,7 +2327,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2356,7 +2464,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2487,7 +2595,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2636,7 +2744,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -2786,7 +2894,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -2961,7 +3069,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3116,7 +3224,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3217,7 +3325,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3319,7 +3427,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3421,7 +3529,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3481,7 +3589,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3565,13 +3673,13 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -3781,7 +3889,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -3889,7 +3997,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -3999,7 +4107,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4119,7 +4227,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4275,7 +4383,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4424,7 +4532,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4586,7 +4694,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4675,7 +4783,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -4705,7 +4813,7 @@
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -4777,7 +4885,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -4861,13 +4969,13 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -5077,7 +5185,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -5185,7 +5293,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5295,7 +5403,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5415,7 +5523,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5571,7 +5679,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5720,7 +5828,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5882,7 +5990,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -5971,7 +6079,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -6001,7 +6109,7 @@
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -6073,7 +6181,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -6157,13 +6265,13 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },
@@ -6373,7 +6481,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -6481,7 +6589,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -6591,7 +6699,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -6711,7 +6819,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -6867,7 +6975,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -7016,7 +7124,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -7178,7 +7286,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    }
@@ -7267,7 +7375,7 @@
    },
    {
     "key": "status-toggle",
-    "text": "drive or memory needs attention (click for detail)",
+    "text": "drive and memory ok",
     "hotkey": null,
     "press": true
    },
@@ -7297,7 +7405,7 @@
    },
    {
     "key": "tab-coleta-receipts",
-    "text": "receipts (0)",
+    "text": "receipts (1)",
     "hotkey": null,
     "press": true
    },

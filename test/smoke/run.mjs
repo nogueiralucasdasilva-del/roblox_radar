@@ -5,8 +5,9 @@ import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 
-const root = path.resolve(import.meta.dirname, '..', '..')
-const out = path.join(root, 'node_modules', '.smoke', 'bundle.mjs')
+const toolRoot = path.resolve(import.meta.dirname, '..', '..')
+const root = process.env.RADAR_ROOT ? path.resolve(process.env.RADAR_ROOT) : toolRoot
+const out = path.join(toolRoot, 'node_modules', '.smoke', 'bundle.mjs')
 await build({
   entryPoints: [path.join(root, 'hooks', 'register.tsx')],
   bundle: true,
@@ -14,13 +15,14 @@ await build({
   platform: 'node',
   outfile: out,
   jsx: 'transform',
+  absWorkingDir: root,
   jsxFactory: 'h',
   jsxFragment: 'Fragment',
-  inject: [path.join(root, 'test', 'smoke', 'h.mjs')],
-  alias: { 'claude-code': path.join(root, 'test', 'smoke', 'host-stub.mjs') },
+  inject: [path.join(toolRoot, 'test', 'smoke', 'h.mjs')],
+  alias: { 'claude-code': path.join(toolRoot, 'test', 'smoke', 'host-stub.mjs') },
   logLevel: 'error',
 })
-const stub = await import(pathToFileURL(path.join(root, 'test', 'smoke', 'host-stub.mjs')).href)
+const stub = await import(pathToFileURL(path.join(toolRoot, 'test', 'smoke', 'host-stub.mjs')).href)
 const { register } = await import(pathToFileURL(out).href + `?t=${Date.now()}`)
 
 const handlers = []
@@ -33,7 +35,17 @@ const $ = {
   fs: { read: async p => readFileSync(p, 'utf8'), write: async () => {} },
   store: { get: async k => mem.get(k), set: async (k, v) => void mem.set(k, JSON.parse(JSON.stringify(v))) },
   ui: { resolve: () => ({ Box: 'Box', Text: 'Text', Button: 'Button', Input: 'Input', Link: 'Link' }), toast: () => {} },
-  tool: { call: async () => ({ isError: true, text: 'no tool in the smoke test' }), list: async () => [] },
+  tool: {
+    call: async a => {
+      if (String(a.tool).endsWith('search_files')) return { text: JSON.stringify({ files: [{ id: 'r1', title: 'receipt_fake', createdTime: new Date().toISOString() }] }) }
+      if (String(a.tool).endsWith('read_file_content')) return { text: JSON.stringify(fakeReceipt()) }
+      return { isError: true, text: 'no tool in the smoke test' }
+    },
+    list: async () => [
+      { name: 'mcp__fake__search_files', mcp: true, description: 'Google Drive search' },
+      { name: 'mcp__fake__read_file_content', mcp: true, description: 'Google Drive read' },
+    ],
+  },
   mcp: { call: async () => { throw new Error('no mcp') } },
   model: { complete: async () => ({ isAnswered: false }) },
   session: { send: async () => ({ isDelivered: false }), surfaces: async () => [] },
@@ -44,6 +56,15 @@ const $ = {
 }
 const e = { surface: 'desktop', viewport: { columns: 100 }, props: { bodyColumns: 100 }, requestId: 'radar-panel', component: 'Pane' }
 
+function fakeReceipt() {
+  const now = new Date().toISOString()
+  return {
+    receipt_version: 1, task_key: 'coleta', stage: 'coleta', run_id: 'coleta-fake-1', started_utc: now, finished_utc: now, outcome: 'attention',
+    summary: '18 legs ok, 1 stale, 1 degraded_size.', counts: { legs_ok: 18, legs_stale: 1 },
+    items: [{ name: 'tiktok_trends', status: 'stale', rows: 50, note: 'identical to yesterday' }, { name: 'reddit', status: 'skipped_cost', rows: null, note: 'cost cap' }, { name: 'google_trends', status: 'ok', rows: 120, note: 'fresh' }],
+    outputs: [{ kind: 'sheet', name: 'collection_log', ref: 'abc' }], problems: ['reddit shrank'], next_run_utc: '2020-01-01T00:00:00Z',
+  }
+}
 // ---- tree helpers ----
 const textOf = n => (typeof n === 'string' || typeof n === 'number' ? String(n) : n && n.children ? n.children.map(textOf).join('') : '')
 function walk(n, f, parent = null) {
@@ -152,6 +173,8 @@ const rich = () => {
   return s
 }
 
+await render($, e)
+await new Promise(r => setTimeout(r, 400))
 const reset = async () => {
   stub.state.clear()
   mem.clear()
@@ -167,6 +190,7 @@ await scenario('radar: advisor card opens with the latest report and Send to Fac
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', '[Send to Factory]', '[Discard]', 'add-inbox', '[← Pipeline]'))
 await scenario('radar: auditor opens', async () => { await reset(); await setAtom('rstage', 'auditor') }, need('[← Pipeline]'))
 await scenario('radar: garbage values fall back to the map', async () => { await reset(); await setAtom('rstage', 'zzz'); await setAtom('mode', 'nope') }, need('[ 1  Radar and collection'))
+await scenario('radar: receipts tab, one receipt open', async () => { await reset(); await setAtom('rstage', 'coleta'); await setAtom('tabs', { coleta: 'receipts' }); await setAtom('open', ['rcp:coleta-fake-1']) }, need('coleta', 'Outcome', 'reddit shrank', 'tiktok_trends', 'skipped_cost'))
 await scenario('radar: more open', async () => { await reset(); await setAtom('more', true) })
 await scenario('factory: order is title, status, big tabs, buttons, then picker, potential and stacked stages', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory') }, (t, text) => {
   const order = ['▣ Roblox Radar', 'Drive', '[        RADAR        ]', '[        FACTORY (2)        ]', '[Refresh]', '[More ▸]', 'Prototype', 'Potential', '[ 1  ◆ Pre-validation', '[ 2  ◆ 2-page brief', '[ 9  ◆ Metrics']
