@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.8.0
+
+The panel is a shell. Reverse engineering replaces Template match. Each prototype has its own Drive folder.
+
+### What changed
+
+- One request builder (`hooks/request.ts`). Every stage action and the principles gate become the same four-part text: the prototype line, the Skills line (read every file of the stage skills folder and `_all`, ignore subfolders), the Output line (the prototype Drive folder and the exact document name), and the Context lines (earlier documents, the chosen reference, params). `hooks/actions.ts` (was `prompts.ts`) is only the action registry.
+- The output protocol lives in Drive (`_all/skill_output_protocol.md`). The parser stays in the mod and now reads `@@REFS`, `@@VERDICT` and `@@FAIL` too. A verdict or failure counts only after the request it answers; a failure returns a pending request to "not started" with its reason.
+- Prototype Drive folder `roblox_radar_protos/<proto_id>/inputs`, created once when the prototype is created (or lazily at its next action for older prototypes). Idempotent: searched before created. `Open folder` link in the prototype header. A Drive failure shows an amber note and is retried.
+- Standard document names `<proto_id>_<NN>_<kind>_v<gen>` (`hooks/docnames.ts`). `@@DOC` registers documents in `idea.docs[stage]`; `Open doc` link on the stage panel and on the stage card; older 0.7.x output links show too. Best effort check with `get_file_metadata`: a warning when the name is not the standard one or the file is not inside the prototype folder.
+- Stage `template` is shown as Reverse engineering (id unchanged, `skills_folder: reveng`). Four steps: Copy prompt JSON (segment 1 to 12, Extract or Audit, filled from the Drive prompt files and copied), Upload doc (local files or a folder, classified, numbered and uploaded with standard names), Validate doc (generic request, verdict chip PASS, PASS WITH GAPS, FAIL), Build template doc. The stage is done with a passing verdict plus a template doc.
+- The 2-page brief now yields three reference candidates (`@@REFS`), shown on the brief card and on the Reverse engineering card, where `Choose` stores the choice and sends one line to the chat. `Find references` runs the `refs` action for older prototypes.
+- Skills row counts `reveng` and ignores `_tool`. `/seed-skills` seeds nested folders and uploads `<name>.new` when a Drive file differs.
+- Version 0.8.0. New unit tests (request builder, doc names, tag parser, segments, upload planning, folder idempotence, connector read-back escaping).
+
+### Removed from the code during the shell audit (moved to Drive skills, or dropped)
+
+- All per-action work instructions in `prompts.ts` (scan format, brief output lines, full doc contents, build plan rules, title and thumbnail rules, launch and results rules). Their text is now in the seed skills `prevalid/skill_prevalid_scan.md`, `brief/skill_brief_document.md`, `doccompleto/skill_fulldoc.md`, `build/skill_build_plan_output.md`, `titulo/skill_titulo_output.md`, `thumb/skill_thumb_output.md`, `publicar/skill_launch_output.md`, `metricas/skill_results_output.md`.
+- The protocol block and the "read the Drive skills" sentence built in code (now `request.ts` and `_all/skill_output_protocol.md`).
+- The gate prompt with its fallback sentence (now `_all/skill_gate_request.md`).
+- The old Template match actions (find 3 reference games, reverse-engineering packet, register research, build template doc) and the research input.
+- The knowledge repository text that titles and thumbnails used to inject into the prompt. The repository still exists in the panel but is no longer sent to the chat: put that knowledge in the Drive skills of the stage.
+- The legacy idea agent flows (`scanPrompt`, `briefPrompt`, `ideaChatPrompt`, `startIdeaJob`, `onIdeaDone`) and the non-prototype chat opening.
+
+### Decisions taken
+
+- Stage id stays `template`; the Drive skills folder is `reveng` (`skills_folder`), with a fallback to the folder named by the stage id.
+- No Drive folder rename when the ABBR changes: the ABBR can no longer change since 0.7.4, and the stored folder id would be kept anyway.
+- The library path (`fetchTemplates`, `chooseTemplate`) is kept but hidden behind `SHOW_LIBRARY_PATH = false`; the `template_mode` field stays, unused.
+- Clipboard order: the app clipboard (`$.ui.copy`), then an OS tool started without a shell (`clip`, `pbcopy`, `wl-copy`, `xclip`), then a file in Downloads plus an expandable block in the panel. Not verified inside the app.
+- Upload uses the Drive connector with a JSON file type first (tested: the connector accepts it and keeps the size), and falls back to a text file (a Google Doc) if refused. The connector returns file text Markdown-escaped on read-back; the loader and the prompt reader undo that.
+- `Upload doc` is the submit button of its input (an `Input` only gives its text on submit), so when that is the next step, the highlighted marker is the "next" tag and not a filled button.
+- Parity baseline updated for the deliberate changes only: the two template path toggles and the research input are gone; new buttons for references, the four steps, segment and mode pills, the economy toggle and `Open doc` / `Open folder` links.
+- The validator script (`validate_extraction.py`) was not run here: the package is untrusted data and the task forbids executing anything from it.
+- Drive permission rule needed for the document check: `get_file_metadata` (the other Drive tools in use are already allowed).
+
 ## 0.7.5
 
 Design polish only. No behavior change.

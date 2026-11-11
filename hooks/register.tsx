@@ -48,8 +48,8 @@ import {
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
 import { docNameMatches, isStandardName, parseDocName } from './docnames'
-import { PROMPT_FILES, clampSegment, fillPrompt, segmentLabel } from './segments'
-import { expandHome, numberFromName, planUpload, splitPaths, summarizePlan, unescapeMarkdown } from './upload'
+import { PROMPT_FILES, clampSegment, fillPrompt, segmentLabel, tidyPrompt } from './segments'
+import { expandHome, numberFromName, planUpload, splitPaths, summarizePlan } from './upload'
 import type { RawFile } from './upload'
 import { AUTO_OPEN_CHAT_ON_SEND, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
@@ -1057,7 +1057,8 @@ async function readToolPrompt($: any, folder: string, name: string): Promise<str
   if (!f) throw new Error(`${name} not found in ${folder}/_tool in Drive`)
   const hit = promptCache.get(f.id)
   if (hit && hit.modified === f.modified) return hit.text
-  const text = unescapeMarkdown(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id }))).trim()
+  // unwrapDoc takes the connector envelope off and undoes its Markdown escaping once.
+  const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
   if (!text) throw new Error(`${name} is empty`)
   promptCache.set(f.id, { modified: f.modified, text })
   return text

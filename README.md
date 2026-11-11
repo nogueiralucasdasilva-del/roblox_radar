@@ -11,6 +11,8 @@ Control surface for the Roblox Radar pipeline.
 - **Chat first:** the panel is a dashboard and launcher. Buttons send a request to the prototype's chat. The chat ends its reply with tagged blocks (`@@OUTPUT`, `@@DOC`, `@@CHOSEN`, `@@SCORES`, `@@GATE`) and the panel files them on the card. While a request waits, that chat is read every 30 seconds.
 - **Potential score:** weights live in `data/scoring.json` (edit freely). The panel computes the overall percentage; `safety` is a gate below 40.
 - **Skills live in Drive**, folder `roblox_radar_skills`, one subfolder per stage id plus `_all`. Every request tells the chat to read every file of its stage folder and `_all`. Add or edit files in Drive: no code change. `/seed-skills` recreates missing folders and seed files, never overwriting.
+- **Shell:** the panel only launches requests and reads outputs. Every action is one generic request (`request.ts`) that points the chat at the Drive skills and the output protocol. Each prototype has a Drive folder `roblox_radar_protos/<proto_id>` with an `inputs` subfolder, and its documents have standard names and `Open doc` links.
+- **Reverse engineering:** the stage that turns the chosen reference game into the prototype's template: copy the Gemini prompt per video segment, upload the extraction files, validate, build the template doc. Skills in Drive: `reveng` (and `reveng/_tool` for the prompts).
 - **More:** one toggle with Overview, Pending, Skills and docs, Log, and a Skills row (files per stage, newest date).
 
 ## Install

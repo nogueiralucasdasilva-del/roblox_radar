@@ -36,3 +36,12 @@ export function fillPrompt(template: string, n: number): string {
 
 export const PROMPT_FILES = { extract: 'prompt_gemini_extract.txt', audit: 'prompt_gemini_audit.txt' } as const
 export type PromptMode = keyof typeof PROMPT_FILES
+
+// The Drive connector turns every line break into a Markdown hard break (two trailing spaces). Take them off a prompt read from Drive.
+export function tidyPrompt(text: string): string {
+  return text
+    .split(String.fromCharCode(10))
+    .map(l => l.replace(/ {2}$/, ''))
+    .join(String.fromCharCode(10))
+    .trim()
+}

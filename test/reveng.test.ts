@@ -8,9 +8,10 @@ import { applyParsed, createPrototype, docLinks, ensureReveng, markAsked, newest
 import { emptyStore } from '../hooks/model'
 import { parseRefs, parseTags } from '../hooks/outputs'
 import { ensureProtoFolders } from '../hooks/protos'
+import { unwrapDoc } from '../hooks/receipts'
 import { buildRequest } from '../hooks/request'
-import { MAX_SEGMENTS, clampSegment, fillPrompt, fmtTime, segmentLabel, segmentWindow } from '../hooks/segments'
-import { MAX_FILE_BYTES, classify, expandHome, lenientParse, numberFromName, planUpload, splitPaths, summarizePlan } from '../hooks/upload'
+import { MAX_SEGMENTS, clampSegment, fillPrompt, fmtTime, segmentLabel, segmentWindow, tidyPrompt } from '../hooks/segments'
+import { MAX_FILE_BYTES, classify, expandHome, lenientParse, numberFromName, planUpload, splitPaths, summarizePlan, unescapeMarkdown } from '../hooks/upload'
 import type { RawFile } from '../hooks/upload'
 
 const NOW = '2026-11-11T10:00:00.000Z'
@@ -359,4 +360,41 @@ test('creating the prototype folder twice makes no duplicate: root, <proto_id> a
 
 test('a failing Drive call surfaces as an error the caller can turn into a notice', async () => {
   await assert.rejects(ensureProtoFolders(async () => { throw new Error('Drive is not reachable') }, '', 'P001-A'), /Drive is not reachable/)
+})
+
+/* ---------- connector read-back escaping (shape captured from a real Drive round trip) ---------- */
+
+// What the Drive connector does to file text: Markdown escaping of backslash, backtick, star, underscore and brackets.
+const connectorEscape = (text: string): string => text.replace(/([\\`*_\[\]])/g, '\\$1')
+
+test('the connector read-back of a clean chunk, and of an already escaped chunk, both load with the right keys', () => {
+  const clean = readFileSync(path.join(FIX, 'synthetic_good', 'chunk_01.json'), 'utf8')
+  const esc = readFileSync(path.join(FIX, 'synthetic_esc', 'chunk_01.json'), 'utf8')
+  for (const original of [clean, esc]) {
+    const back = connectorEscape(original)
+    assert.notEqual(back, original)
+    const r = lenientParse(back)
+    assert.equal(r.ok, true)
+    const v = (r as { ok: true; value: Record<string, unknown> }).value
+    assert.ok('video_quality' in v, 'key video_quality must be intact')
+    assert.ok('economy_readings' in v)
+    assert.equal((v.segment as { index: number }).index, 1)
+  }
+  assert.equal(planUpload('P1-A', 1, [{ path: 'x', name: 'chunk_01.json', bytes: 100, text: connectorEscape(clean) }]).accepted.length, 1)
+})
+
+test('the connector inverse restores a prompt with underscores, brackets and braces', () => {
+  const prompt = 'index: {INDEX} from {START} to {END}. Use per_second [rate] and *bold*. A backslash: \ done.'
+  assert.equal(unescapeMarkdown(connectorEscape(prompt)), prompt)
+  assert.equal(fillPrompt(unescapeMarkdown(connectorEscape(prompt)), 2), 'index: 2 from 10:00 to 20:10. Use per_second [rate] and *bold*. A backslash: \ done.')
+})
+
+test('a prompt read back from the connector is restored: escapes undone, hard breaks removed, placeholders intact', () => {
+  const NL = String.fromCharCode(10)
+  const BS = String.fromCharCode(92)
+  const body = ['index: {INDEX}  ', `1${BS}. Use ${BS}<int${BS}> and video${BS}_quality  `, '  ', 'from: {START} to: {END}  '].join(NL)
+  const raw = JSON.stringify({ fileContent: body })
+  const text = tidyPrompt(unwrapDoc(raw))
+  assert.equal(text, ['index: {INDEX}', '1. Use <int> and video_quality', '', 'from: {START} to: {END}'].join(NL))
+  assert.equal(fillPrompt(text, 1).includes('from: 00:00 to: 10:10'), true)
 })

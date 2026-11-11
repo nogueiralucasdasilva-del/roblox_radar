@@ -1,6 +1,6 @@
 {
   "name": "radar-panel",
-  "version": "0.7.5",
+  "version": "0.8.0",
   "description": "Roblox Radar pipeline control in two modes: Radar (collection, screening, loose ideas) and Factory (prototypes with proto IDs, one chat each, potential score, stage panels, skills in Drive).",
   "types": "./types/index.d.ts",
   "icon": "./assets/icon.png"

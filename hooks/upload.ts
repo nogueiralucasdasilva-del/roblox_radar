@@ -5,34 +5,47 @@ export const MAX_FILE_BYTES = 2 * 1024 * 1024
 
 export type LenientResult = { ok: true; value: unknown } | { ok: false; error: string }
 
-// Characters a Markdown export may escape with a backslash. JSON's own escapes (quote, backslash, slash, b f n r t u) are left alone.
-const MD_ESCAPED = /\\([_\[\]*#`{}()<>~|+.!-])/g
+// Two kinds of Markdown escaping can reach the panel.
+// - Single level (a Google Doc export): a backslash before a character such as underscore or a bracket.
+// - Connector read-back: the Drive connector returns file text Markdown-escaped, so a backslash becomes two and an underscore
+//   becomes backslash plus underscore (an original "\_" comes back as three backslashes and an underscore).
+// JSON's own escapes (quote, slash, b f n r t u) are never touched.
+const MD_SINGLE = /\\([_\[\]*#`{}()<>~|+.!-])/g
+const MD_FULL = /\\([\\_\[\]*#`{}()<>~|+.!-])/g
 
-// Removes the backslashes a Markdown export puts before characters such as underscore and brackets (JSON escapes stay).
-export const unescapeMarkdown = (t: string): string => t.replace(MD_ESCAPED, '$1')
+// Exact inverse of the connector's escaping: every backslash-escaped Markdown character loses its backslash, including a
+// backslash escaped by another backslash.
+export const unescapeMarkdown = (t: string): string => t.replace(MD_FULL, '$1')
 
-// Loads JSON the way a Google Doc export or a chat paste leaves it: code fences, a BOM, Markdown escapes, text around the JSON.
-export function lenientParse(raw: string): LenientResult {
-  let t = (raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw).trim()
+const stripFence = (raw: string): string => {
+  const t = (raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw).trim()
   const fence = /```[a-zA-Z]*\s*([\s\S]*?)```/.exec(t)
-  if (fence && fence[1] && fence[1].trim()) t = fence[1].trim()
-  else t = t.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim()
-  const attempts = [t, t.replace(MD_ESCAPED, '$1')]
-  for (const a of attempts) {
+  if (fence && fence[1] && fence[1].trim()) return fence[1].trim()
+  return t.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim()
+}
+
+// Loads JSON the way a Google Doc export, a connector read-back or a chat paste leaves it: code fences (also escaped ones),
+// a BOM, Markdown escapes, text around the JSON. Order: the text as it is, the connector inverse, then the single-level inverse.
+export function lenientParse(raw: string): LenientResult {
+  const connectorBack = unescapeMarkdown(raw)
+  // The connector inverse can leave a single-level escape of an already escaped export, so that comes next.
+  const forms = [stripFence(raw), stripFence(connectorBack), stripFence(connectorBack.replace(MD_SINGLE, '$1')), stripFence(raw.replace(MD_SINGLE, '$1'))]
+  for (const a of forms) {
     try {
       return { ok: true, value: JSON.parse(a) }
     } catch {
       // try the next form
     }
   }
-  const cleaned = attempts[1] ?? t
-  const open = Math.min(...['{', '['].map(c => cleaned.indexOf(c)).filter(k => k >= 0))
-  const close = Math.max(cleaned.lastIndexOf('}'), cleaned.lastIndexOf(']'))
-  if (Number.isFinite(open) && close > open) {
-    try {
-      return { ok: true, value: JSON.parse(cleaned.slice(open, close + 1)) }
-    } catch {
-      // fall through
+  for (const cleaned of [forms[1] as string, forms[2] as string, forms[3] as string]) {
+    const open = Math.min(...['{', '['].map(c => cleaned.indexOf(c)).filter(k => k >= 0))
+    const close = Math.max(cleaned.lastIndexOf('}'), cleaned.lastIndexOf(']'))
+    if (Number.isFinite(open) && close > open) {
+      try {
+        return { ok: true, value: JSON.parse(cleaned.slice(open, close + 1)) }
+      } catch {
+        // next form
+      }
     }
   }
   return { ok: false, error: 'not valid JSON' }
