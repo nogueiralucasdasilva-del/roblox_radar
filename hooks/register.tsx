@@ -47,13 +47,15 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
-import { AUTO_OPEN_CHAT_ON_SEND, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
+import { docNameMatches, isStandardName } from './docnames'
+import { AUTO_OPEN_CHAT_ON_SEND, docLinks, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
 import type { RequestCtx } from './actions'
 import { parseTags, splitItems } from './outputs'
 import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
+import { ensureProtoFolders } from './protos'
 import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
@@ -719,6 +721,70 @@ function ideaEvent(s: Store, i: Idea, at: string): void {
   enqueue(s, { v: 1, kind: 'idea', scope: `idea:${i.id}`, at, stage: i.stage, idea: ideaSnapshot(i) })
 }
 
+// The prototype's Drive folder (roblox_radar_protos / <proto_id> / inputs). Best effort and idempotent: a failure leaves a one-line
+// notice and the next action tries again. Never creates a second folder: the search runs before any create.
+let protosRootId = ''
+const folderBusy = new Set<string>()
+const folderNotes: Record<string, string> = {}
+
+async function ensureProtoFolder($: any, ideaId: string): Promise<boolean> {
+  const i0 = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i0 || !i0.proto_id) return false
+  if (i0.driveFolderId && i0.inputsFolderId) return true
+  if (folderBusy.has(ideaId)) return false
+  folderBusy.add(ideaId)
+  try {
+    const f = await ensureProtoFolders((tool, args) => driveCall($, tool, args), protosRootId, i0.proto_id, { folderId: i0.driveFolderId, inputsId: i0.inputsFolderId })
+    protosRootId = f.rootId
+    await mutate($, s => {
+      const x = s.ideas.find(y => y.id === ideaId)
+      if (!x) return
+      x.driveFolderId = f.folderId
+      x.driveFolderUrl = f.folderUrl
+      x.inputsFolderId = f.inputsId
+      ideaEvent(s, x, new Date().toISOString())
+    })
+    delete folderNotes[ideaId]
+    void flushOutbox($)
+    return true
+  } catch (err: any) {
+    folderNotes[ideaId] = `Drive folder not created yet (${String((err && err.message) || err).slice(0, 90)}). It is retried before the next action.`
+    return false
+  } finally {
+    folderBusy.delete(ideaId)
+    await update($, rev, n => n + 1)
+  }
+}
+
+// Best effort check of the documents the chat registered: the name must be the standard one and the file must sit in the
+// prototype folder. Needs the Drive tool get_file_metadata; if it is not allowed or fails, nothing is shown.
+async function verifyDocs($: any, ideaId: string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i) return
+  const todo = Object.entries(i.docs ?? {}).flatMap(([stage, list]) => list.filter(d => d.fileId && !d.checked).map(d => ({ stage, d })))
+  for (const { stage, d } of todo.slice(0, 6)) {
+    try {
+      const o: any = jsonOf(await driveCall($, 'get_file_metadata', { fileId: d.fileId }))
+      const title = String(o?.title ?? o?.name ?? '')
+      const parent = String(o?.parentId ?? (Array.isArray(o?.parents) ? o.parents[0] : '') ?? '')
+      const warns: string[] = []
+      if (title && !docNameMatches(title, d.name)) warns.push(`the file is named "${title}", not "${d.name}"`)
+      if (!isStandardName(d.name)) warns.push('the name is not the standard one')
+      if (parent && i.driveFolderId && parent !== i.driveFolderId && parent !== i.inputsFolderId) warns.push('it is not inside the prototype folder')
+      await mutate($, s => {
+        const x = s.ideas.find(y => y.id === ideaId)
+        const ref = x?.docs?.[stage]?.find(r => r.url === d.url)
+        if (!x || !ref) return
+        ref.checked = true
+        ensureProto(x)
+        if (warns.length > 0) x.docWarn![d.url] = warns.join('; ')
+      })
+    } catch {
+      // the connector call may be refused: skip silently
+    }
+  }
+}
+
 // Sends a request to the prototype's own chat (creating the chat first when it does not exist) and shows it beside the panel.
 async function sendToProtoChat($: any, ideaId: string, text: string, done: string): Promise<void> {
   const key = `idea:${ideaId}`
@@ -801,8 +867,10 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
     $.ui.toast('Nothing to send (already in the Factory?).')
     return
   }
-  factoryNote = { ideaId, text: `Created ${protoId} and its chat` }
   await update($, protoAtom, () => ideaId)
+  // The Drive folder first, so the chat's first message already knows it. A failure only adds a note: the chat is still created.
+  const folderOk = await ensureProtoFolder($, ideaId)
+  factoryNote = { ideaId, text: `Created ${protoId} and its chat${folderOk ? '' : '. Drive folder not created yet, it is retried before the next action'}` }
   $.ui.toast(`Created ${protoId} and its chat`)
   void flushOutbox($)
   const idea = (await loadStore($)).ideas.find(x => x.id === ideaId)
@@ -872,6 +940,8 @@ async function openProtoChat($: any, ideaId: string, stageId: string): Promise<v
 
 async function runFactory($: any, ideaId: string, key: string): Promise<void> {
   const a = actionByKey(key)
+  // An older prototype gets its Drive folder now (lazily); the request names it.
+  await ensureProtoFolder($, ideaId)
   const data = await load($)
   const s0 = await loadStore($)
   const i = s0.ideas.find(x => x.id === ideaId)
@@ -1075,6 +1145,7 @@ async function syncChats($: any, only?: string[], force = false): Promise<void> 
           enqueue(s, { v: 1, kind: 'exchange', scope: t.scope, at, stage: t.scope, user: 'transcript', answer: tail, purpose: 'chat', memory: memText })
         }
       })
+      if (t.kind === 'idea' && parsed && parsed.docs.length > 0) void verifyDocs($, t.scope)
     }
   } finally {
     syncBusy = false
@@ -2014,6 +2085,7 @@ async function renderPane($: any, e: any) {
       pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       archive: (id, archived) => archiveProto($, id, archived),
+      folderNotice: id => folderNotes[id] ?? null,
     }
 
     /* the body of one tab of one stage */
@@ -2263,6 +2335,7 @@ async function renderPane($: any, e: any) {
       border: string
       selected: boolean
       done?: boolean
+      docUrl?: string
       state: { label: string; color: string; dim?: boolean }
       connector?: string
       onPress: () => unknown
@@ -2290,6 +2363,7 @@ async function renderPane($: any, e: any) {
             </Text>
           </Button>
           <Text color={c.selected ? FG : MUTED}>{clip(c.sub, inner)}</Text>
+          {c.docUrl && Link ? <Link key={`carddoc-${c.id}`} href={c.docUrl} label="Open doc" /> : null}
           {c.lines.map((l, k) => (
             <Text key={`cl-${c.id}-${k}`} bold={l.bold} color={l.color}>
               {clip(l.text, inner)}
@@ -2484,6 +2558,7 @@ async function renderPane($: any, e: any) {
           border: g.color,
           selected: here,
           done: isDone,
+          docUrl: docLinks(idea, id)[0]?.url,
           connector: doneAbove ? OLIVE : undefined,
           onPress: () => goF(id),
         }

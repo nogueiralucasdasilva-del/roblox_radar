@@ -49,7 +49,7 @@ export type Idea = {
   reveng?: Reveng
   failed?: Record<string, { reason: string; at: string }>
 }
-export type DocRef = { name: string; url: string; fileId: string | null; at: string; gen: number; kind: string }
+export type DocRef = { name: string; url: string; fileId: string | null; at: string; gen: number; kind: string; checked?: boolean }
 export type RefCandidate = { name: string; url?: string; universe_id?: string; visits?: string; approval_pct?: string; ccu?: string; as_of?: string; why_fit?: string; risk?: string; tag?: string }
 export type Refs = { candidates: RefCandidate[]; chosenIndex: number | null; history: RefCandidate[][] }
 export type UploadFile = { name: string; kind: 'chunk' | 'audit'; index: number; fileId: string | null; url: string | null }

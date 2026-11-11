@@ -103,6 +103,10 @@ function dump(tree) {
       lines.push(`${' '.repeat(depth)}[${n.props.label ?? textOf(n)}]`)
       return
     }
+    if (n.type === 'Link') {
+      lines.push(`${' '.repeat(depth)}<link ${n.props.label}>`)
+      return
+    }
     if (n.type === 'Input') {
       lines.push(`${' '.repeat(depth)}<input ${n.props.key}: ${n.props.placeholder}>`)
       return
@@ -252,6 +256,26 @@ for (const cols of [60, 90, 130]) {
   await scenario(`tier ${cols}: factory more open`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief'); await setAtom('more', true) }, null, cols)
   await scenario(`tier ${cols}: radar more open`, async () => { await reset(); await setAtom('rstage', 'coleta'); await setAtom('more', true) }, null, cols)
 }
+await scenario('factory: documents give Open doc on the card and the stage, Open folder in the header, a failure notice', async () => {
+  await reset()
+  const s = rich()
+  s.ideas[1].driveFolderId = 'FOLD'
+  s.ideas[1].driveFolderUrl = 'https://drive.google.com/drive/folders/FOLDERIDFOLDERID'
+  s.ideas[1].docs = { brief: [{ name: 'P002-MONSTER2_02_brief_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'brief' }] }
+  s.ideas[1].docWarn = { 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit': 'it is not inside the prototype folder' }
+  s.ideas[1].failed = { brief: { reason: 'no connector', at: NOW } }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
+}, need('<link Open folder>', '<link Open doc>', 'Prototype folder'.slice(0, 0)))
+await scenario('factory: stage panel lists documents and the failure', async () => {
+  await reset()
+  const s = rich()
+  s.ideas[1].docs = { brief: [{ name: 'P002-MONSTER2_02_brief_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'brief' }] }
+  s.ideas[1].docWarn = { 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit': 'it is not inside the prototype folder' }
+  s.ideas[1].failed = { brief: { reason: 'no connector', at: NOW } }
+  putStore(s)
+  await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief')
+}, need('<link Open doc>', 'Documents (1)', 'P002-MONSTER2_02_brief_v1', 'not inside the prototype folder', 'Failed: no connector'))
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))
 
 const dumpName = process.argv.includes('--dump') ? process.argv[process.argv.indexOf('--dump') + 1] : null

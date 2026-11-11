@@ -5,7 +5,7 @@ import { ago, nameOf, openChatButton } from '../views'
 import type { Ctx } from '../views'
 import { IDEA_STAGES, clip, nextStageOf } from '../model'
 import type { Idea, Output } from '../model'
-import { isArchived, isPending, latestOf, outputsOf } from '../factory'
+import { docLinks, isArchived, isPending, latestOf, outputsOf } from '../factory'
 import { actionsFor } from '../actions'
 import type { FAction } from '../actions'
 import { splitItems } from '../outputs'
@@ -134,7 +134,9 @@ export function protoHeader(x: Ctx, i: Idea) {
         <Text bold color={FG}>{i.title}</Text>
         {isArchived(i) ? tint(x.C, 'ARCHIVED', SAND) : null}
         {blocked ? chip(x.C, `⚑ SAFETY BELOW ${x.scoring.safety_gate}`, RUST) : null}
+        {i.driveFolderUrl && x.C.Link ? <x.C.Link key={`folder-${i.id}`} href={i.driveFolderUrl} label="Open folder" /> : null}
       </Box>
+      {!i.driveFolderUrl && x.folderNotice(i.id) ? notice(x.C, 'warn', x.folderNotice(i.id) as string) : null}
       <Box gap={2} flexWrap="wrap" alignItems="center">
         {chip(x.C, pctText(p.pct), pctColor(p.pct))}
         <Text color={MUTED}>POTENTIAL</Text>
@@ -191,6 +193,23 @@ function docLink(x: Ctx, o: Output) {
 
 function skillNote(o: Output) {
   return o.skill.length > 0 ? `skills: ${o.skill.map(s => s.name).join(', ')}` : ''
+}
+
+// Every document of the stage, newest first, one link each. A warning shows when a check found a problem.
+function docsBlock(x: Ctx, i: Idea, stage: string, docs: { name: string; url: string }[]) {
+  const { Box, Text, Link } = x.C
+  void stage
+  return (
+    <Box flexDirection="column">
+      <Text color={MUTED}>{`Documents (${docs.length})`}</Text>
+      {docs.map(d => (
+        <Box key={`doc-${d.url}`} gap={1} flexWrap="wrap">
+          {Link ? <Link key={`doclink-${d.url}`} href={d.url} label={clip(d.name, 70)} /> : <Text color={SKY}>{d.url}</Text>}
+          {i.docWarn?.[d.url] ? notice(x.C, 'warn', i.docWarn[d.url] as string) : null}
+        </Box>
+      ))}
+    </Box>
+  )
 }
 
 // One generation of text output, with its doc link and the skills that were present when it was requested.
@@ -331,6 +350,8 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
   const histId = `hist:${i.id}:${stage}`
   const histOpen = x.open.includes(histId)
   const items = stage === 'titulo' || stage === 'thumb'
+  const docs = docLinks(i, stage)
+  const failed = i.failed?.[stage]
   const state = check === 'done' ? { t: 'DONE', c: OLIVE } : check === 'asked' || pending ? { t: 'ASKED', c: AMBER } : { t: 'NOT STARTED', c: SAND }
   return (
     <Box flexDirection="column" gap={1} borderStyle="round" borderColor={LINE} backgroundColor={PANEL} paddingX={1} paddingY={1}>
@@ -339,11 +360,14 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
         {chip(x.C, state.t, state.c, `chk-${stage}`)}
         {askedAt ? <Text color={MUTED}>{`asked ${ago(askedAt, x.now)}`}</Text> : null}
         {openChatButton(x, 'idea', i.id, i.chat ?? null, () => x.openProtoChat(i.id, stage))}
+        {docs.length > 0 && x.C.Link ? <x.C.Link key={`opendoc-${i.id}-${stage}`} href={docs[0]!.url} label="Open doc" /> : null}
         {pending ? btn(x.C, `refresh-${i.id}`, 'Refresh now', 'quiet', () => x.refreshNow(i.id)) : null}
         {check !== 'done' && enabled ? btn(x.C, `done-${i.id}-${stage}`, 'Mark done', 'secondary', () => x.markDone(i.id, stage)) : null}
       </Box>
       {rule(x.C, w - 6)}
       {!reached ? notice(x.C, 'warn', 'This prototype has not reached this stage yet. Actions are off.') : null}
+      {failed ? notice(x.C, 'error', `Failed: ${failed.reason}`) : null}
+      {docs.length > 0 && stage !== 'template' ? docsBlock(x, i, stage, docs) : null}
       {pending ? notice(x.C, 'warn', 'Waiting for the chat. The result shows here when it answers (checked every 30 seconds).') : null}
       {stage === 'template' ? templateTools(x, i, enabled) : null}
       {acts.map(a => actionButton(x, i, a, enabled, stage === 'thumb' && gens.length > 0 ? 'Generate 5 more' : stage === 'titulo' && gens.length > 0 ? 'Generate more titles' : undefined))}

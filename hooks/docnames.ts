@@ -49,3 +49,11 @@ export const DEFAULT_DOC_KIND: Record<string, DocKind> = {
   publicar: 'launch',
   metricas: 'results',
 }
+
+// Whether two document names are the same (a Drive copy may add a trailing extension or a space).
+export function docNameMatches(a: string, b: string): boolean {
+  const norm = (t: string) => t.trim().replace(/\.(json|txt|md)$/i, '')
+  return norm(a) === norm(b)
+}
+
+export const isStandardName = (name: string): boolean => parseDocName(name.trim().replace(/\.(json|txt|md)$/i, '')) !== null

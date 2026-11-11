@@ -7,6 +7,7 @@ import { DOC_KINDS, docName, fileIdOf, kindOfName, parseDocName, stageNN } from 
 import { applyParsed, createPrototype, docLinks, ensureReveng, markAsked, newestDocs, templateDone } from '../hooks/factory'
 import { emptyStore } from '../hooks/model'
 import { parseRefs, parseTags } from '../hooks/outputs'
+import { ensureProtoFolders } from '../hooks/protos'
 import { buildRequest } from '../hooks/request'
 import { MAX_SEGMENTS, clampSegment, fillPrompt, fmtTime, segmentLabel, segmentWindow } from '../hooks/segments'
 import { MAX_FILE_BYTES, classify, expandHome, lenientParse, numberFromName, planUpload, splitPaths, summarizePlan } from '../hooks/upload'
@@ -309,4 +310,53 @@ test('a chunk without a segment index takes the number in its name, then sorted 
   const byName = Object.fromEntries(plan.accepted.map(f => [f.name, f.index]))
   assert.equal(byName['part_5.json'], 5)
   assert.deepEqual([byName['a.json'], byName['b.json']].sort(), [1, 2])
+})
+
+/* ---------- the prototype Drive folder ---------- */
+
+// A tiny in-memory Drive: search by title, mime type and parent, and create.
+function fakeDrive() {
+  const files: { id: string; title: string; parentId: string | null; mime: string }[] = []
+  let n = 0
+  const calls = { search: 0, create: 0 }
+  const drive = async (tool: string, args: Record<string, unknown>): Promise<string> => {
+    if (tool === 'search_files') {
+      calls.search++
+      const q = String(args.query)
+      const title = /title = '([^']*)'/.exec(q)?.[1]
+      const parent = /parentId = '([^']+)'/.exec(q)?.[1] ?? null
+      const hit = files.filter(f => f.title === title && (parent ? f.parentId === parent : true) && f.mime.includes('folder'))
+      return JSON.stringify({ files: hit.map(f => ({ id: f.id, title: f.title })) })
+    }
+    if (tool === 'create_file') {
+      calls.create++
+      const f = { id: `ID${++n}`, title: String(args.title), parentId: (args.parentId as string) ?? null, mime: String(args.contentMimeType) }
+      files.push(f)
+      return JSON.stringify({ id: f.id, title: f.title })
+    }
+    throw new Error(`unexpected tool ${tool}`)
+  }
+  return { drive, files, calls }
+}
+
+test('creating the prototype folder twice makes no duplicate: root, <proto_id> and inputs exist once', async () => {
+  const d = fakeDrive()
+  const a = await ensureProtoFolders(d.drive, '', 'P003-MONSTER')
+  const createdAfterFirst = d.calls.create
+  assert.equal(createdAfterFirst, 3)
+  const b = await ensureProtoFolders(d.drive, '', 'P003-MONSTER')
+  assert.equal(d.calls.create, createdAfterFirst)
+  assert.deepEqual([b.folderId, b.inputsId, b.rootId], [a.folderId, a.inputsId, a.rootId])
+  assert.equal(d.files.filter(f => f.title === 'P003-MONSTER').length, 1)
+  assert.equal(d.files.filter(f => f.title === 'inputs').length, 1)
+  assert.equal(d.files.filter(f => f.title === 'roblox_radar_protos').length, 1)
+  assert.ok(a.folderUrl.endsWith(a.folderId))
+  const c = await ensureProtoFolders(d.drive, a.rootId, 'P004-OTHER')
+  assert.equal(c.rootId, a.rootId)
+  assert.equal(d.files.filter(f => f.title === 'roblox_radar_protos').length, 1)
+  assert.equal(d.files.filter(f => f.title === 'inputs').length, 2)
+})
+
+test('a failing Drive call surfaces as an error the caller can turn into a notice', async () => {
+  await assert.rejects(ensureProtoFolders(async () => { throw new Error('Drive is not reachable') }, '', 'P001-A'), /Drive is not reachable/)
 })

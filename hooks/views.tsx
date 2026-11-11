@@ -62,6 +62,7 @@ export type Ctx = {
   pickItem: (ideaId: string, stageId: string, item: string, mode: 'choose' | 'discard') => unknown
   setTemplateMode: (ideaId: string, mode: 'library' | 'custom') => unknown
   archive: (ideaId: string, on: boolean) => unknown
+  folderNotice: (ideaId: string) => string | null
 }
 
 const STATUS_META: Record<SourceStatus, { glyph: string; color: string; label: string }> = {
