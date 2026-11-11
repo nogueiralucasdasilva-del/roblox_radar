@@ -1,4 +1,5 @@
 import type { Stage } from '../types'
+import type { Scan } from './scan'
 
 export type Msg = { role: 'user' | 'assistant' | 'system'; text: string; at: string; moveTo?: string }
 export type Busy = { agentId: string; at: string }
@@ -49,6 +50,8 @@ export type Idea = {
   reveng?: Reveng
   failed?: Record<string, { reason: string; at: string }>
   creation?: Creation
+  // The pre-validation decision after the scan: open until Lucas chooses.
+  decision?: 'open' | 'brief' | 'adjusting' | 'stopped'
 }
 export type StepStateName = 'pending' | 'running' | 'done' | 'failed'
 export type CreationStep = { state: StepStateName; error?: string }
@@ -69,11 +72,11 @@ export type Reveng = { gen: number; uploads: Record<number, UploadRecord>; segme
 export type StageCheck = 'asked' | 'done'
 export type SkillRef = { name: string; modified: string; id?: string; version?: number | null; actions?: string[] }
 export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[]; action?: string; noTags?: boolean }
-export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string } }
+export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string }; scan?: Scan; scanErrors?: string[] }
 export type Confidence = 'low' | 'medium' | 'high'
 export type EvidenceTag = 'F' | 'H' | 'V'
 export type Criterion = { v: number; c: Confidence; e: string; t: EvidenceTag; stage: string }
-export type ScoreEntry = { at: string; stage: string; criteria: Record<string, Criterion>; h: string }
+export type ScoreEntry = { at: string; stage: string; criteria: Record<string, Criterion>; h: string; provisional?: boolean }
 export type GateVerdict = 'PASS' | 'PASS WITH RISKS' | 'BLOCK'
 export type GateRecord = { verdict: GateVerdict; reason: string; at: string; override?: boolean }
 // A raw idea in the Radar inbox: no proto ID and no chat until it is sent to the Factory.

@@ -114,7 +114,7 @@ test('@@REFS parses an array, tolerates missing keys and numbers, drops entries 
   assert.deepEqual(parseRefs('[]'), [])
 })
 
-test('@@REFS survives JSON-wrapped transcripts and multi-line arrays, and ignores quoted examples', () => {
+test('@@REFS survives JSON-wrapped transcripts, multi-line arrays and code fences, and ignores quoted examples', () => {
   const nl = String.fromCharCode(10)
   const text = ['@@OUTPUT stage=brief kind=brief gen=1', 'Three candidates.', '@@END', `@@REFS stage=brief | ${REFS_JSON}`].join(nl)
   assert.equal(parseTags(JSON.stringify(text)).refs.length, 1)
@@ -122,7 +122,7 @@ test('@@REFS survives JSON-wrapped transcripts and multi-line arrays, and ignore
   const pretty = JSON.stringify(JSON.parse(REFS_JSON), null, 1)
   assert.equal(parseTags(`@@REFS stage=brief | ${pretty}`).refs[0]!.items.length, 2)
   assert.equal(parseTags(`> @@REFS stage=brief | ${REFS_JSON}`).refs.length, 0)
-  assert.equal(parseTags(['```', `@@REFS stage=brief | ${REFS_JSON}`, '```'].join(nl)).refs.length, 0)
+  assert.equal(parseTags(['```', `@@REFS stage=brief | ${REFS_JSON}`, '```'].join(nl)).refs.length, 1)
   assert.equal(parseTags(`@@REFS stage=<stageId> | ${REFS_JSON}`).refs.length, 0)
 })
 

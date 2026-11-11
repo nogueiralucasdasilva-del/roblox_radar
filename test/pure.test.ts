@@ -108,23 +108,24 @@ test('tags tolerate JSON-wrapped transcripts with escaped newlines', () => {
   assert.equal(p.gates.length, 1)
 })
 
-test('tags inside quoted examples, code fences and placeholders are ignored', () => {
+test('tags in quoted lines and with placeholder stages are ignored; tags inside a code fence are read', () => {
   const text = [
     'End your reply with:',
     '> @@OUTPUT stage=titulo kind=titles gen=1',
-    '```',
-    '@@OUTPUT stage=titulo kind=titles gen=1',
-    'fenced',
-    '@@END',
-    '```',
+    '> 1. quoted title',
+    '> @@END',
     '@@OUTPUT stage=<stageId> kind=<kind> gen=<n>',
     'placeholder',
     '@@END',
     '@@GATE stage=<stageId> verdict=PASS | x',
-  ].join('\n')
+  ].join(String.fromCharCode(10))
   const p = parseTags(text)
   assert.equal(p.outputs.length, 0)
   assert.equal(p.gates.length, 0)
+  const fenced = ['```', '@@OUTPUT stage=titulo kind=titles gen=1', '1. Soup Dash', '@@END', '```'].join(String.fromCharCode(10))
+  const f = parseTags(fenced)
+  assert.equal(f.outputs.length, 1)
+  assert.equal(f.outputs[0]!.content, '1. Soup Dash')
 })
 
 test('an unterminated output is flagged as truncated', () => {

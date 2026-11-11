@@ -286,6 +286,31 @@ await scenario('factory: documents give Open doc on the card and the stage, Open
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
 }, need('<link Open folder>', '<link Open doc>', 'Prototype folder'.slice(0, 0)))
+const mkScan = (pot, over = {}) => ({
+  potential: pot, reason: { text: 'clear hook but the verb is taken', tag: 'I' }, noun: 'soup', verb: 'deliver without spilling',
+  wedge: { text: 'delivery race with spill physics, clippable in 2 seconds', tag: 'H' }, engine: 'NAO AVALIADO',
+  works: { text: 'the spill is a clip moment', tag: 'I' }, fails: { text: 'balance verb owned by two old games', tag: 'F' },
+  competitors: [{ game: 'Game A', numbers: '12k now, peak 85k (14%)', implication: { text: 'slow decay', tag: 'F' }, peakPct: 14, deadClone: false }, { game: 'Game B', numbers: '1k now, peak 80k (1%)', implication: { text: 'dead', tag: 'F' }, peakPct: 1, deadClone: true }],
+  noKo: true, knockouts: [], confidence: 'media', evidence: 'radar=not found ; web=5 sources', ...over,
+})
+const scanIdea = (scan, extra = {}) => {
+  const s = rich()
+  s.ideas[1].stage = 'prevalid'
+  s.ideas[1].outputs = { prevalid: [{ at: NOW, kind: 'scan', gen: 1, content: 'POTENCIAL: MEDIO', skill: [], chosen: [], discarded: [], scan }] }
+  s.ideas[1].checks = { prevalid: 'done' }
+  Object.assign(s.ideas[1], extra)
+  return s
+}
+for (const cols of [60, 90, 130]) {
+  await scenario(`scan card ${cols}: potential, wedge, competitors, decisions`, async () => { await reset(); putStore(scanIdea(mkScan('MEDIO'))); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+    need('MEDIO', 'PROVISIONAL SCORES', 'CONF MED', 'Wedge', 'NOT ASSESSED', 'DEAD CLONE', 'NO KO', 'Write 2-page brief', 'Adjust idea', 'Stop here'), cols)
+}
+await scenario('scan card: BAIXO keeps the brief button and warns', async () => { await reset(); putStore(scanIdea(mkScan('BAIXO', { noKo: false, knockouts: [{ name: 'KO3 saturated', fix: 'other verb' }] }))); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('Chat recommends stopping', 'Write 2-page brief', 'KO3 SATURATED', 'fixable by: other verb'))
+await scenario('scan card: an unrecognized scan shows the missing keys and the raw text', async () => { await reset(); const s = scanIdea(undefined); s.ideas[1].outputs.prevalid[0].scanErrors = ['missing WEDGE, CONFIANCA']; s.ideas[1].checks = { prevalid: 'asked' }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('Scan format not recognized: missing WEDGE, CONFIANCA', 'POTENCIAL: MEDIO'))
+await scenario('scan card: the chosen decision shows as a tint', async () => { await reset(); putStore(scanIdea(mkScan('ALTO'), { decision: 'brief' })); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
+  need('BRIEF CHOSEN'))
 await scenario('factory: stage panel lists documents and the failure', async () => {
   await reset()
   const s = rich()
@@ -339,10 +364,10 @@ await scenario('ready check section shows each check and the buttons', async () 
     await press()
     const again = await render($, e)
     const text = dump(again)
-    if (!text.includes('Show self-test files (13)')) problems.push('self-test did not report 13 files')
+    if (!text.includes('Show self-test files (20)')) problems.push('self-test did not report 20 files')
     if (/✖/.test(text.split('Ready check')[1] ?? '')) problems.push('a self-test file failed in the panel')
   }
-  results.push({ name: 'the self-test button runs all 13 golden fixtures through the real code and the real stage cards', ok: problems.length === 0, problems, text: '' })
+  results.push({ name: 'the self-test button runs all 20 fixtures (13 golden, 7 pre-validation) through the real code and the real stage cards', ok: problems.length === 0, problems, text: '' })
   if (problems.length) failures++
 }
 await scenario('a drawing error never leaves a blank pane', async () => { await reset(); const s = base(); s.ideas = 'broken'; putStore(s) }, need('Back to Radar', 'could not draw'))

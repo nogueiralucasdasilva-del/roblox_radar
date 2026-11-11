@@ -13,6 +13,7 @@ import { SAFETY, potential, safetyBlocked } from '../scoring'
 import { newest, skillsFolderName } from '../skills'
 import { refsBlock, revengPanel } from './reveng'
 import { STEP_LABEL, STEP_ORDER } from '../chatflow'
+import { scanPanel, scanSummary } from './scan'
 import { btn, cardWidth, chip, emptyState, meterColor, meterText, notice, pill, rail, rule, tierOf, tint } from './kit'
 
 const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Reverse eng.', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
@@ -191,6 +192,7 @@ export function protoHeader(x: Ctx, i: Idea) {
         {p.delta !== null ? <Text color={p.delta >= 0 ? OLIVE : RUST}>{`${p.delta >= 0 ? '+' : ''}${p.delta} vs previous stage`}</Text> : null}
         <Text color={MUTED}>{`${p.scored}/${p.total} criteria scored`}</Text>
       </Box>
+      {(i.outputs?.prevalid ?? []).find(o => o.scan)?.scan ? scanSummary(x, (i.outputs?.prevalid ?? []).find(o => o.scan)!.scan!, `scan-sum-${i.id}`) : null}
       {progressRow(x, i)}
       {criteriaColumns(x, i)}
       <Text color={MUTED}>Confidence l, m, h. Evidence F fact, H hypothesis, V needs validation.</Text>
@@ -444,11 +446,12 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
       })}
       {stage === 'brief' ? refsBlock(x, i, false) : null}
       {stage === 'brief' && !(i.refs && i.refs.candidates.length > 0) && docs.length > 0 ? <Text color={MUTED}>The references come from the 2-page brief.</Text> : null}
-      {stage !== 'template' && !items && gens.length > 0 ? outputBlock(x, i, gens[0]!, 'Latest output') : null}
+      {stage === 'prevalid' && gens.length > 0 ? scanPanel(x, i, gens, enabled) : null}
+      {stage !== 'template' && stage !== 'prevalid' && !items && gens.length > 0 ? outputBlock(x, i, gens[0]!, 'Latest output') : null}
       {stage === 'template' && i.template ? notice(x.C, 'ok', `Library template chosen: ${i.template.name}`) : null}
       {items ? itemsBlock(x, i, stage) : null}
       {!items && stage !== 'template' && gens.length === 0 ? emptyState(x.C, 'No output yet') : null}
-      {!items && stage !== 'template' && gens.length > 1 ? (
+      {!items && stage !== 'template' && stage !== 'prevalid' && gens.length > 1 ? (
         <Box flexDirection="column" gap={1}>
           <Box>{btn(x.C, `hist-${i.id}-${stage}`, `${histOpen ? 'Hide' : 'Show'} history (${gens.length - 1} earlier)`, 'quiet', () => x.toggle(histId))}</Box>
           {histOpen ? gens.slice(1).map(o => outputBlock(x, i, o, 'Earlier output', true)) : null}

@@ -8,6 +8,7 @@ import type { DocKind } from './docnames'
 import { docLinks, newestDocs, templateDone } from './factory'
 import { splitItems } from './outputs'
 import { buildRequest } from './request'
+import { scanContext } from './scan'
 import type { RequestDoc } from './request'
 
 export type Param = string | number | boolean
@@ -49,7 +50,21 @@ const previous = (i: Idea, stage: string): string =>
 
 export const ACTIONS: FAction[] = [
   { key: 'scan', stage: 'prevalid', kind: 'scan', label: 'Run quick scan', done: 'Quick scan requested in its chat.', docKind: 'scan' },
-  { key: 'brief', stage: 'brief', kind: 'brief', label: 'Write 2-page brief', done: 'Brief requested in its chat.', docKind: 'brief' },
+  {
+    key: 'brief',
+    stage: 'brief',
+    kind: 'brief',
+    label: 'Write 2-page brief',
+    done: 'Brief requested in its chat.',
+    docKind: 'brief',
+    // The latest scan travels with the brief request, so the brief reuses its evidence instead of searching again.
+    params: (i): Record<string, Param> => {
+      const sc = (i.outputs?.prevalid ?? []).find(o => o.scan)?.scan
+      const out: Record<string, Param> = {}
+      if (sc) out.scan = scanContext(sc)
+      return out
+    },
+  },
   { key: 'refs', stage: 'brief', kind: 'refs', label: 'Find references', done: 'Reference candidates requested in its chat.', docKind: 'brief', needs: hasBrief },
   {
     key: 'reveng_validate',
@@ -120,7 +135,7 @@ function chosenText(i: Idea): string | null {
 }
 
 // The only way an action becomes text for the chat.
-export function buildActionRequest(a: FAction, i: Idea, ctx: RequestCtx): { text: string; gen: number; expectedDocName: string } {
+export function buildActionRequest(a: FAction, i: Idea, ctx: RequestCtx, extra?: Record<string, Param>): { text: string; gen: number; expectedDocName: string } {
   const gen = a.gen ? a.gen(i) : nextGeneration(i, a)
   const expectedDocName = docName(i.proto_id ?? '', a.stage, a.docKind ?? 'scan', gen)
   const text = buildRequest({
@@ -136,7 +151,7 @@ export function buildActionRequest(a: FAction, i: Idea, ctx: RequestCtx): { text
     expectedDocName,
     docs: contextDocs(i),
     chosenReference: chosenText(i),
-    params: a.params ? a.params(i) : undefined,
+    params: a.params || extra ? { ...(a.params ? a.params(i) : {}), ...(extra ?? {}) } : undefined,
   })
   return { text, gen, expectedDocName }
 }

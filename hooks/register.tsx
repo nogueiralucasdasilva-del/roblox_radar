@@ -61,7 +61,7 @@ import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scori
 import type { ScoringConfig } from './scoring'
 import { evalChatTools, evalDrive, evalDuplicates, evalFolders, evalRadar, evalScheduled, evalSelftest, evalSkills, PROTOCOL_FILE } from './ready'
 import type { ReadyItem, ReadyReport } from './ready'
-import { GOLDEN_FILES, runGolden } from './selftest'
+import { GOLDEN_FILES, PREVALID_FILES, runGolden, runPrevalid } from './selftest'
 import type { SelfResult } from './selftest'
 import { createChat, openBeside, permissionHelp, sessionRows, STEP_LABEL } from './chatflow'
 import type { Attempt, ChatDeps, CreateResult, StepName } from './chatflow'
@@ -820,7 +820,8 @@ async function runSelftest($: any): Promise<SelfResult[]> {
   const golden = await loadSelftestFiles($, GOLDEN_FILES)
   const ctx = lastCtx
   const render = ctx ? (idea: Idea, stage: string) => stagePanel({ ...ctx, store: { ...ctx.store, ideas: [idea] } } as Ctx, idea, stage) : undefined
-  selfResults = runGolden(golden, render)
+  const prevalid = await loadSelftestFiles($, PREVALID_FILES, 'prevalid/')
+  selfResults = [...runGolden(golden, render), ...runPrevalid(prevalid)]
   await update($, rev, n => n + 1)
   return selfResults
 }
@@ -1192,7 +1193,7 @@ async function openProtoChat($: any, ideaId: string, stageId: string): Promise<v
   await update($, rev, n => n + 1)
 }
 
-async function runFactory($: any, ideaId: string, key: string): Promise<void> {
+async function runFactory($: any, ideaId: string, key: string, extra?: Record<string, string>): Promise<void> {
   const a = actionByKey(key)
   // An older prototype gets its Drive folder now (lazily); the request names it.
   await ensureProtoFolder($, ideaId)
@@ -1206,7 +1207,7 @@ async function runFactory($: any, ideaId: string, key: string): Promise<void> {
     await update($, rev, n => n + 1)
     return
   }
-  const { text, gen } = buildActionRequest(a, i, requestCtx(data, a.stage, i))
+  const { text, gen } = buildActionRequest(a, i, requestCtx(data, a.stage, i), extra)
   const refs = skillFiles(skillsState, skillsFolderName(skillsState, data.stages.find(x => x.id === a.stage) ?? { id: a.stage }))
   await mutate($, s => {
     const x = s.ideas.find(y => y.id === ideaId)
@@ -1218,6 +1219,32 @@ async function runFactory($: any, ideaId: string, key: string): Promise<void> {
     ideaEvent(s, x, now)
   })
   await sendToProtoChat($, ideaId, text, a.done)
+}
+
+async function setDecision($: any, ideaId: string, decision: NonNullable<Idea['decision']>): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (i) i.decision = decision
+  })
+}
+
+// Decision buttons of the pre-validation card.
+async function decideScan($: any, ideaId: string, decision: 'brief'): Promise<void> {
+  await setDecision($, ideaId, decision)
+  await runFactory($, ideaId, 'brief')
+}
+
+async function adjustScan($: any, ideaId: string, note: string): Promise<void> {
+  const text = note.replace(/\s+/g, ' ').trim().slice(0, 200)
+  if (!text) return
+  await setDecision($, ideaId, 'adjusting')
+  await runFactory($, ideaId, 'scan', { adjust: text })
+}
+
+async function stopAtScan($: any, ideaId: string): Promise<void> {
+  await setDecision($, ideaId, 'stopped')
+  await sendToProtoChat($, ideaId, 'Stopped at scan, log STOPPED_AT_SCAN. No further work on this prototype.', 'Told the chat: stopped at scan.')
+  await archiveProto($, ideaId, true)
 }
 
 async function markStageDone($: any, ideaId: string, stageId: string): Promise<void> {
@@ -2619,6 +2646,9 @@ async function renderPane($: any, e: any) {
       openProtoChat: (id, st) => openProtoChat($, id, st),
       runFactory: (id, key) => runFactory($, id, key),
       markDone: (id, st) => markStageDone($, id, st),
+      decide: (id, d) => decideScan($, id, d),
+      adjustScan: (id, t) => adjustScan($, id, t),
+      stopHere: id => stopAtScan($, id),
       requestAdvance: (id, force) => requestAdvance($, id, force),
       overrideAdvance: id => overrideAdvance($, id),
       advanceNoGate: id => advanceNoGate($, id),

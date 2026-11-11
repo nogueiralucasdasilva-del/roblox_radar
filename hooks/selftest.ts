@@ -4,6 +4,8 @@ import { applyParsed, createPrototype, docLinks, markAsked } from './factory'
 import { IDEA_STAGES, emptyStore } from './model'
 import type { Idea } from './model'
 import { parseTags, splitItems } from './outputs'
+import { parseScan } from './scan'
+import { parseCriteria } from './scoring'
 
 export type SelfFile = { name: string; text: string }
 export type SelfResult = { file: string; ok: boolean; detail: string }
@@ -76,3 +78,55 @@ export function runGolden(files: readonly SelfFile[], render?: (idea: Idea, stag
 }
 
 export const GOLDEN_FILES = Object.keys(GOLDEN)
+
+export const PREVALID_FILES = ['reply_plain.txt', 'reply_json_wrapped.json', 'reply_fenced.txt', 'reply_trailing_spaces.txt', 'reply_malformed.txt', 'reply_no_tags.txt', 'reply_quoted_example_only.txt']
+const SAME = PREVALID_FILES.slice(0, 4)
+
+// What the parser makes of one pre-validation reply: the scan result and the scored criteria.
+export function readPrevalid(text: string) {
+  const parsed = parseTags(text)
+  const out = parsed.outputs.find(o => o.stage === 'prevalid' && o.kind === 'scan')
+  const scan = out ? parseScan(out.content) : null
+  const criteria = parsed.scores.length > 0 ? Object.keys(parseCriteria(parsed.scores[0], 'prevalid')) : []
+  return { found: !!out, scan, criteria }
+}
+
+// The pre-validation fixtures: the four layouts give the same valid scan; malformed is found but invalid; no tags and a quoted example find nothing.
+export function runPrevalid(files: readonly SelfFile[]): SelfResult[] {
+  const out: SelfResult[] = []
+  const byName = new Map(files.map(f => [f.name, f.text]))
+  let reference: string | null = null
+  for (const name of PREVALID_FILES) {
+    const text = byName.get(name)
+    if (text === undefined) {
+      out.push({ file: `prevalid/${name}`, ok: false, detail: 'fixture file not found' })
+      continue
+    }
+    let wrong: string | null = null
+    try {
+      const r = readPrevalid(text)
+      if (SAME.includes(name)) {
+        if (!r.found || !r.scan?.ok || !r.scan.scan) wrong = `scan not valid: ${r.scan?.errors.join(', ') ?? 'not found'}`
+        else if (r.criteria.length !== 6) wrong = `scores ${r.criteria.length}, expected 6`
+        else if (r.scan.scan.competitors.length !== 2) wrong = `competitors ${r.scan.scan.competitors.length}, expected 2`
+        else if (!r.scan.scan.noKo) wrong = 'expected no knockout'
+        else {
+          const json = JSON.stringify(r.scan.scan)
+          if (reference === null) reference = json
+          else if (json !== reference) wrong = 'result differs from reply_plain.txt'
+        }
+      } else if (name === 'reply_malformed.txt') {
+        const miss = r.scan && !r.scan.ok ? r.scan.errors.join(' ') : ''
+        if (!r.found) wrong = 'scan block not found'
+        else if (r.scan?.ok) wrong = 'expected an invalid scan'
+        else if (!miss.includes('WEDGE') || !miss.includes('CONFIANCA')) wrong = `expected missing WEDGE and CONFIANCA, got: ${miss}`
+      } else if (r.found) {
+        wrong = 'a scan was found, expected none'
+      }
+    } catch (err) {
+      wrong = `threw: ${String((err as Error)?.message ?? err).slice(0, 100)}`
+    }
+    out.push({ file: `prevalid/${name}`, ok: wrong === null, detail: wrong ?? 'ok' })
+  }
+  return out
+}
