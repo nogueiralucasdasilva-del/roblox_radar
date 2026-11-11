@@ -4,15 +4,17 @@
 //   @@CHOSEN stage=<id> | <text>
 //   @@SCORES {"criteria":{...}}
 //   @@GATE stage=<id> verdict=<PASS|PASS WITH RISKS|BLOCK> | <reason>
-import type { GateVerdict } from './model'
+//   @@REFS stage=<id> | <JSON array of reference candidates>
+//   @@VERDICT stage=<id> kind=<kind> verdict=<PASS|PASS WITH GAPS|FAIL> | <reason>
+//   @@FAIL stage=<id> | <what failed>
+import type { GateVerdict, RefCandidate } from './model'
 
-export const KINDS = ['scan', 'brief', 'refs', 're_packet', 'template_doc', 'fulldoc', 'titles', 'thumb_prompts', 'build_plan', 'launch', 'results']
+export const KINDS = ['scan', 'brief', 'refs', 're_packet', 'reveng_validation', 'template_doc', 'fulldoc', 'titles', 'thumb_prompts', 'build_plan', 'launch', 'results']
 export const OUTPUT_STAGES = ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
 // Which output kind completes which stage. refs and re_packet are steps inside the template stage.
 export const DONE_KIND: Record<string, string> = {
   prevalid: 'scan',
   brief: 'brief',
-  template: 'template_doc',
   doccompleto: 'fulldoc',
   build: 'build_plan',
   titulo: 'titles',
@@ -28,6 +30,11 @@ export type Parsed = {
   chosen: { stage: string; text: string }[]
   scores: unknown[]
   gates: { stage: string; verdict: GateVerdict; reason: string }[]
+  refs: { stage: string; items: RefCandidate[] }[]
+  verdicts: { stage: string; kind: string; verdict: 'PASS' | 'PASS WITH GAPS' | 'FAIL'; reason: string; pos: number }[]
+  fails: { stage: string; reason: string; pos: number }[]
+  // Where the panel's own requests start in the transcript, so a verdict or failure counts only after its request.
+  headers: { action: string; gen: number; pos: number }[]
 }
 
 const NL = String.fromCharCode(10)
@@ -56,9 +63,37 @@ const kv = (s: string, key: string): string | null => {
   return m && m[1] ? m[1].replace(/^"|"$/g, '') : null
 }
 
+const REF_KEYS = ['name', 'url', 'universe_id', 'visits', 'approval_pct', 'ccu', 'as_of', 'why_fit', 'risk', 'tag'] as const
+
+// The JSON array of an @@REFS tag. Tolerates missing keys and numbers where text is expected; drops entries without a name.
+export function parseRefs(text: string): RefCandidate[] | null {
+  let v: unknown
+  try {
+    v = JSON.parse(text.trim())
+  } catch {
+    return null
+  }
+  if (!Array.isArray(v)) return null
+  const out: RefCandidate[] = []
+  for (const x of v) {
+    if (!x || typeof x !== 'object') continue
+    const rec = x as Record<string, unknown>
+    if (typeof rec.name !== 'string' || !rec.name.trim()) continue
+    const c: RefCandidate = { name: rec.name.trim() }
+    for (const k of REF_KEYS) {
+      if (k === 'name') continue
+      const val = rec[k]
+      if (typeof val === 'string' && val.trim()) c[k] = val.trim()
+      else if (typeof val === 'number' && Number.isFinite(val)) c[k] = String(val)
+    }
+    out.push(c)
+  }
+  return out
+}
+
 // Tags count only at the start of a line, outside code fences and quote lines, and only with a real stage id and kind.
 export function parseTags(raw: string): Parsed {
-  const out: Parsed = { outputs: [], docs: [], chosen: [], scores: [], gates: [] }
+  const out: Parsed = { outputs: [], docs: [], chosen: [], scores: [], gates: [], refs: [], verdicts: [], fails: [], headers: [] }
   const lines = normalizeTranscript(raw).split(NL)
   let fence = false
   let cur: { stage: string; kind: string; gen: number; buf: string[] } | null = null
@@ -66,7 +101,10 @@ export function parseTags(raw: string): Parsed {
     if (cur) out.outputs.push({ stage: cur.stage, kind: cur.kind, gen: cur.gen, content: cur.buf.join(NL).trim(), truncated })
     cur = null
   }
-  for (const line of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li] as string
+    const hm = /Action:\s.*\(([A-Za-z0-9_]+)\)\.\s*Generation:\s*(\d+)\./.exec(line)
+    if (hm && hm[1]) out.headers.push({ action: hm[1], gen: Number(hm[2]), pos: li })
     if (/^\s*```/.test(line)) {
       fence = !fence
       if (cur) cur.buf.push(line)
@@ -107,6 +145,31 @@ export function parseTags(raw: string): Parsed {
       } catch {
         // a malformed block is ignored
       }
+      continue
+    }
+    const rf = /^\s*@@REFS\s+stage=(\S+)\s*\|\s*(.*)$/.exec(line)
+    if (rf && rf[1] && OUTPUT_STAGES.includes(rf[1])) {
+      // The JSON normally sits on one line; accept it spread over a few lines until it parses.
+      let buf = rf[2] ?? ''
+      let items = parseRefs(buf)
+      for (let k = 1; !items && k <= 40 && li + k < lines.length; k++) {
+        const next = lines[li + k] as string
+        if (/^\s*@@/.test(next)) break
+        buf += NL + next
+        items = parseRefs(buf)
+        if (items) li += k
+      }
+      if (items) out.refs.push({ stage: rf[1], items })
+      continue
+    }
+    const vd = /^\s*@@VERDICT\s+stage=(\S+)\s+kind=(\S+)\s+verdict=(PASS WITH GAPS|PASS|FAIL)\s*\|\s*(.*)$/.exec(line)
+    if (vd && vd[1] && OUTPUT_STAGES.includes(vd[1])) {
+      out.verdicts.push({ stage: vd[1], kind: vd[2] ?? '', verdict: vd[3] as 'PASS' | 'PASS WITH GAPS' | 'FAIL', reason: (vd[4] ?? '').trim(), pos: li })
+      continue
+    }
+    const fl = /^\s*@@FAIL\s+stage=(\S+)\s*\|\s*(.*)$/.exec(line)
+    if (fl && fl[1] && OUTPUT_STAGES.includes(fl[1])) {
+      out.fails.push({ stage: fl[1], reason: (fl[2] ?? '').trim(), pos: li })
       continue
     }
     const g = /^\s*@@GATE\s+stage=(\S+)\s+verdict=(PASS WITH RISKS|PASS|BLOCK)\s*\|\s*(.*)$/.exec(line)

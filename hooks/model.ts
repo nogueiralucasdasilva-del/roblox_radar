@@ -36,14 +36,29 @@ export type Idea = {
   scores?: ScoreEntry[]
   outputs?: Record<string, Output[]>
   template_mode?: 'library' | 'custom' | null
-  refs?: string
   research?: string
   gate?: Record<string, GateRecord>
   gateAsked?: Record<string, string>
+  // 0.8.0: the prototype's Drive folder, its documents, the reference candidates, the Reverse engineering state.
+  driveFolderId?: string
+  driveFolderUrl?: string
+  inputsFolderId?: string
+  docs?: Record<string, DocRef[]>
+  docWarn?: Record<string, string>
+  refs?: Refs
+  reveng?: Reveng
+  failed?: Record<string, { reason: string; at: string }>
 }
+export type DocRef = { name: string; url: string; fileId: string | null; at: string; gen: number; kind: string }
+export type RefCandidate = { name: string; url?: string; universe_id?: string; visits?: string; approval_pct?: string; ccu?: string; as_of?: string; why_fit?: string; risk?: string; tag?: string }
+export type Refs = { candidates: RefCandidate[]; chosenIndex: number | null; history: RefCandidate[][] }
+export type UploadFile = { name: string; kind: 'chunk' | 'audit'; index: number; fileId: string | null; url: string | null }
+export type UploadRecord = { at: string; files: UploadFile[]; rejected: { name: string; reason: string }[] }
+export type RevengVerdict = 'PASS' | 'PASS WITH GAPS' | 'FAIL'
+export type Reveng = { gen: number; uploads: Record<number, UploadRecord>; segment: number; mode: 'extract' | 'audit'; noEconomy: boolean; verdict?: RevengVerdict; verdictAt?: string; verdictReason?: string }
 export type StageCheck = 'asked' | 'done'
 export type SkillRef = { name: string; modified: string }
-export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[] }
+export type Requested = { kind: string; gen: number; at: string; skill: SkillRef[]; action?: string }
 export type Output = { at: string; kind: string; gen: number; content: string; skill: SkillRef[]; chosen: string[]; discarded: string[]; doc?: { title: string; url: string } }
 export type Confidence = 'low' | 'medium' | 'high'
 export type EvidenceTag = 'F' | 'H' | 'V'

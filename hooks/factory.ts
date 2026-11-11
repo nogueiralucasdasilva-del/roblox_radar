@@ -1,6 +1,7 @@
 // Factory logic, pure: proto IDs, ABBR, creating a prototype, migrating an old store, applying tagged chat output.
 import { IDEA_STAGES, clip, nextStageOf } from './model'
-import type { Idea, InboxIdea, Output, Requested, SkillRef, Store } from './model'
+import type { DocRef, Idea, InboxIdea, Output, Requested, Reveng, SkillRef, Store } from './model'
+import { fileIdOf, kindOfName, parseDocName } from './docnames'
 import { DONE_KIND } from './outputs'
 import type { Parsed } from './outputs'
 import { addScores, parseCriteria } from './scoring'
@@ -154,7 +155,45 @@ export function ensureProto(i: Idea): Idea {
   i.outputs = i.outputs ?? {}
   i.gate = i.gate ?? {}
   i.gateAsked = i.gateAsked ?? {}
+  i.docs = i.docs ?? {}
+  i.docWarn = i.docWarn ?? {}
+  i.failed = i.failed ?? {}
+  // 0.7.x kept the reference games as text; 0.8.0 keeps candidates.
+  if (typeof (i.refs as unknown) === 'string') i.refs = undefined
   return i
+}
+
+export function ensureReveng(i: Idea): Reveng {
+  if (!i.reveng) i.reveng = { gen: 0, uploads: {}, segment: 1, mode: 'extract', noEconomy: false }
+  return i.reveng
+}
+
+// The newest document of each kind of a stage (by version, then by time).
+export function newestDocs(list: readonly DocRef[]): DocRef[] {
+  const best = new Map<string, DocRef>()
+  for (const d of list) {
+    const cur = best.get(d.kind)
+    if (!cur || d.gen > cur.gen || (d.gen === cur.gen && d.at > cur.at)) best.set(d.kind, d)
+  }
+  return [...best.values()]
+}
+
+export function docsOf(i: Idea, stage: string): DocRef[] {
+  return [...(i.docs?.[stage] ?? [])].sort((a, b) => b.at.localeCompare(a.at) || b.gen - a.gen)
+}
+
+// Every document of a stage as a link list: the registry first, then older 0.7.x output links that are not in it.
+export function docLinks(i: Idea, stage: string): { name: string; url: string }[] {
+  const out: { name: string; url: string }[] = docsOf(i, stage).map(d => ({ name: d.name, url: d.url }))
+  for (const o of i.outputs?.[stage] ?? []) if (o.doc && !out.some(x => x.url === o.doc!.url)) out.push({ name: o.doc.title, url: o.doc.url })
+  return out
+}
+
+// The Reverse engineering stage is done when the latest verdict passes and a template doc is registered.
+export function templateDone(i: Idea): boolean {
+  const v = i.reveng?.verdict
+  if (v !== 'PASS' && v !== 'PASS WITH GAPS') return false
+  return (i.docs?.template ?? []).some(d => d.kind === 'template-doc')
 }
 
 export function outputsOf(i: Idea, stage: string): Output[] {
@@ -196,11 +235,12 @@ export function resolveGates(i: Idea, now: string): boolean {
   return advanceIdea(i, now)
 }
 
-export function markAsked(i: Idea, stage: string, kind: string, gen: number, skill: SkillRef[], now: string): void {
+export function markAsked(i: Idea, stage: string, kind: string, gen: number, skill: SkillRef[], now: string, action?: string): void {
   ensureProto(i)
+  delete i.failed![stage]
   if (i.checks![stage] !== 'done') i.checks![stage] = 'asked'
   i.askedAt![stage] = now
-  i.requested![stage] = { kind, gen, at: now, skill } as Requested
+  i.requested![stage] = { kind, gen, at: now, skill, action } as Requested
   i.updated = now
 }
 
@@ -227,14 +267,27 @@ export function archiveIdea(i: Idea, archived: boolean, now: string): void {
   if (last && last.stage === i.stage) last.status = i.status
 }
 
-export type ApplyResult = { added: number; scored: boolean; gates: number; truncated: { stage: string; kind: string; gen: number }[] }
+export type ApplyResult = { added: number; scored: boolean; gates: number; failed: number; truncated: { stage: string; kind: string; gen: number }[] }
 
 const sameContent = (a: string, b: string) => a.replace(/\s+/g, ' ').trim() === b.replace(/\s+/g, ' ').trim()
+
+// A verdict or a failure counts only when it comes after the request it answers. Without a matching request in the
+// transcript (an older chat, a restore) it counts.
+function afterRequest(i: Idea, p: Parsed, stage: string, pos: number): boolean {
+  const r = i.requested?.[stage]
+  const wanted = r && r.action ? { action: r.action, gen: r.gen } : i.gateAsked?.[stage] ? { action: 'gate', gen: 0 } : null
+  if (!wanted) return true
+  const hs = p.headers.filter(h => h.action === wanted.action && (wanted.action === 'gate' || h.gen === wanted.gen))
+  const last = hs.length > 0 ? Math.max(...hs.map(h => h.pos)) : -1
+  return last < 0 ? true : pos > last
+}
+
+const hasPendingRequest = (i: Idea, stage: string): boolean => isPending(i, stage) || (!!i.gateAsked?.[stage] && (!i.gate?.[stage] || (i.gate[stage]?.at ?? '') < (i.gateAsked[stage] ?? '')))
 
 // Files what the chat tagged into the prototype. Safe to run on the same transcript again: nothing is added twice.
 export function applyParsed(i: Idea, p: Parsed, now: string): ApplyResult {
   ensureProto(i)
-  const res: ApplyResult = { added: 0, scored: false, gates: 0, truncated: [] }
+  const res: ApplyResult = { added: 0, scored: false, gates: 0, failed: 0, truncated: [] }
   for (const o of p.outputs) {
     if (o.truncated || !o.content) {
       if (o.truncated) res.truncated.push({ stage: o.stage, kind: o.kind, gen: o.gen })
@@ -247,21 +300,18 @@ export function applyParsed(i: Idea, p: Parsed, now: string): ApplyResult {
     i.outputs![o.stage] = list
     res.added++
     if (DONE_KIND[o.stage] === o.kind) i.checks![o.stage] = 'done'
-    if (o.kind === 'refs') i.refs = o.content
   }
+  // Documents: kept in the registry (older ones stay, the newest per kind is marked when shown).
   for (const d of p.docs) {
-    const kind = DONE_KIND[d.stage] ?? 'brief'
-    const list = i.outputs![d.stage] ?? []
-    if (list.some(x => x.doc?.url === d.url)) continue
-    const target = list.find(x => x.kind === kind && !x.doc)
-    if (target) target.doc = { title: d.title, url: d.url }
-    else {
-      const req = i.requested![d.stage]
-      list.unshift({ at: now, kind, gen: nextGen(i, d.stage, kind), content: d.title, skill: req ? req.skill : [], chosen: [], discarded: [], doc: { title: d.title, url: d.url } })
-    }
-    i.outputs![d.stage] = list
+    const list = i.docs![d.stage] ?? []
+    if (list.some(x => x.url === d.url)) continue
+    const parsedName = parseDocName(d.title)
+    const kind = kindOfName(d.title) ?? DEFAULT_KIND[d.stage] ?? 'doc'
+    list.push({ name: d.title, url: d.url, fileId: fileIdOf(d.url), at: now, gen: parsedName ? parsedName.gen : list.filter(x => x.kind === kind).length + 1, kind })
+    i.docs![d.stage] = list
     res.added++
-    i.checks![d.stage] = 'done'
+    // Documents of these stages complete them; the Reverse engineering stage has its own rule (verdict plus template doc).
+    if (d.stage !== 'template') i.checks![d.stage] = 'done'
   }
   for (const c of p.chosen) {
     const list = i.outputs![c.stage] ?? []
@@ -280,6 +330,38 @@ export function applyParsed(i: Idea, p: Parsed, now: string): ApplyResult {
     i.gate![g.stage] = { verdict: g.verdict, reason: g.reason, at: now }
     res.gates++
   }
+  // Reference candidates: a new list replaces the old one, which moves to the history. The choice is reset.
+  for (const r of p.refs) {
+    if (r.items.length === 0) continue
+    const cur = i.refs
+    if (cur && JSON.stringify(cur.candidates) === JSON.stringify(r.items)) continue
+    const history = cur ? [...cur.history, ...(cur.candidates.length > 0 ? [cur.candidates] : [])].slice(-5) : []
+    i.refs = { candidates: r.items, chosenIndex: null, history }
+    res.added++
+  }
+  // Validation verdict of the Reverse engineering extraction.
+  for (const v of p.verdicts) {
+    if (v.stage !== 'template' || !afterRequest(i, p, v.stage, v.pos)) continue
+    const rv = ensureReveng(i)
+    if (rv.verdict === v.verdict && rv.verdictReason === v.reason) continue
+    rv.verdict = v.verdict
+    rv.verdictReason = v.reason
+    rv.verdictAt = now
+    const r = i.requested!.template
+    if (r && r.action === 'reveng_validate') delete i.requested!.template
+    res.added++
+  }
+  // A failure returns the request to "not started" and shows its reason. Only a pending request can fail.
+  for (const f of p.fails) {
+    if (!hasPendingRequest(i, f.stage) || !afterRequest(i, p, f.stage, f.pos)) continue
+    i.failed![f.stage] = { reason: f.reason, at: now }
+    delete i.requested![f.stage]
+    if (i.checks![f.stage] === 'asked') delete i.checks![f.stage]
+    delete i.gateAsked![f.stage]
+    res.failed++
+  }
+  if (templateDone(i)) i.checks!.template = 'done'
   return res
 }
 
+const DEFAULT_KIND: Record<string, string> = { prevalid: 'scan', brief: 'brief', template: 'template-doc', doccompleto: 'fulldoc', build: 'build-plan', titulo: 'titles', thumb: 'thumb-prompts', publicar: 'launch', metricas: 'results' }

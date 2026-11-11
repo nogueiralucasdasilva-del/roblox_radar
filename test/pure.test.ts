@@ -203,7 +203,7 @@ import { ACTIONS, buildActionPrompt, gatePrompt } from '../hooks/prompts'
 test('every action prompt tells the chat to read its Drive stage folder and _all, and its own example is not parsed as output', () => {
   const s = emptyStore()
   const i = createPrototype(s, { title: 'Truck', note: '', origin: 'own', from: null, now: NOW })
-  i.refs = '1. a'
+  i.refs = { candidates: [{ name: 'A' }], chosenIndex: 0, history: [] }
   i.research = 'r'
   const ctx = { stageName: 'Stage', folders: { stage: 'FOLDER1', all: 'ALLID' }, criteria: ['demand'], knowledge: [], nextStage: 'brief', nextStageName: 'Brief' }
   for (const a of ACTIONS) {
