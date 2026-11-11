@@ -211,16 +211,35 @@ for (const st of ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titu
   await scenario(`factory: stage ${st} full screen for prototype 2`, async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', st) }, need('[← Pipeline]', 'Change prototype', 'Open chat'))
 }
 await scenario('factory: proto 3 archived thumb', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p3'); await setAtom('fstage', 'thumb') })
-await scenario('factory: template custom + library', async () => {
+const REFS = [
+  { name: 'Game A', url: 'https://www.roblox.com/games/1', visits: '9.3B', approval_pct: '87%', ccu: '120K', as_of: '2026-11-10', why_fit: 'same loop family', risk: 'fading', tag: 'F' },
+  { name: 'Game B', url: 'https://www.roblox.com/games/2', visits: '1.1B', tag: 'H' },
+  { name: 'Game C' },
+]
+const BRIEF_DOC = { name: 'P002-MONSTER2_02_brief_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'brief' }
+const revengState = (patch, extra = {}) => async () => {
   await reset()
   const s = rich()
-  s.ideas[1].template_mode = 'custom'
-  s.ideas[1].refs = '1. a'
-  s.ideas[1].research = 'r'
-  s.ideas[1].outputs = { template: [{ at: NOW, kind: 'refs', gen: 1, content: '1. ref', skill: [], chosen: [], discarded: [] }], brief: [{ at: NOW, kind: 'brief', gen: 1, content: 'b', skill: [], chosen: [], discarded: [], doc: { title: 'T', url: 'https://x' } }] }
+  Object.assign(s.ideas[1], { stage: 'template', docs: { brief: [BRIEF_DOC] }, ...extra })
+  s.ideas[1].reveng = { gen: 0, uploads: {}, segment: 1, mode: 'extract', noEconomy: false, ...patch }
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'template')
-})
+}
+const upl = { 1: { at: NOW, files: [{ name: 'P002_03_reveng-input_g1_chunk01.json', kind: 'chunk', index: 1, fileId: 'f1', url: null }, { name: 'P002_03_reveng-input_g1_audit01.json', kind: 'audit', index: 1, fileId: 'f2', url: null }], rejected: [] } }
+await scenario('reveng: no reference chosen, candidates from the brief', revengState({}, { refs: { candidates: REFS, chosenIndex: null, history: [] } }), need('Reference candidates (3)', 'Choose', 'Game A', '9.3B visits', 'Risk: fading', 'Reference chosen', 'Copy prompt JSON', 'Upload doc', 'Validate doc', 'Build template doc', 'Choose a reference first.', 'Needs a PASS or PASS WITH GAPS'))
+await scenario('reveng: brief done but no candidates shows Find references', revengState({}), need('Find references', 'No reference candidates yet'))
+await scenario('reveng: no brief yet says so', async () => { await revengState({})(); const s = JSON.parse(mem.get('rr1') ? JSON.stringify(mem.get('rr1')) : '{}'); s.ideas[1].docs = {}; putStore(s) }, need('Write the brief first'))
+await scenario('reveng: reference chosen, upload is next', revengState({}, { refs: { candidates: REFS, chosenIndex: 1, history: [] } }), need('CHOSEN', 'Upload doc', 'next', 'Upload the extraction files first.'))
+await scenario('reveng: uploaded, validate is next', revengState({ gen: 1, uploads: upl }, { refs: { candidates: REFS, chosenIndex: 0, history: [] } }), need('batch 1: 1 chunk, 1 audit', 'Validate doc', 'Economy game'))
+await scenario('reveng: FAIL verdict keeps upload and validate live', revengState({ gen: 1, uploads: upl, verdict: 'FAIL', verdictReason: 'coverage 2 of 6 chunks' }, { refs: { candidates: REFS, chosenIndex: 0, history: [] } }), need('FAIL', 'coverage 2 of 6 chunks', 'Upload another file set', 'Upload doc', 'Validate doc'))
+await scenario('reveng: PASS WITH GAPS unlocks Build template doc', revengState({ gen: 1, uploads: upl, verdict: 'PASS WITH GAPS', verdictReason: 'two gaps' }, { refs: { candidates: REFS, chosenIndex: 0, history: [] }, outputs: { template: [{ at: NOW, kind: 'reveng_validation', gen: 1, content: 'Coverage 6 of 6. Two gaps.', skill: [], chosen: [], discarded: [] }] } }), need('PASS WITH GAPS', 'Validation report', 'Coverage 6 of 6', 'Build template doc'))
+await scenario('reveng: done with a template doc shows Open doc and the done notice', revengState({ gen: 1, uploads: upl, verdict: 'PASS' }, { refs: { candidates: REFS, chosenIndex: 0, history: [] }, checks: { template: 'done' }, docs: { brief: [BRIEF_DOC], template: [{ name: 'P002-MONSTER2_03_template-doc_v1', url: 'https://docs.google.com/document/d/BBBBBBBBBBBB/edit', fileId: 'BBBBBBBBBBBB', at: NOW, gen: 1, kind: 'template-doc' }] } }), need('Reverse engineering is done', '<link Open doc>', 'P002-MONSTER2_03_template-doc_v1', 'Advance to'))
+await scenario('reveng: Advance is off until the stage is done', revengState({}, { refs: { candidates: REFS, chosenIndex: 0, history: [] } }), need('Finish Reverse engineering first.'))
+await scenario('brief stage shows the references on its card, without Choose buttons', async () => { await reset(); const s = rich(); s.ideas[1].stage = 'brief'; s.ideas[1].docs = { brief: [BRIEF_DOC] }; s.ideas[1].refs = { candidates: REFS, chosenIndex: null, history: [] }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'brief') }, (t, text) => (/Choose/.test(text) ? ['Choose button on the brief card'] : need('Reference candidates (3)', 'Game A', 'Write 2-page brief')(t, text)))
+await scenario('the stage is called Reverse engineering on the map', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') }, (t, text) => (/Template match/i.test(text) ? ['old name still shown'] : need('Reverse engineering')(t, text)))
+for (const cols of [60, 130]) {
+  await scenario(`tier ${cols}: reveng panel`, revengState({ gen: 1, uploads: upl, verdict: 'PASS WITH GAPS' }, { refs: { candidates: REFS, chosenIndex: 0, history: [] } }), need('Validate doc'), cols)
+}
 await scenario('factory: gate waiting / block', async () => {
   await reset()
   const s = rich()

@@ -63,6 +63,12 @@ export type Ctx = {
   setTemplateMode: (ideaId: string, mode: 'library' | 'custom') => unknown
   archive: (ideaId: string, on: boolean) => unknown
   folderNotice: (ideaId: string) => string | null
+  chooseRef: (ideaId: string, index: number) => unknown
+  copyPrompt: (ideaId: string, press?: any) => unknown
+  uploadDocs: (ideaId: string, raw: string) => unknown
+  scanInputs: (ideaId: string) => unknown
+  setReveng: (ideaId: string, patch: { segment?: number; mode?: 'extract' | 'audit'; noEconomy?: boolean }) => unknown
+  revengNote: (ideaId: string) => { text: string; level: 'ok' | 'warn' | 'error'; prompt?: string; fsFailed?: boolean } | null
 }
 
 const STATUS_META: Record<SourceStatus, { glyph: string; color: string; label: string }> = {

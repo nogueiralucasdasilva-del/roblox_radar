@@ -8,9 +8,12 @@ export type LenientResult = { ok: true; value: unknown } | { ok: false; error: s
 // Characters a Markdown export may escape with a backslash. JSON's own escapes (quote, backslash, slash, b f n r t u) are left alone.
 const MD_ESCAPED = /\\([_\[\]*#`{}()<>~|+.!-])/g
 
+// Removes the backslashes a Markdown export puts before characters such as underscore and brackets (JSON escapes stay).
+export const unescapeMarkdown = (t: string): string => t.replace(MD_ESCAPED, '$1')
+
 // Loads JSON the way a Google Doc export or a chat paste leaves it: code fences, a BOM, Markdown escapes, text around the JSON.
 export function lenientParse(raw: string): LenientResult {
-  let t = raw.replace(/^﻿/, '').trim()
+  let t = (raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw).trim()
   const fence = /```[a-zA-Z]*\s*([\s\S]*?)```/.exec(t)
   if (fence && fence[1] && fence[1].trim()) t = fence[1].trim()
   else t = t.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim()

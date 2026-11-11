@@ -4,7 +4,7 @@ import type { Register } from 'claude-code'
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
-import { checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
+import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
 import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
 import type { Comps } from './ui/kit'
 import { factoryNoteBar, inboxBox } from './ui/radar'
@@ -33,7 +33,7 @@ import {
   summarizerPrompt,
 } from './model'
 import { STALE_BUSY_MS } from './model'
-import type { Idea, Job, Knowledge, LogEntry, Msg, Store, Thread } from './model'
+import type { Idea, Job, Knowledge, LogEntry, Msg, Store, Thread, UploadFile } from './model'
 import {
   KEEP_MESSAGES,
   MEMORY_FOLDER_ID,
@@ -47,8 +47,11 @@ import {
 } from './memory'
 import type { MemEvent } from './memory'
 import { ICON_SVG } from './icon'
-import { docNameMatches, isStandardName } from './docnames'
-import { AUTO_OPEN_CHAT_ON_SEND, docLinks, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
+import { docNameMatches, isStandardName, parseDocName } from './docnames'
+import { PROMPT_FILES, clampSegment, fillPrompt, segmentLabel } from './segments'
+import { expandHome, numberFromName, planUpload, splitPaths, summarizePlan, unescapeMarkdown } from './upload'
+import type { RawFile } from './upload'
+import { AUTO_OPEN_CHAT_ON_SEND, docLinks, ensureReveng, latestOf, advanceIdea, anyPending, applyParsed, archiveIdea, createPrototype, ensureProto, markAsked, markDone, migrateStore, newInbox, resolveGates, sendInboxToFactory } from './factory'
 import { actionByKey, buildActionRequest, buildGateRequest } from './actions'
 import type { RequestCtx } from './actions'
 import { parseTags, splitItems } from './outputs'
@@ -56,7 +59,7 @@ import type { Parsed } from './outputs'
 import { DEFAULT_SCORING, parseScoring, potential, safetyBlocked } from './scoring'
 import type { ScoringConfig } from './scoring'
 import { ensureProtoFolders } from './protos'
-import { SKILLS_ROOT_ID, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
+import { SKILLS_ROOT_ID, listToolFiles, refreshSkills, seedSkills, skillFiles, skillFolders, skillsFolderName } from './skills'
 import type { SkillsState } from './skills'
 import { TEMPLATE_FOLDER_ID, TEMPLATE_PREFIX, parseTemplate } from './templates'
 import type { Template } from './templates'
@@ -1009,6 +1012,271 @@ async function pickItem($: any, ideaId: string, stageId: string, item: string, m
   void flushOutbox($)
 }
 
+// "Choose" on a reference candidate: stored on the prototype, and one line goes to its chat. No waiting for an answer.
+async function chooseRef($: any, ideaId: string, index: number): Promise<void> {
+  let chat: ChatLink | null = null
+  let line = ''
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    const c = i?.refs?.candidates[index]
+    if (!i || !i.refs || !c) return
+    i.refs.chosenIndex = index
+    i.updated = new Date().toISOString()
+    chat = i.chat ?? null
+    line = `Chosen reference: ${c.name}${c.url ? `, ${c.url}` : ''}`
+    addLog(s, 'template', 'ideas', `${i.proto_id}: reference chosen, ${c.name}.`)
+    ideaEvent(s, i, i.updated)
+  })
+  if (chat && line) {
+    try {
+      void $.session.send({ to: { sessionId: (chat as ChatLink).id }, text: line })
+    } catch {
+      // the choice is on the card either way
+    }
+  }
+  void flushOutbox($)
+}
+
+/* ---------- Reverse engineering: Gemini prompts, uploads, inputs folder ---------- */
+
+type RevengNote = { text: string; level: 'ok' | 'warn' | 'error'; prompt?: string; fsFailed?: boolean }
+const revengNotes: Record<string, RevengNote> = {}
+const promptCache = new Map<string, { modified: string; text: string }>()
+
+// The user's home folder, taken from the plugin root (<home>/.claude/plugins/...). Used only for the "~" in paths and the fallback file.
+function homeDir($: any): string {
+  const root = String($.plugin.root).replace(/\\/g, '/')
+  const k = root.indexOf('/.claude')
+  return k > 0 ? root.slice(0, k) : root
+}
+
+// Reads a prompt file from <skills folder>/_tool in Drive. Cached by modified time.
+async function readToolPrompt($: any, folder: string, name: string): Promise<string> {
+  const files = await listToolFiles((tool, args) => driveCall($, tool, args), skillsState, folder)
+  const f = files.find(x => x.name === name)
+  if (!f) throw new Error(`${name} not found in ${folder}/_tool in Drive`)
+  const hit = promptCache.get(f.id)
+  if (hit && hit.modified === f.modified) return hit.text
+  const text = unescapeMarkdown(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id }))).trim()
+  if (!text) throw new Error(`${name} is empty`)
+  promptCache.set(f.id, { modified: f.modified, text })
+  return text
+}
+
+// Puts text on the clipboard. Order: the platform clipboard of the surface, then an OS tool started without a shell
+// (argv array, text on stdin). Returns how it worked, or null.
+async function copyText($: any, text: string, surface?: string): Promise<string | null> {
+  try {
+    const r: any = await $.ui.copy(surface ? { text, surface } : { text })
+    if (r && r.isCopied) return 'app clipboard'
+  } catch {
+    // try the OS tools
+  }
+  const tools: string[][] = [['clip'], ['pbcopy'], ['wl-copy'], ['xclip', '-selection', 'clipboard']]
+  for (const argv of tools) {
+    try {
+      const r: any = await $.process.run(argv, { stdin: text, timeoutMs: 8000 })
+      if (r && r.exitCode === 0) return argv[0] as string
+    } catch {
+      // the tool is not on this machine
+    }
+  }
+  return null
+}
+
+async function copyPrompt($: any, ideaId: string, press: any): Promise<void> {
+  const data = await load($)
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !data) return
+  const st = data.stages.find(x => x.id === 'template')
+  const folder = st ? skillsFolderName(skillsState, st) : 'reveng'
+  const rv = i.reveng ?? { segment: 1, mode: 'extract' as const }
+  try {
+    const tpl = await readToolPrompt($, folder, PROMPT_FILES[rv.mode])
+    const filled = fillPrompt(tpl, rv.segment)
+    const label = rv.mode === 'extract' ? `Copied segment ${rv.segment}, ${segmentLabel(rv.segment)}` : `Copied the audit prompt (segment ${rv.segment})`
+    const how = await copyText($, filled, press && press.surface)
+    if (how) {
+      revengNotes[ideaId] = { text: `${label} (${how}).`, level: 'ok' }
+    } else {
+      // No clipboard: write the filled prompt to a file in Downloads and show it in the panel.
+      const path = `${homeDir($)}/Downloads/radar_${i.proto_id}_seg${String(rv.segment).padStart(2, '0')}_${rv.mode}.txt`
+      let saved = false
+      try {
+        await $.fs.write(path, filled)
+        saved = true
+      } catch {
+        saved = false
+      }
+      revengNotes[ideaId] = { text: saved ? `No clipboard here. The prompt was saved to ${path}. It is also shown below.` : 'No clipboard here and the file could not be written. The prompt is shown below: select and copy it.', level: 'warn', prompt: filled }
+    }
+  } catch (err: any) {
+    revengNotes[ideaId] = { text: `Could not prepare the prompt: ${String((err && err.message) || err).slice(0, 160)}`, level: 'error' }
+  }
+  await update($, rev, n => n + 1)
+}
+
+async function setReveng($: any, ideaId: string, patch: { segment?: number; mode?: 'extract' | 'audit'; noEconomy?: boolean }): Promise<void> {
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    const rv = ensureReveng(i)
+    if (patch.segment !== undefined) rv.segment = clampSegment(patch.segment)
+    if (patch.mode) rv.mode = patch.mode
+    if (patch.noEconomy !== undefined) rv.noEconomy = patch.noEconomy
+    ideaEvent(s, i, new Date().toISOString())
+  })
+}
+
+// Reads the local files Lucas names (files, or a folder read one level deep), classifies and numbers them, and uploads each
+// to <proto folder>/inputs with its standard name. Nothing is validated here: the chat validates.
+async function uploadReveng($: any, ideaId: string, raw: string): Promise<void> {
+  const note = (n: RevengNote) => {
+    revengNotes[ideaId] = n
+  }
+  const s0 = await loadStore($)
+  const i0 = s0.ideas.find(x => x.id === ideaId)
+  if (!i0) return
+  if (!i0.refs || i0.refs.chosenIndex === null) {
+    note({ text: 'Choose a reference first.', level: 'warn' })
+    await update($, rev, n => n + 1)
+    return
+  }
+  const paths = splitPaths(raw).map(p => expandHome(p, homeDir($)))
+  if (paths.length === 0) {
+    note({ text: 'Type or paste one or more file or folder paths first.', level: 'warn' })
+    await update($, rev, n => n + 1)
+    return
+  }
+  if (!(await ensureProtoFolder($, ideaId))) {
+    note({ text: 'The prototype Drive folder is not ready, so nothing was uploaded. It is retried on the next press.', level: 'error' })
+    await update($, rev, n => n + 1)
+    return
+  }
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId) as Idea
+  const files: RawFile[] = []
+  const rejected: { name: string; reason: string }[] = []
+  let fsFailed = false
+  for (const p of paths) {
+    try {
+      let names: { path: string; name: string }[] = []
+      try {
+        const entries: any[] = await $.fs.list(p)
+        const sep = p.endsWith('/') || p.endsWith('\\') ? '' : '/'
+        names = entries.filter(e => e && e.kind !== 'directory' && e.kind !== 'dir' && /\.(json|txt)$/i.test(String(e.name))).map(e => ({ path: `${p}${sep}${e.name}`, name: String(e.name) }))
+        names.sort((a, b) => a.name.localeCompare(b.name))
+      } catch {
+        names = [{ path: p, name: p.replace(/\\/g, '/').split('/').pop() ?? p }]
+      }
+      for (const f of names) {
+        try {
+          const text = String(await $.fs.read(f.path))
+          let bytes = text.length
+          try {
+            const st: any = await $.fs.stat(f.path)
+            if (st && typeof st.size === 'number') bytes = st.size
+          } catch {
+            // the text length stands in for the size
+          }
+          files.push({ path: f.path, name: f.name, bytes, text })
+        } catch (err: any) {
+          rejected.push({ name: f.name, reason: `could not read the file (${String((err && err.message) || err).slice(0, 60)})` })
+        }
+      }
+    } catch (err: any) {
+      fsFailed = true
+      rejected.push({ name: p, reason: `no access to local files (${String((err && err.message) || err).slice(0, 60)})` })
+    }
+  }
+  const gen = (i.reveng?.gen ?? 0) + 1
+  const plan = planUpload(i.proto_id ?? '', gen, files)
+  plan.rejected.unshift(...rejected)
+  const uploaded: UploadFile[] = []
+  for (const f of plan.accepted) {
+    try {
+      let created: any
+      try {
+        created = jsonOf(await driveCall($, 'create_file', { title: f.stdName, parentId: i.inputsFolderId, contentMimeType: 'application/json', disableConversionToGoogleType: true, textContent: f.text }))
+      } catch {
+        // some connectors refuse a JSON file type: a text file converts to a Google Doc with the same text
+        created = jsonOf(await driveCall($, 'create_file', { title: f.stdName, parentId: i.inputsFolderId, contentMimeType: 'text/plain', textContent: f.text }))
+      }
+      uploaded.push({ name: f.stdName, kind: f.kind, index: f.index, fileId: typeof created?.id === 'string' ? created.id : null, url: typeof created?.viewUrl === 'string' ? created.viewUrl : null })
+    } catch (err: any) {
+      plan.rejected.push({ name: f.name, reason: `Drive upload failed (${String((err && err.message) || err).slice(0, 60)})` })
+    }
+  }
+  if (uploaded.length > 0) {
+    await mutate($, s => {
+      const x = s.ideas.find(y => y.id === ideaId)
+      if (!x) return
+      const rv = ensureReveng(x)
+      const now = new Date().toISOString()
+      rv.gen = gen
+      rv.uploads[gen] = { at: now, files: uploaded, rejected: plan.rejected }
+      // A new batch starts a new validation.
+      rv.verdict = undefined
+      rv.verdictReason = undefined
+      rv.verdictAt = undefined
+      delete x.requested?.template
+      if (x.checks?.template === 'done') delete x.checks.template
+      addLog(s, 'template', 'ideas', `${x.proto_id}: ${uploaded.length} extraction file(s) uploaded, batch ${gen}.`)
+      ideaEvent(s, x, now)
+    })
+    void flushOutbox($)
+  }
+  const rej = plan.rejected.map(r => `${r.name}: ${r.reason}`)
+  note({
+    text: uploaded.length > 0 ? `${summarizePlan({ accepted: plan.accepted.filter(a => uploaded.some(u => u.name === a.stdName)), rejected: plan.rejected }, gen)}.${rej.length > 0 ? ` Not uploaded: ${rej.join('; ')}` : ''}` : `Nothing was uploaded.${rej.length > 0 ? ` ${rej.join('; ')}` : ''}`,
+    level: uploaded.length > 0 ? (rej.length > 0 ? 'warn' : 'ok') : 'error',
+    fsFailed,
+  })
+  await update($, rev, n => n + 1)
+}
+
+// Fallback when the panel has no local file access: registers the files Lucas dropped into the inputs folder by hand.
+async function scanInputs($: any, ideaId: string): Promise<void> {
+  if (!(await ensureProtoFolder($, ideaId))) {
+    revengNotes[ideaId] = { text: 'The prototype Drive folder is not ready.', level: 'error' }
+    await update($, rev, n => n + 1)
+    return
+  }
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.inputsFolderId) return
+  try {
+    const o: any = jsonOf(await driveCall($, 'search_files', { query: `parentId = '${i.inputsFolderId}' and trashed = false`, pageSize: 100, excludeContentSnippets: true }))
+    const found: UploadFile[] = []
+    let gen = i.reveng?.gen ?? 0
+    for (const f of Array.isArray(o?.files) ? o.files : []) {
+      const name = String(f.title ?? f.name ?? '')
+      if (f.mimeType === 'application/vnd.google-apps.folder') continue
+      const p = parseDocName(name.replace(/\.(json|txt)$/i, ''))
+      if (p && p.kind === 'reveng-input') gen = Math.max(gen, p.gen)
+      const kind: 'chunk' | 'audit' = /audit/i.test(name) ? 'audit' : 'chunk'
+      found.push({ name, kind, index: numberFromName(name) ?? found.length + 1, fileId: String(f.id ?? ''), url: typeof f.viewUrl === 'string' ? f.viewUrl : null })
+    }
+    if (found.length === 0) {
+      revengNotes[ideaId] = { text: 'The inputs folder is empty. Drop the extraction files into it, then scan again.', level: 'warn' }
+    } else {
+      gen = Math.max(gen, 1)
+      await mutate($, s => {
+        const x = s.ideas.find(y => y.id === ideaId)
+        if (!x) return
+        const rv = ensureReveng(x)
+        const now = new Date().toISOString()
+        rv.gen = gen
+        rv.uploads[gen] = { at: now, files: found, rejected: [] }
+        rv.verdict = undefined
+        ideaEvent(s, x, now)
+      })
+      revengNotes[ideaId] = { text: `Registered ${found.length} file(s) found in the inputs folder, batch ${gen}.`, level: 'ok' }
+    }
+  } catch (err: any) {
+    revengNotes[ideaId] = { text: `Could not read the inputs folder: ${String((err && err.message) || err).slice(0, 120)}`, level: 'error' }
+  }
+  await update($, rev, n => n + 1)
+}
+
 async function setTemplateMode($: any, ideaId: string, mode: 'library' | 'custom'): Promise<void> {
   await mutate($, s => {
     const i = s.ideas.find(x => x.id === ideaId)
@@ -1755,7 +2023,7 @@ export const register: Register = on => {
         },
       )
       void fetchSkills($)
-      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
+      return { text: `Skills seed: ${r.created.length} created, ${r.skipped.length} already there${r.differs.length > 0 ? `, ${r.differs.length} differ from Drive and were uploaded as .new (${r.differs.join(', ')})` : ''}${r.missing.length > 0 ? `. Missing seed files, put them in the plugin seed folder: ${r.missing.join(', ')}` : ''}.` }
     } catch (err: any) {
       return { text: `Skills seed failed: ${String((err && err.message) || err).slice(0, 300)}` }
     }
@@ -2086,6 +2354,12 @@ async function renderPane($: any, e: any) {
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       archive: (id, archived) => archiveProto($, id, archived),
       folderNotice: id => folderNotes[id] ?? null,
+      chooseRef: (id, n) => chooseRef($, id, n),
+      copyPrompt: (id, press) => copyPrompt($, id, press),
+      uploadDocs: (id, raw) => uploadReveng($, id, raw),
+      scanInputs: id => scanInputs($, id),
+      setReveng: (id, patch) => setReveng($, id, patch),
+      revengNote: id => revengNotes[id] ?? null,
     }
 
     /* the body of one tab of one stage */
@@ -2299,7 +2573,7 @@ async function renderPane($: any, e: any) {
       const st = data.stages.find(x => x.id === stageId)
       if (!st) return null
       const extra: TabDef[] = [
-        ...(st.extra_tabs ?? []).filter(t => t.id === 'knowledge' || t.id === 'templates'),
+        ...(st.extra_tabs ?? []).filter(t => t.id === 'knowledge' || (t.id === 'templates' && SHOW_LIBRARY_PATH)),
         ...(st.trigger_ids.length > 0 ? [{ id: 'tasks', label: 'Tasks' }] : []),
         ...(STAGES_WITH_RECEIPTS.includes(st.id) ? [{ id: 'receipts', label: 'Receipts' }] : []),
         ...MORE_TABS,

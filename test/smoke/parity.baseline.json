@@ -33,19 +33,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -243,31 +243,31 @@
    },
    {
     "key": "rep-toggle-2026-09-24-hooks",
-    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "text": "2026-09-24 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-09-24.…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-09-28-hooks",
-    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "text": "2026-09-28 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-09-28.…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-05-hooks",
-    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "text": "2026-10-05 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-10-05.…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-hooks",
-    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "text": "2026-10-12 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-10-12.…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-themes",
-    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "text": "2026-10-12 themes temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 7…",
     "hotkey": null,
     "press": true
    },
@@ -611,19 +611,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -779,19 +779,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -845,55 +845,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -947,55 +947,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -1067,55 +1067,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -1163,55 +1163,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief none here",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build none here",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc none here",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning none here",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation none here",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic none here",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering none here",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail none here",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title none here",
     "hotkey": "6",
     "press": true
    },
@@ -1307,7 +1307,7 @@
    },
    {
     "key": "next",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -1576,7 +1576,7 @@
    },
    {
     "key": "next",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -1610,6 +1610,18 @@
  "factory: stage template full screen for prototype 2": {
   "buttons": [
    {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "back",
     "text": "pipeline",
     "hotkey": null,
@@ -1628,8 +1640,26 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "done-p2-template",
     "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
     "hotkey": null,
     "press": true
    },
@@ -1700,6 +1730,18 @@
     "press": true
    },
    {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "mode-factory",
     "text": "factory (2)",
     "hotkey": null,
@@ -1730,25 +1772,93 @@
     "press": true
    },
    {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "status-toggle",
     "text": "drive and memory ok",
     "hotkey": null,
     "press": true
-   },
-   {
-    "key": "tm-custom",
-    "text": "build my own",
-    "hotkey": null,
-    "press": true
-   },
-   {
-    "key": "tm-library",
-    "text": "use existing template",
-    "hotkey": null,
-    "press": true
    }
   ],
-  "inputs": [],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
   "links": [
    {
     "href": "claude://x",
@@ -1874,7 +1984,7 @@
    },
    {
     "key": "prev",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -2752,23 +2862,29 @@
   "inputs": [],
   "links": []
  },
- "factory: template custom + library": {
+ "reveng: no reference chosen, candidates from the brief": {
   "buttons": [
    {
-    "key": "actb-p2-packet",
-    "text": "reverse-engineering packet",
-    "hotkey": null,
-    "press": true
-   },
-   {
-    "key": "actb-p2-refs",
-    "text": "find 3 reference games",
-    "hotkey": null,
-    "press": true
-   },
-   {
-    "key": "actb-p2-template_doc",
+    "key": "actb-p2-reveng_build",
     "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
     "hotkey": null,
     "press": true
    },
@@ -2791,7 +2907,2594 @@
     "press": true
    },
    {
+    "key": "choose-ref-p2-0",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: brief done but no candidates shows Find references": {
+  "buttons": [
+   {
+    "key": "actb-p2-refs",
+    "text": "find references",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "reveng: no brief yet says so": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   }
+  ]
+ },
+ "reveng: reference chosen, upload is next": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-0",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: uploaded, validate is next": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: FAIL verdict keeps upload and validate live": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: PASS WITH GAPS unlocks Build template doc": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: done with a template doc shows Open doc and the done notice": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://docs.google.com/document/d/BBBBBBBBBBBB/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/BBBBBBBBBBBB/edit",
+    "label": "P002-MONSTER2_03_template-doc_v1"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "reveng: Advance is off until the stage is done": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "brief stage shows the references on its card, without Choose buttons": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
     "text": "mark done",
     "hotkey": null,
     "press": true
@@ -2876,6 +5579,327 @@
    },
    {
     "key": "next",
+    "text": "reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "P002-MONSTER2_02_brief_v1"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "the stage is called Reverse engineering on the map": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "tier 60: reveng panel": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
     "text": "full doc",
     "hotkey": null,
     "press": true
@@ -2893,30 +5917,90 @@
     "press": true
    },
    {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "status-toggle",
     "text": "drive and memory ok",
-    "hotkey": null,
-    "press": true
-   },
-   {
-    "key": "tm-custom",
-    "text": "build my own",
-    "hotkey": null,
-    "press": true
-   },
-   {
-    "key": "tm-library",
-    "text": "use existing template",
     "hotkey": null,
     "press": true
    }
   ],
   "inputs": [
    {
-    "key": "research-p2",
-    "placeholder": "Paste links or text of the finished research",
-    "submitLabel": "register",
-    "rows": 3,
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
     "submit": true
    }
   ],
@@ -2924,6 +6008,305 @@
    {
     "href": "claude://x",
     "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
+   }
+  ]
+ },
+ "tier 130: reveng panel": {
+  "buttons": [
+   {
+    "key": "actb-p2-reveng_build",
+    "text": "build template doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-reveng_validate",
+    "text": "validate doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-force-p2",
+    "text": "advance anyway (safety is low)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "adv-p2",
+    "text": "advance to full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-1",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "choose-ref-p2-2",
+    "text": "choose",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2",
+    "text": "copy prompt json",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-template",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-no-p2",
+    "text": "no",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "econ-yes-p2",
+    "text": "yes",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-audit-p2",
+    "text": "audit",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-extract-p2",
+    "text": "extract",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "full doc",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-1",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-10",
+    "text": "10",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-11",
+    "text": "11",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-12",
+    "text": "12",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-2",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-3",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-4",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-5",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-6",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-7",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-8",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "seg-p2-9",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [
+   {
+    "key": "upload-p2",
+    "placeholder": "C:/path/to/chunk_01.json",
+    "submitLabel": "Upload doc",
+    "rows": 2,
+    "submit": true
+   }
+  ],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://www.roblox.com/games/1",
+    "label": "Game A"
+   },
+   {
+    "href": "https://www.roblox.com/games/2",
+    "label": "Game B"
    }
   ]
  },
@@ -3271,55 +6654,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief none here",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build none here",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc none here",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning none here",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation none here",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic none here",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering none here",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail none here",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title none here",
     "hotkey": "6",
     "press": true
    },
@@ -3373,55 +6756,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -3475,55 +6858,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief not started",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not reached",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not reached",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation not started",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not reached",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not reached",
     "hotkey": "6",
     "press": true
    },
@@ -3571,19 +6954,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -3781,31 +7164,31 @@
    },
    {
     "key": "rep-toggle-2026-09-24-hooks",
-    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "text": "2026-09-24 hooks thumbnail hooks genre-agn…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-09-28-hooks",
-    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "text": "2026-09-28 hooks thumbnail hooks genre-agn…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-05-hooks",
-    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "text": "2026-10-05 hooks thumbnail hooks genre-agn…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-hooks",
-    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "text": "2026-10-12 hooks thumbnail hooks genre-agn…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-themes",
-    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "text": "2026-10-12 themes temas stage 1 week oct 6…",
     "hotkey": null,
     "press": true
    },
@@ -4053,55 +7436,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -4143,13 +7526,13 @@
    },
    {
     "key": "opt-p1",
-    "text": "p001-monster1 monster truck 1 -- pre-valid",
+    "text": "p001-monster1 monster tru… -- pre-valid",
     "hotkey": null,
     "press": true
    },
    {
     "key": "opt-p2",
-    "text": "p002-monster2 monster truck 2 60% title",
+    "text": "p002-monster2 monster tru… 60% title",
     "hotkey": null,
     "press": true
    },
@@ -4173,55 +7556,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -4676,7 +8059,7 @@
    },
    {
     "key": "next",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -4867,19 +8250,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -5077,31 +8460,31 @@
    },
    {
     "key": "rep-toggle-2026-09-24-hooks",
-    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "text": "2026-09-24 hooks thumbnail hooks genre-agnostic hooks for the week of 2…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-09-28-hooks",
-    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "text": "2026-09-28 hooks thumbnail hooks genre-agnostic hooks for the week of 2…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-05-hooks",
-    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "text": "2026-10-05 hooks thumbnail hooks genre-agnostic hooks for the week of 2…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-hooks",
-    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "text": "2026-10-12 hooks thumbnail hooks genre-agnostic hooks for the week of 2…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-themes",
-    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "text": "2026-10-12 themes temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 6…",
     "hotkey": null,
     "press": true
    },
@@ -5349,55 +8732,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -5469,55 +8852,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -5972,7 +9355,7 @@
    },
    {
     "key": "next",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -6163,19 +9546,19 @@
    },
    {
     "key": "stage-coleta",
-    "text": "1 radar and collection",
+    "text": "1 radar and collection attention",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-inbox",
-    "text": "3 loose ideas",
+    "text": "3 loose ideas 0 waiting",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-triagem",
-    "text": "2 screening and advisor",
+    "text": "2 screening and advisor ok",
     "hotkey": "2",
     "press": true
    },
@@ -6373,31 +9756,31 @@
    },
    {
     "key": "rep-toggle-2026-09-24-hooks",
-    "text": "2026-09-24 thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in the post, top 8 listed here.",
+    "text": "2026-09-24 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-09-24. 16 hooks in t…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-09-28-hooks",
-    "text": "2026-09-28 thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in the post, top 10 listed here.",
+    "text": "2026-09-28 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-09-28. 24 hooks in t…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-05-hooks",
-    "text": "2026-10-05 thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in the post, top 10 listed here.",
+    "text": "2026-10-05 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-10-05. 22 hooks in t…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-hooks",
-    "text": "2026-10-12 thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in the post, top 12 listed here.",
+    "text": "2026-10-12 hooks thumbnail hooks genre-agnostic hooks for the week of 2026-10-12. 34 hooks in t…",
     "hotkey": null,
     "press": true
    },
    {
     "key": "rep-toggle-2026-10-12-themes",
-    "text": "2026-10-12 temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
+    "text": "2026-10-12 themes temas stage 1 week oct 6 to 12: 157 themes. 26 pass, 60 maybe, 71 reject.",
     "hotkey": null,
     "press": true
    },
@@ -6645,55 +10028,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -6765,55 +10148,55 @@
    },
    {
     "key": "stage-brief",
-    "text": "2 ◆ 2-page brief",
+    "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
     "press": true
    },
    {
     "key": "stage-build",
-    "text": "5 build",
+    "text": "5 build not started",
     "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc",
+    "text": "4 ◆ full doc not started",
     "hotkey": "4",
     "press": true
    },
    {
     "key": "stage-metricas",
-    "text": "9 ◆ metrics and learning",
+    "text": "9 ◆ metrics and learning not reached",
     "hotkey": "9",
     "press": true
    },
    {
     "key": "stage-prevalid",
-    "text": "1 ◆ pre-validation",
+    "text": "1 ◆ pre-validation done",
     "hotkey": "1",
     "press": true
    },
    {
     "key": "stage-publicar",
-    "text": "8 ◆ publish and traffic",
+    "text": "8 ◆ publish and traffic not reached",
     "hotkey": "8",
     "press": true
    },
    {
     "key": "stage-template",
-    "text": "3 ◆ template match",
+    "text": "3 ◆ reverse engineering not started",
     "hotkey": "3",
     "press": true
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail",
+    "text": "7 thumbnail not reached",
     "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title",
+    "text": "6 title not started",
     "hotkey": "6",
     "press": true
    },
@@ -7268,7 +10651,7 @@
    },
    {
     "key": "next",
-    "text": "template match",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -7424,6 +10807,274 @@
   ],
   "inputs": [],
   "links": []
+ },
+ "factory: documents give Open doc on the card and the stage, Open folder in the header, a failure notice": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "5 build not started",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "4 ◆ full doc not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "7 thumbnail not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "6 title not started",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://drive.google.com/drive/folders/FOLDERIDFOLDERID",
+    "label": "Open folder"
+   }
+  ]
+ },
+ "factory: stage panel lists documents and the failure": {
+  "buttons": [
+   {
+    "key": "actb-p2-brief",
+    "text": "write 2-page brief",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "actb-p2-refs",
+    "text": "find references",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "back",
+    "text": "pipeline",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "change-proto",
+    "text": "change prototype",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "chat-open-idea:p2",
+    "text": "open chat",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "done-p2-brief",
+    "text": "mark done",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "factory-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-brief",
+    "text": "2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-build",
+    "text": "5",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-doccompleto",
+    "text": "4",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-metricas",
+    "text": "9",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-prevalid",
+    "text": "1",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-publicar",
+    "text": "8",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-template",
+    "text": "3",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-thumb",
+    "text": "7",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "jump-titulo",
+    "text": "6",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "next",
+    "text": "reverse engineering",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "prev",
+    "text": "pre-validation",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "claude://x",
+    "label": "open in app"
+   },
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "P002-MONSTER2_02_brief_v1"
+   }
+  ]
  },
  "a drawing error never leaves a blank pane": {
   "buttons": [

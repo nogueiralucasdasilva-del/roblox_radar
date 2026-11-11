@@ -80,7 +80,7 @@ export function btnText(C: Comps, label: string, kind: BtnKind, opts: { disabled
 }
 
 // A Button that already looks right. Keeps onPress, key and hotkey exactly as the caller gives them.
-export function btn(C: Comps, key: string, label: string, kind: BtnKind, onPress: () => unknown, opts: { disabled?: boolean; active?: boolean; hotkey?: string } = {}) {
+export function btn(C: Comps, key: string, label: string, kind: BtnKind, onPress: (press?: any) => unknown, opts: { disabled?: boolean; active?: boolean; hotkey?: string } = {}) {
   const { Button } = C
   return (
     <Button key={key} hotkey={opts.hotkey} onPress={onPress}>

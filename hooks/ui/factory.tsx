@@ -10,10 +10,11 @@ import { actionsFor } from '../actions'
 import type { FAction } from '../actions'
 import { splitItems } from '../outputs'
 import { SAFETY, potential, safetyBlocked } from '../scoring'
-import { newest } from '../skills'
+import { newest, skillsFolderName } from '../skills'
+import { refsBlock, revengPanel } from './reveng'
 import { btn, cardWidth, chip, emptyState, meterColor, meterText, notice, pill, rail, rule, tierOf, tint } from './kit'
 
-const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Template', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
+const SHORT: Record<string, string> = { prevalid: 'Pre-valid', brief: 'Brief', template: 'Reverse eng.', doccompleto: 'Full doc', build: 'Build', titulo: 'Title', thumb: 'Thumb', publicar: 'Publish', metricas: 'Metrics' }
 const GATE_COLOR: Record<string, string> = { PASS: OLIVE, 'PASS WITH RISKS': AMBER, BLOCK: RUST }
 
 export function checkGlyph(i: Idea, st: string): { glyph: string; color: string } {
@@ -173,13 +174,13 @@ export function protoLine(x: Ctx, i: Idea) {
 /* ---------- stage panel ---------- */
 
 // The block's one primary action. Disabled keeps its place and turns grey, so the layout never jumps.
-function actionButton(x: Ctx, i: Idea, a: FAction, enabled: boolean, label?: string) {
+export function actionButton(x: Ctx, i: Idea, a: FAction, enabled: boolean, label?: string, kind: 'primary' | 'secondary' = 'primary') {
   const { Box, Text } = x.C
   const blocked = a.needs ? a.needs(i) : null
   const off = !enabled || !!blocked
   return (
     <Box key={`act-${a.key}`} gap={1} flexWrap="wrap" alignItems="center">
-      {btn(x.C, `actb-${i.id}-${a.key}`, label ?? a.label, 'primary', () => (off ? undefined : x.runFactory(i.id, a.key)), { disabled: off })}
+      {btn(x.C, `actb-${i.id}-${a.key}`, label ?? a.label, kind, () => (off ? undefined : x.runFactory(i.id, a.key)), { disabled: off })}
       {blocked && enabled ? <Text color={AMBER}>{blocked}</Text> : null}
     </Box>
   )
@@ -279,7 +280,6 @@ export const SHOW_LIBRARY_PATH = false
 function templateTools(x: Ctx, i: Idea, enabled: boolean) {
   const { Box, Text, Button } = x.C
   const list = x.templates ? x.templates.list : []
-  if (!SHOW_LIBRARY_PATH) return <Text color={MUTED}>Reverse engineering panel is built in the next phase.</Text>
   return (
     <Box gap={1} flexWrap="wrap">
       {list.map(t => {
@@ -302,6 +302,7 @@ function advanceRow(x: Ctx, i: Idea, stage: string) {
   const asked = i.gateAsked?.[stage]
   const waiting = !!asked && (!g || g.at < asked)
   const blocked = safetyBlocked(i.scores, x.scoring)
+  const notDone = stage === 'template' && i.checks?.template !== 'done'
   const nextName = nameOf(x.stages, next)
   const railColor = g ? (GATE_COLOR[g.verdict] ?? LINE_SOFT) : LINE_SOFT
   return (
@@ -327,7 +328,8 @@ function advanceRow(x: Ctx, i: Idea, stage: string) {
           </Box>
         ) : (
           <Box gap={1} flexWrap="wrap" alignItems="center">
-            {btn(x.C, `adv-${i.id}`, `Advance to ${nextName}`, 'primary', () => x.requestAdvance(i.id, false), { disabled: blocked })}
+            {btn(x.C, `adv-${i.id}`, `Advance to ${nextName}`, 'primary', () => (notDone ? undefined : x.requestAdvance(i.id, false)), { disabled: blocked || notDone })}
+            {notDone ? <Text color={AMBER}>Finish Reverse engineering first.</Text> : null}
             {blocked ? btn(x.C, `adv-force-${i.id}`, 'Advance anyway (safety is low)', 'danger', () => x.requestAdvance(i.id, true)) : null}
             {blocked ? <Text color={RUST}>Safety is below the gate. Confirm to advance.</Text> : null}
           </Box>
@@ -367,10 +369,21 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
       {rule(x.C, w - 6)}
       {!reached ? notice(x.C, 'warn', 'This prototype has not reached this stage yet. Actions are off.') : null}
       {failed ? notice(x.C, 'error', `Failed: ${failed.reason}`) : null}
-      {docs.length > 0 && stage !== 'template' ? docsBlock(x, i, stage, docs) : null}
+      {docs.length > 0 ? docsBlock(x, i, stage, docs) : null}
       {pending ? notice(x.C, 'warn', 'Waiting for the chat. The result shows here when it answers (checked every 30 seconds).') : null}
-      {stage === 'template' ? templateTools(x, i, enabled) : null}
-      {acts.map(a => actionButton(x, i, a, enabled, stage === 'thumb' && gens.length > 0 ? 'Generate 5 more' : stage === 'titulo' && gens.length > 0 ? 'Generate more titles' : undefined))}
+      {stage === 'template' ? revengPanel(x, i, enabled) : null}
+      {stage === 'template' && SHOW_LIBRARY_PATH ? templateTools(x, i, enabled) : null}
+      {acts.map(a => {
+        // Brief stage: the brief is the primary step until it exists; then Find references appears (secondary) when there are none.
+        if (stage === 'brief') {
+          const hasBrief = docs.length > 0
+          if (a.key === 'refs') return hasBrief && !(i.refs && i.refs.candidates.length > 0) ? actionButton(x, i, a, enabled, undefined, 'secondary') : null
+          return actionButton(x, i, a, enabled, undefined, hasBrief ? 'secondary' : 'primary')
+        }
+        return actionButton(x, i, a, enabled, stage === 'thumb' && gens.length > 0 ? 'Generate 5 more' : stage === 'titulo' && gens.length > 0 ? 'Generate more titles' : undefined)
+      })}
+      {stage === 'brief' ? refsBlock(x, i, false) : null}
+      {stage === 'brief' && !(i.refs && i.refs.candidates.length > 0) && docs.length > 0 ? <Text color={MUTED}>The references come from the 2-page brief.</Text> : null}
       {stage !== 'template' && !items && gens.length > 0 ? outputBlock(x, i, gens[0]!, 'Latest output') : null}
       {stage === 'template' && i.template ? notice(x.C, 'ok', `Library template chosen: ${i.template.name}`) : null}
       {items ? itemsBlock(x, i, stage) : null}
@@ -390,7 +403,8 @@ export function stagePanel(x: Ctx, i: Idea, stage: string) {
 
 export function skillsRow(x: Ctx) {
   const { Box, Text } = x.C
-  const stages = ['coleta', 'triagem', ...IDEA_STAGES, '_all']
+  // One row per skills folder: the folder a stage names with skills_folder (reveng for Reverse engineering), else its own id.
+  const stages = [...['coleta', 'triagem', ...IDEA_STAGES].map(id => skillsFolderName(x.skills, x.stages.find(t => t.id === id) ?? { id })), '_all']
   const st = x.skills
   return (
     <Box flexDirection="column">

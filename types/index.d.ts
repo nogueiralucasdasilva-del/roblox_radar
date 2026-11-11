@@ -23,6 +23,7 @@ export type Stage = {
   extra_tabs?: { id: string; label: string }[]
   group?: 'radar' | 'factory'
   default_tab?: string
+  skills_folder?: string
 }
 export type SourceStatus = 'working' | 'attention' | 'stale' | 'broken' | 'unknown'
 export type Source = {

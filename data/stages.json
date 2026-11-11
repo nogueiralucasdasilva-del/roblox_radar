@@ -265,14 +265,14 @@
     },
     {
       "id": "template",
-      "name": "Template match",
-      "sub": "pick and slots",
+      "name": "Reverse engineering",
+      "sub": "reference game to template",
       "gate": true,
-      "desc": "Matches the brief to a template from the library and defines the variation slots. The library is the Drive folder roblox_radar_templates: one Google Doc per template, read by the panel on its own.",
-      "inputs": "Validated brief",
-      "outputs": "Chosen template and variation slots",
+      "desc": "Turns the chosen reference game into the prototype's own template: Lucas copies the Gemini prompt for each video segment, uploads the extraction files, the chat validates them and builds the template doc. All know-how lives in the Drive skills.",
+      "inputs": "2-page brief with reference candidates, Gemini JSON of about one hour of gameplay",
+      "outputs": "Validated extraction and the prototype's template doc",
       "build": "not_built",
-      "build_note": "Template library folder ready in Drive. No template doc yet.",
+      "build_note": "Skills in Drive: roblox_radar_skills/reveng. Gemini prompts in reveng/_tool.",
       "owner_chat": "to create",
       "trigger_ids": [],
       "status_doc": "",
@@ -317,7 +317,8 @@
         }
       ],
       "group": "factory",
-      "default_tab": "main"
+      "default_tab": "main",
+      "skills_folder": "reveng"
     },
     {
       "id": "doccompleto",
