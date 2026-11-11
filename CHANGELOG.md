@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.8.2
+
+Factory readiness: Lucas can start a prototype and go through all nine stages with no silent failure. Every failure shows its cause and the next step.
+
+### What changed
+
+- Phase 1, chat creation: creating a prototype shows a four-step sequence (prototype, Drive folder, chat, first message) with a state and error per step, `Retry chat`, an Open chat link, and the exact permission rule text when the host refuses to start a session. An existing chat is found by stored id, exact title or the proto id prefix, so a retry never makes a duplicate.
+- Phase 2, readiness: a Ready check (More section, one coloured dot in the header) tests chat tools, Drive read and write, the skills folders, skill versions, duplicate actions, scheduled tasks and radar freshness. A self-test runs the fixture replies through the real parser, the real state code and the real stage cards, in a scratch store. `/panel selftest` runs it from the command line.
+- Skills carry `seed_version` and declared actions. `/seed-skills` replaces an unedited Drive file (create new, trash old) or uploads `<name>.proposed.md` when the Drive file was edited. The skills row shows the file name, version, date and a warning for `.proposed.md`.
+- Step 0 line in every request (follow the protocol, including the Drive check). A request with no answer after 10 minutes shows `No reply yet` and `Ask chat for status`; an answer without tags shows `The chat replied without tags` and `Ask chat to reformat`. Neither auto-resends.
+- Parser tolerance: fenced blocks, CRLF, wrapped transcripts, trailing spaces; verdicts and fails only count after their own request header.
+- Phase 3, pre-validation scan (0.8.1 sections B, C, D): `hooks/scan.ts` reads the scan lines (POTENCIAL, NOUN_VERB, WEDGE, ENGINE, FUNCIONA, FALHA, up to 3 CONCORRENTE, KO, CONFIANCA, EVIDENCIA, evidence tags F, I, H, V, dead clone under 5 percent of peak). A valid scan marks the stage done and applies provisional scores (6 of 10 criteria) until the brief re-scores them; an invalid scan keeps the raw text with an amber notice naming the missing keys. The card shows the potential chip, confidence, wedge, competitors, knockouts and the decision row (Write 2-page brief primary, Adjust idea with a 200 character note, Stop here with a second press). The brief request carries the latest scan, clipped to 600 characters. The Factory hero card shows the potential and wedge line. Section A (the Drive skill) was not executed here: the shipped v2 seed files are used.
+- Phase 4: `test/walk.test.ts` walks one prototype through all nine stages on the fixture replies (ask, reply, output, gate, advance, archive) and prints one report line per stage.
+- Version 0.8.2. Tests 80, smoke and parity (87 scenarios) pass.
+
+### Parity baseline changes (deliberate)
+
+- Six new scan card scenarios added (three width tiers, BAIXO, unrecognized scan, chosen decision). The 81 earlier scenarios are unchanged.
+- The self-test now runs 20 fixtures (13 golden, 7 pre-validation).
+
+### Decisions taken
+
+- The pre-validation stage shows the scan panel instead of the generic latest output block; its older generations sit under `Show history`.
+- `Stop here` sends one line to the chat, sets `decision: 'stopped'` and archives through the existing Archive flow.
+- Live Drive and chat checks were not run in this task (no live host session): the walk uses fixtures. The first real run of each stage is still to be seen by Lucas.
+- Other Drive seed files without `seed_version` get it at the next `/seed-skills`.
+
 ## 0.8.0
 
 The panel is a shell. Reverse engineering replaces Template match. Each prototype has its own Drive folder.

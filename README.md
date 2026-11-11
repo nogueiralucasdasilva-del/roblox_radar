@@ -30,6 +30,12 @@ Terminal:
 - `/panel` opens the pane, `/panel radar` or `/panel factory` picks the mode, `/stage <id>` focuses a stage, `/seed-skills` seeds the Drive skills.
 - Text selector that works anywhere: start a message with `#brief`, `#build`, etc. (`#clear` resets).
 
+## Readiness (0.8.2)
+
+- Creating a prototype shows four steps (prototype, Drive folder, chat, first message). A failed step shows its cause; `Retry chat` retries without duplicating.
+- More, Ready check: `Run ready check` tests chat tools, Drive, skills, versions and radar freshness. `Run self-test` feeds the fixture replies in `data/selftest` through the real code.
+- Pre-validation card: potential, wedge, evidence, competitors, knockouts, then `Write 2-page brief`, `Adjust idea` or `Stop here`.
+
 ## Live state (receipts)
 
 - Every scheduled task (free scout, collection, advisor, thumbnails, status phase 1, status phase 2) ends its run by writing one receipt, a small Google Doc with a JSON body, into the Drive folder `roblox_radar_receipts`. Receipts are never edited.
