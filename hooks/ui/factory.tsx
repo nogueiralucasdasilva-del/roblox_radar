@@ -135,6 +135,21 @@ export function creationBlock(x: Ctx, i: Idea) {
   )
 }
 
+// When the two Drive documents were last read, or why they could not be.
+function docsLine(x: Ctx, i: Idea) {
+  const { Box, Text, Link } = x.C
+  const d = i.pdocs
+  if (!d) return null
+  return (
+    <Box gap={2} flexWrap="wrap" alignItems="center">
+      {d.error ? <Text color={AMBER}>{`Drive documents: ${clip(d.error, 160)}`}</Text> : <Text color={MUTED}>{d.readAt ? `Drive documents read ${ago(d.readAt, x.now)}` : 'Drive documents not read yet'}</Text>}
+      {d.statusUrl && Link ? <Link key={`st-doc-${i.id}`} href={d.statusUrl} label="Status doc" /> : null}
+      {d.potentialUrl && Link ? <Link key={`pt-doc-${i.id}`} href={d.potentialUrl} label="Potential doc" /> : null}
+      {btn(x.C, `refresh-docs-${i.id}`, 'Refresh docs', 'quiet', () => x.refreshDocs(i.id))}
+    </Box>
+  )
+}
+
 /* ---------- the prototype hero card ---------- */
 
 function criteriaColumns(x: Ctx, i: Idea) {
@@ -199,6 +214,7 @@ export function protoHeader(x: Ctx, i: Idea) {
         {i.driveFolderUrl && x.C.Link ? <x.C.Link key={`folder-${i.id}`} href={i.driveFolderUrl} label="Open folder" /> : null}
       </Box>
       {creationBlock(x, i)}
+      {docsLine(x, i)}
       {!i.driveFolderUrl && x.folderNotice(i.id) ? notice(x.C, 'warn', x.folderNotice(i.id) as string) : null}
       <Box gap={2} flexWrap="wrap" alignItems="center">
         {chip(x.C, pctText(p.pct), pctColor(p.pct))}

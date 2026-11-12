@@ -27,10 +27,12 @@ function links(x: Ctx, items: { key: string; label: string; url: string | null }
 
 // The prompt buttons, drawn inside the card on its right side.
 export function stageSide(x: Ctx, i: Idea, stage: string) {
-  const { Box } = x.C
+  const { Box, Link } = x.C
   const reveng = stage === 'template'
+  const doc = docLinks(i, stage)[0]
   return (
     <Box flexDirection="column" gap={1} alignItems="center">
+      {doc && Link ? <Link key={`open-doc-${i.id}-${stage}`} href={doc.url} label="Open doc" /> : null}
       {reveng ? btn(x.C, `gemini-prompt-${i.id}`, 'Copy Gemini prompt', 'secondary', (press: any) => x.copyPrompt(i.id, press)) : null}
       {btn(x.C, `copy-prompt-${i.id}-${stage}`, reveng ? 'Copy validation prompt' : 'Copy prompt', reveng ? 'secondary' : 'primary', (press: any) => x.copyStagePrompt(i.id, stage, 0, press))}
     </Box>

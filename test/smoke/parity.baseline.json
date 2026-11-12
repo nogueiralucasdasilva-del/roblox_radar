@@ -13550,6 +13550,193 @@
    }
   ]
  },
+ "factory cards: a done stage shows Open doc beside Copy prompt, and the Drive documents line": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh-docs-p2",
+    "text": "refresh docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief not started",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "7 build not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "4 title not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/BBBBBBBBBBBB/edit",
+    "label": "Status doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/CCCCCCCCCCCC/edit",
+    "label": "Potential doc"
+   }
+  ]
+ },
  "factory: stage panel lists documents and the failure": {
   "buttons": [
    {

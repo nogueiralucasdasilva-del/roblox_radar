@@ -113,3 +113,47 @@ test('summary lines under SUMMARIES never overwrite a stage row', () => {
   assert.equal(p.rows.prevalid!.status, 'done')
   assert.equal(p.rows.prevalid!.doc, 'P003-ATRAVES_01_scan_v1')
 })
+
+test('the real P003 documents written by the chat parse: two stages done, the brief document, eight criteria', () => {
+  const BS = String.fromCharCode(92)
+  const esc = (t: string) => t.replace(/([_\[\]!])/g, `${BS}$1`)
+  const status = [
+    'STATUS | P003-ATRAVES | Cross without making a splash | updated 2026-11-12 17:25', '',
+    'IDEA: Atravessar sem fazer splash (DONT SPLASH). 1 jogo, 65 mil e caindo.', '',
+    'CHAT: not available (no link given in the request)', '',
+    'FOLDER: https://drive.google.com/drive/folders/1EOIMhQDRDu19MTl5WGlOVQ78M18Ggl', '',
+    'CURRENT STAGE: 2-page brief', '',
+    'STAGE STATUS DOCUMENT UPDATED', '',
+    '1 Pre-validation done P003-ATRAVES_01_scan_v1 https://docs.google.com/document/d/1ewEjo9iY8sskJW0gFS7wQW97l-S_Dk9kHFmwqOb8Hz0/edit 2026-11-12', '',
+    '2 2-page brief done P003-ATRAVES_02_brief_v1 https://docs.google.com/document/d/1ZzMCwdn0iJjN5oEGXcJBVy5Ma_FRukn-m7EfKGwft6k/edit 2026-11-12', '',
+    '3 Reverse engineering not started', '', '4 Title not started', '',
+    'SUMMARIES:', '', '1 Pre-validation (2026-11-12): MEDIUM 59%, ADJUST.', '',
+  ].join(NL)
+  const p = parseStatus(status)
+  assert.equal(p.rows.prevalid!.status, 'done')
+  assert.equal(p.rows.brief!.status, 'done')
+  assert.equal(p.rows.brief!.doc, 'P003-ATRAVES_02_brief_v1')
+  assert.ok(p.rows.brief!.url!.startsWith('https://docs.google.com/document/d/1ZzMCwdn0iJjN5oEGXcJBVy5Ma_FRukn-m7EfKGwft6k'))
+  assert.equal(p.rows.template!.status, 'not started')
+  assert.equal(p.current, '2-page brief')
+  assert.equal(p.chat, null)
+  const potential = [
+    'POTENTIAL: MEDIUM (overall score: 64%)', '', 'CONFIDENCE: low', '',
+    'CRITERIA score confidence evidence', '',
+    'Emerging demand 78 medium Leader 285.4M visits, 7-day average 72K, peak 167K on 2026-11-01 (2026-11-12). [F]', '',
+    'Timing 38 medium Silence format alive 18 months in Quiet or Die!, but a plain copy window is closed. [F]', '',
+    'Competition (space) 40 low No game found with a shared team noise meter. [H]', '',
+    'Clickability 78 medium One image: friends on a dark flooded path. [I]', '',
+    'Virality 72 low One splash wipes the team. [H]', '',
+    'Co-play 78 low The shared meter makes friends the core. [H]', '',
+    'Feasibility (1 hour MVP) 65 medium One room, noise check and blind chaser. [I]', '',
+    'Safety 75 medium Leader rated All Ages (Minimal). [F]', '',
+    'Not assessed: loop, retention, monetization',
+  ].join(NL)
+  const q = parsePotential(potential)
+  assert.equal(q.label, 'MEDIUM')
+  assert.equal(q.pct, 64)
+  assert.equal(Object.keys(q.criteria).length, 8)
+  assert.equal(q.criteria.whitespace!.v, 40)
+  assert.equal(esc('a_b').includes(BS), true)
+})

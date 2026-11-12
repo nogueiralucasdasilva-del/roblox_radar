@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.5
+
+- The panel reads the Drive documents of every active prototype (not only the selected one) every minute, and the top Refresh button reads them too. Before, a prototype that was only the default choice was never read, so the potential and the statuses never updated.
+- A line under the prototype header shows when the documents were read (or why they could not be), with links to the status and potential documents and a `Refresh docs` button.
+- The creation card follows Drive: when both documents exist the docs step is done, and the old waiting text of the chat step is cleared.
+- Done stages are green and show an `Open doc` link next to `Copy prompt`.
+- Copy prompt is instant: the prompts are kept in memory and checked against Drive every 90 seconds (a click uses a prompt checked in the last 3 minutes, otherwise it reads Drive first; the file is read again only when its modified time changed).
+
 ## 0.9.4
 
 Fewer tokens in every stage.
