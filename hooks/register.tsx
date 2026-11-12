@@ -2758,7 +2758,7 @@ async function renderPane($: any, e: any) {
             </Box>
           ) : null}
         </Box>
-        <Box gap={0} flexWrap="wrap">
+        <Box gap={2} flexWrap="wrap">
           {modeTab('radar', 'Radar')}
           {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
         </Box>
