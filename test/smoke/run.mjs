@@ -188,7 +188,7 @@ const reset = async () => {
 // Case and padding insensitive: the look changes, the words must not.
 const squash = t => t.toLowerCase().replace(/\[\s+/g, '[').replace(/\s+\]/g, ']').replace(/\s+/g, ' ')
 const need = (...words) => (t, text) => words.filter(w => !squash(text).includes(squash(w))).map(w => `missing "${w}"`)
-await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.9.4', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
+await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.9.5', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', 'Send to Factory', 'Discard', 'add-inbox', '[← Pipeline]'))
@@ -315,6 +315,8 @@ await scenario('factory cards: static, each with Copy prompt; Reverse engineerin
   need('Copy prompt', 'Copy Gemini prompt', 'Copy validation prompt'))
 await scenario('factory cards: an opened card lists skills, prompt and documents by name', async () => { await reset(); const s = rich(); s.ideas[1].docs = { brief: [{ name: 'P002-MONSTER2_02_brief_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'brief' }] }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('open', ['card:p2:brief']) },
   need('Skills', 'Prompt', 'Documents', 'P002-MONSTER2_02_brief_v1'))
+await scenario('factory cards: a done stage shows Open doc beside Copy prompt, and the Drive documents line', async () => { await reset(); const s = rich(); s.ideas[1].checks = { prevalid: 'done' }; s.ideas[1].docs = { prevalid: [{ name: 'P002-MONSTER2_01_scan_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'scan' }] }; s.ideas[1].pdocs = { statusUrl: 'https://docs.google.com/document/d/BBBBBBBBBBBB/edit', potentialUrl: 'https://docs.google.com/document/d/CCCCCCCCCCCC/edit', readAt: NOW }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') },
+  need('<link Open doc>', 'Drive documents read', '<link Status doc>', '<link Potential doc>', 'Refresh docs'))
 await scenario('factory: stage panel lists documents and the failure', async () => {
   await reset()
   const s = rich()

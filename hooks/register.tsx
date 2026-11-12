@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
-import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
+import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, OLIVE_BG, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
 import { stageExtras, stageSide } from './ui/cards'
 import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
@@ -1226,11 +1226,59 @@ async function refreshProtoDocs($: any, ideaId: string): Promise<void> {
       const x = s.ideas.find(y => y.id === ideaId)
       if (!x) return
       applyProtoDocs(x, status, potential, now)
+      // The two documents exist: the creation step is done, even for a prototype made before the step existed.
+      if (statusUrl && potentialUrl && x.creation) {
+        x.creation.steps.docs = { state: 'done' }
+        if (x.creation.steps.chat.error?.startsWith('Waiting for the main chat')) x.creation.steps.chat = { state: 'pending' }
+      }
       x.pdocs = { ...(x.pdocs ?? {}), statusUrl: statusUrl ?? x.pdocs?.statusUrl, potentialUrl: potentialUrl ?? x.pdocs?.potentialUrl, status: status?.ok ? status : x.pdocs?.status, potential: potential?.ok ? potential : x.pdocs?.potential, readAt: now, error }
     })
   } finally {
     docsBusy = false
     await update($, rev, n => n + 1)
+  }
+}
+
+// The prompt text of each stage, kept in memory: a click uses it when Drive was checked in the last 3 minutes, otherwise it reads
+// Drive first. The 60 second timer keeps it fresh in the background, so the copy is instant and still follows Drive edits.
+const stagePromptCache = new Map<string, { id: string; modified: string; text: string; at: number }>()
+const PROMPT_MAX_AGE = 3 * 60 * 1000
+
+async function loadStagePrompt($: any, stage: string, which: number, maxAge: number): Promise<{ text: string; ageSec: number }> {
+  const key = `${stage}:${which}`
+  const hit = stagePromptCache.get(key)
+  if (hit && Date.now() - hit.at < maxAge) return { text: hit.text, ageSec: Math.round((Date.now() - hit.at) / 1000) }
+  const data = await load($)
+  const stageDef = data?.stages.find(s => s.id === stage) ?? { id: stage }
+  const fname = PD.PROMPT_FILES[stage]?.[which]
+  if (!fname) throw new Error('this stage has no prompt file')
+  let folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
+  if (!folderId) {
+    skillsBusy = false
+    await fetchSkills($)
+    folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
+  }
+  if (!folderId) throw new Error(`the Drive skills folder of this stage was not found. ${skillsState?.ok ? '' : (skillsState?.error ?? 'Run /seed-skills.')}`)
+  const found = await driveCall($, 'search_files', { query: `title = '${fname}' and parentId = '${folderId}' and trashed = false`, excludeContentSnippets: true, orderBy: 'modifiedTime desc', pageSize: 5 })
+  const f = (jsonOf(found)?.files ?? []).find((x: any) => x && x.id)
+  if (!f) throw new Error(`${fname} is not in the Drive skills folder of this stage.`)
+  const modified = String(f.modifiedTime ?? '')
+  if (hit && hit.id === f.id && hit.modified === modified) {
+    hit.at = Date.now()
+    return { text: hit.text, ageSec: 0 }
+  }
+  const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
+  stagePromptCache.set(key, { id: String(f.id), modified, text, at: Date.now() })
+  return { text, ageSec: 0 }
+}
+
+async function prefetchPrompts($: any): Promise<void> {
+  for (const stage of Object.keys(PD.PROMPT_FILES)) {
+    try {
+      await loadStagePrompt($, stage, 0, 0)
+    } catch {
+      // a missing prompt file shows its error when the button is pressed
+    }
   }
 }
 
@@ -1240,33 +1288,18 @@ async function copyStagePrompt($: any, ideaId: string, stage: string, which: num
   const key = `${ideaId}:${stage}`
   try {
     const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
-    const data = await load($)
-    if (!i || !data) throw new Error('the prototype is not loaded')
-    const stageDef = data.stages.find(s => s.id === stage) ?? { id: stage }
-    const fname = PD.PROMPT_FILES[stage]?.[which]
-    if (!fname) throw new Error('this stage has no prompt file')
-    // Every click reads Drive again and takes the newest file with that name, so an edit in Drive is used at once.
-    let folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
-    if (!folderId) {
-      skillsBusy = false
-      await fetchSkills($)
-      folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
-    }
-    if (!folderId) throw new Error(`the Drive skills folder of this stage was not found. ${skillsState?.ok ? '' : (skillsState?.error ?? 'Run /seed-skills.')}`)
-    const found = await driveCall($, 'search_files', { query: `title = '${fname}' and parentId = '${folderId}' and trashed = false`, excludeContentSnippets: true, orderBy: 'modifiedTime desc', pageSize: 5 })
-    const f = (jsonOf(found)?.files ?? []).find((x: any) => x && x.id)
-    if (!f) throw new Error(`${fname} is not in the Drive skills folder of this stage.`)
-    const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
+    if (!i) throw new Error('the prototype is not loaded')
+    const { text, ageSec } = await loadStagePrompt($, stage, which, PROMPT_MAX_AGE)
     const filled = PD.fillPrompt(text, { proto_id: i.proto_id ?? '', folder_url: i.driveFolderUrl ?? '', gen: nextGen(i.pdocs?.status?.rows[stage]), reveng_links: '<paste the Drive links of the extraction files here>' })
     const how = await copyText($, filled, press && press.surface)
-    stageNotes[key] = how ? { text: `Prompt copied (${how}). Paste it in the prototype chat.`, level: 'ok' } : { text: 'No clipboard here. The prompt is shown below: select and copy it.', level: 'warn', prompt: filled }
+    stageNotes[key] = how ? { text: `Prompt copied (${how}), read from Drive ${ageSec < 5 ? 'now' : `${ageSec}s ago`}. Paste it in the prototype chat.`, level: 'ok' } : { text: 'No clipboard here. The prompt is shown below: select and copy it.', level: 'warn', prompt: filled }
     $.ui.toast(how ? 'Prompt copied. Paste it in the prototype chat.' : 'No clipboard here. The prompt is shown on the card.')
   } catch (err: any) {
     stageNotes[key] = { text: `Could not prepare the prompt: ${String((err && err.message) || err).slice(0, 220)}`, level: 'error' }
   }
   await update($, rev, n => n + 1)
 }
-
+
 // Lucas creates the prototype chat by hand with the title the card shows. The panel finds it by that title, keeps its id and
 // link, writes the link into the status document and shows it beside the panel. Selecting the prototype shows it again.
 async function findAndShowChat($: any, ideaId: string, show: boolean): Promise<void> {
@@ -1284,12 +1317,19 @@ async function findAndShowChat($: any, ideaId: string, show: boolean): Promise<v
   if (show) await showChat($, i.chat, `idea:${ideaId}`)
 }
 
+// Every active prototype with a Drive folder: read its documents, look for its chat, and keep the prompts fresh in memory.
+let lastPrefetch = 0
 async function refreshSelectedDocs($: any): Promise<void> {
-  const id = await read($, protoAtom)
-  if (!id) return
-  await refreshProtoDocs($, id as string)
-  const i = (await loadStore($)).ideas.find(x => x.id === id)
-  if (i && (!i.chat || !/^local_/.test(i.chat.id))) await findAndShowChat($, id as string, false)
+  const ideas = (await loadStore($)).ideas.filter(i => i.status !== 'rejected' && i.driveFolderId)
+  for (const i of ideas.slice(0, 6)) {
+    await refreshProtoDocs($, i.id)
+    const fresh = (await loadStore($)).ideas.find(x => x.id === i.id)
+    if (fresh && (!fresh.chat || !/^local_/.test(fresh.chat.id))) await findAndShowChat($, i.id, false)
+  }
+  if (ideas.length > 0 && Date.now() - lastPrefetch > 80 * 1000) {
+    lastPrefetch = Date.now()
+    await prefetchPrompts($)
+  }
 }
 
 async function sendToFactory($: any, src: SendSrc): Promise<void> {
@@ -2794,7 +2834,7 @@ async function renderPane($: any, e: any) {
           {modeTab('factory', activeProtos > 0 ? `Factory (${activeProtos})` : 'Factory')}
         </Box>
         <Box gap={2} flexWrap="wrap">
-          {btn(K, 'refresh', 'Refresh', 'secondary', () => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($)]))}
+          {btn(K, 'refresh', 'Refresh', 'secondary', () => Promise.all([fetchLive($), fetchReceipts($), fetchTemplates($), fetchSkills($), refreshSelectedDocs($)]))}
           {btn(K, 'map-more', moreOpen ? 'More ▾' : 'More ▸', 'quiet', () => update($, moreAtom, (v: boolean) => !v))}
           <Button key="ready-toggle" onPress={() => update($, moreAtom, (v: boolean) => !v)}>
             <Text color={readyReport ? readyColor({ ready: readyReport } as Ctx) : SAND}>{'● '}</Text>
@@ -3147,7 +3187,7 @@ async function renderPane($: any, e: any) {
       const chipText = ` ${c.state.label.toUpperCase()} `
       const nameW = Math.max(8, inner - 4 - chipText.length - (c.done ? 3 : 0) - 1)
       return (
-        <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
+        <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : c.done ? OLIVE_BG : PANEL} paddingX={1} width={nodeW}>
           <Box flexDirection="row" alignItems="center" gap={1}>
           <Box flexDirection="column" flexGrow={1}>
           <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
@@ -3367,7 +3407,6 @@ async function renderPane($: any, e: any) {
           border: g.color,
           selected: here,
           done: isDone,
-          docUrl: docLinks(idea, id)[0]?.url,
           connector: doneAbove ? OLIVE : undefined,
           side: stageSide(vctx, idea, id),
           onPress: () => void toggleOpen($, `card:${idea.id}:${id}`),
