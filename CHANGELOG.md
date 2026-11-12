@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+- The Radar and Factory buttons have the same spacing as Refresh and More.
+
 ## 0.9.0
 
 The panel is a cover over Drive. The chat does the work and keeps two documents; the panel shows them and copies prompts.
