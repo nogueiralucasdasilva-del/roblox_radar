@@ -35,7 +35,7 @@ test('standard document names follow <proto>_<NN>_<kind>_v<gen><suffix>', () => 
   assert.equal(docName('P003-MONSTER', 'template', 'template-doc', 2), 'P003-MONSTER_03_template-doc_v2')
   assert.equal(docName('P003-MONSTER', 'template', 'reveng-input', 1, '_chunk01.json'), 'P003-MONSTER_03_reveng-input_g1_chunk01.json')
   assert.equal(docName('P001-X', 'metricas', 'results', 3), 'P001-X_09_results_v3')
-  assert.deepEqual(['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas'].map(stageNN), ['01', '02', '03', '04', '05', '06', '07', '08', '09'])
+  assert.deepEqual(['prevalid', 'brief', 'template', 'titulo', 'thumb', 'doccompleto', 'build', 'publicar', 'metricas'].map(stageNN), ['01', '02', '03', '04', '05', '06', '07', '08', '09'])
 })
 
 test('a document name can be read back, and its kind derived', () => {

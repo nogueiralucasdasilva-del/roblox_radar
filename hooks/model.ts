@@ -50,14 +50,17 @@ export type Idea = {
   reveng?: Reveng
   failed?: Record<string, { reason: string; at: string }>
   creation?: Creation
+  // The two standing Drive documents and what the panel last read from them: the chat keeps them up to date.
+  pdocs?: ProtoDocs
   // The pre-validation decision after the scan: open until Lucas chooses.
   decision?: 'open' | 'brief' | 'adjusting' | 'stopped'
 }
+export type ProtoDocs = { statusUrl?: string; potentialUrl?: string; status?: import('./protodocs').ParsedStatus; potential?: import('./protodocs').ParsedPotential; readAt?: string; error?: string }
 export type StepStateName = 'pending' | 'running' | 'done' | 'failed'
 export type CreationStep = { state: StepStateName; error?: string }
 // The visible sequence of creating a prototype: prototype and ID, Drive folder, chat created, chat opened.
 export type Creation = {
-  steps: Record<'proto' | 'folder' | 'chat' | 'open', CreationStep>
+  steps: Record<'proto' | 'folder' | 'chat' | 'open', CreationStep> & { docs?: CreationStep }
   notice?: string
   link?: string | null
   attempts: { step: string; ok: boolean; detail: string; at: string }[]
@@ -110,7 +113,7 @@ export type Store = {
 }
 
 // The ladder an idea climbs. Each step is a stage id.
-export const IDEA_STAGES = ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
+export const IDEA_STAGES = ['prevalid', 'brief', 'template', 'titulo', 'thumb', 'doccompleto', 'build', 'publicar', 'metricas']
 export const KNOWLEDGE_KINDS: KnowledgeKind[] = ['principle', 'technique', 'pattern', 'pitfall', 'result']
 export const KNOWLEDGE_TAG = 'KNOWLEDGE:'
 

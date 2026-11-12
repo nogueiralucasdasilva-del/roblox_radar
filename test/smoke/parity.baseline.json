@@ -874,6 +874,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -917,14 +977,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -953,14 +1013,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -982,6 +1042,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -1025,14 +1145,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1061,14 +1181,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1086,6 +1206,66 @@
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -1151,14 +1331,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1187,14 +1367,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1253,14 +1433,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build none here",
-    "hotkey": "5",
+    "text": "7 build none here",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc none here",
-    "hotkey": "4",
+    "text": "6 ◆ full doc none here",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1289,14 +1469,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail none here",
-    "hotkey": "7",
+    "text": "5 thumbnail none here",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title none here",
-    "hotkey": "6",
+    "text": "4 title none here",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1325,13 +1505,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1361,13 +1541,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1463,13 +1643,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1499,13 +1679,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1606,13 +1786,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1642,13 +1822,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1779,13 +1959,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1815,13 +1995,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1857,7 +2037,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -2001,12 +2181,6 @@
     "press": true
    },
    {
-    "key": "done-p2-doccompleto",
-    "text": "mark done",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "factory-more",
     "text": "more",
     "hotkey": null,
@@ -2020,13 +2194,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2056,13 +2230,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2092,7 +2266,7 @@
    },
    {
     "key": "prev",
-    "text": "reverse engineering",
+    "text": "thumbnail",
     "hotkey": null,
     "press": true
    },
@@ -2150,12 +2324,6 @@
     "press": true
    },
    {
-    "key": "done-p2-build",
-    "text": "mark done",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "factory-more",
     "text": "more",
     "hotkey": null,
@@ -2169,13 +2337,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2205,13 +2373,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2235,7 +2403,7 @@
    },
    {
     "key": "next",
-    "text": "title",
+    "text": "publish and traffic",
     "hotkey": null,
     "press": true
    },
@@ -2336,13 +2504,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2372,13 +2540,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2408,7 +2576,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -2479,13 +2647,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2515,13 +2683,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2545,7 +2713,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -2622,13 +2790,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2658,13 +2826,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2694,7 +2862,7 @@
    },
    {
     "key": "prev",
-    "text": "thumbnail",
+    "text": "build",
     "hotkey": null,
     "press": true
    },
@@ -2765,13 +2933,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2801,13 +2969,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2914,13 +3082,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2950,13 +3118,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2980,7 +3148,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -3034,7 +3202,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3112,13 +3280,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3148,13 +3316,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3190,7 +3358,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3343,7 +3511,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3403,13 +3571,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3439,13 +3607,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3481,7 +3649,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3620,7 +3788,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3680,13 +3848,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3716,13 +3884,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3758,7 +3926,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3897,7 +4065,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3969,13 +4137,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4005,13 +4173,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4047,7 +4215,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4194,7 +4362,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4266,13 +4434,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4302,13 +4470,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4344,7 +4512,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4491,7 +4659,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4563,13 +4731,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4599,13 +4767,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4641,7 +4809,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4788,7 +4956,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4860,13 +5028,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4896,13 +5064,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4938,7 +5106,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5085,7 +5253,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -5151,13 +5319,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5187,13 +5355,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5229,7 +5397,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5384,7 +5552,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -5456,13 +5624,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5492,13 +5660,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5534,7 +5702,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5717,13 +5885,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5753,13 +5921,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5845,6 +6013,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -5888,14 +6116,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -5924,14 +6152,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -5966,7 +6194,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -6038,13 +6266,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6074,13 +6302,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6116,7 +6344,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -6263,7 +6491,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -6335,13 +6563,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6371,13 +6599,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6413,7 +6641,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -6596,13 +6824,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6632,13 +6860,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6668,7 +6896,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -6757,13 +6985,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6793,13 +7021,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6829,7 +7057,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -6906,14 +7134,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build none here",
-    "hotkey": "5",
+    "text": "7 build none here",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc none here",
-    "hotkey": "4",
+    "text": "6 ◆ full doc none here",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -6942,14 +7170,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail none here",
-    "hotkey": "7",
+    "text": "5 thumbnail none here",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title none here",
-    "hotkey": "6",
+    "text": "4 title none here",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -6967,6 +7195,66 @@
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -7026,14 +7314,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7062,14 +7350,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7087,6 +7375,66 @@
    {
     "key": "arch-o1",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-o1-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-o1",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -7134,14 +7482,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not reached",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not reached",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7170,14 +7518,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not reached",
-    "hotkey": "6",
+    "text": "4 title not reached",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7699,6 +8047,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -7742,14 +8150,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7778,14 +8186,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7803,6 +8211,66 @@
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -7868,14 +8336,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7904,14 +8372,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7988,13 +8456,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8024,13 +8492,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -8060,7 +8528,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -8143,13 +8611,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8179,13 +8647,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -8209,7 +8677,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -8287,13 +8755,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8323,13 +8791,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9079,6 +9547,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -9122,14 +9650,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -9158,14 +9686,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -9183,6 +9711,66 @@
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -9248,14 +9836,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -9284,14 +9872,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -9368,13 +9956,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9404,13 +9992,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9440,7 +10028,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -9523,13 +10111,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9559,13 +10147,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9589,7 +10177,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -9667,13 +10255,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9703,13 +10291,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10459,6 +11047,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -10502,14 +11150,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -10538,14 +11186,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -10563,6 +11211,66 @@
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -10628,14 +11336,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -10664,14 +11372,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -10748,13 +11456,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -10784,13 +11492,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10820,7 +11528,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -10903,13 +11611,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -10939,13 +11647,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10969,7 +11677,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -11047,13 +11755,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11083,13 +11791,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11339,6 +12047,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -11382,14 +12150,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -11418,14 +12186,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -11517,13 +12285,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11553,13 +12321,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11684,13 +12452,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11720,13 +12488,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11851,13 +12619,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11887,13 +12655,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12018,13 +12786,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12054,13 +12822,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12173,13 +12941,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12209,13 +12977,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12340,13 +13108,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12376,13 +13144,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12434,6 +13202,351 @@
    {
     "href": "claude://x",
     "label": "open in app"
+   }
+  ]
+ },
+ "factory cards: static, each with Copy prompt; Reverse engineering has the Gemini and validation buttons": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "7 build not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "4 title not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": []
+ },
+ "factory cards: an opened card lists skills, prompt and documents by name": {
+  "buttons": [
+   {
+    "key": "arch-p2",
+    "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "map-more",
+    "text": "more",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-factory",
+    "text": "factory (2)",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "mode-radar",
+    "text": "radar",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "proto-menu",
+    "text": "p002-monster2 monster truck 2",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "ready-toggle",
+    "text": "ready check",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "refresh",
+    "text": "refresh",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "stage-brief",
+    "text": "2 ◆ 2-page brief asked",
+    "hotkey": "2",
+    "press": true
+   },
+   {
+    "key": "stage-build",
+    "text": "7 build not reached",
+    "hotkey": "7",
+    "press": true
+   },
+   {
+    "key": "stage-doccompleto",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
+    "press": true
+   },
+   {
+    "key": "stage-metricas",
+    "text": "9 ◆ metrics and learning not reached",
+    "hotkey": "9",
+    "press": true
+   },
+   {
+    "key": "stage-prevalid",
+    "text": "1 ◆ pre-validation done",
+    "hotkey": "1",
+    "press": true
+   },
+   {
+    "key": "stage-publicar",
+    "text": "8 ◆ publish and traffic not reached",
+    "hotkey": "8",
+    "press": true
+   },
+   {
+    "key": "stage-template",
+    "text": "3 ◆ reverse engineering not started",
+    "hotkey": "3",
+    "press": true
+   },
+   {
+    "key": "stage-thumb",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
+    "press": true
+   },
+   {
+    "key": "stage-titulo",
+    "text": "4 title not started",
+    "hotkey": "4",
+    "press": true
+   },
+   {
+    "key": "status-toggle",
+    "text": "drive and memory ok",
+    "hotkey": null,
+    "press": true
+   }
+  ],
+  "inputs": [],
+  "links": [
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "Open doc"
+   },
+   {
+    "href": "https://docs.google.com/document/d/AAAAAAAAAAAA/edit",
+    "label": "P002-MONSTER2_02_brief_v1"
    }
   ]
  },
@@ -12489,13 +13602,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12525,13 +13638,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12600,11 +13713,77 @@
    }
   ]
  },
- "creation: all four steps show, chat running": {
+ "creation: four steps, the chat step asks Lucas to create the chat and paste its link": {
   "buttons": [
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-chat-title-p2",
+    "text": "copy chat title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -12652,14 +13831,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12688,14 +13867,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12705,14 +13884,94 @@
     "press": true
    }
   ],
-  "inputs": [],
+  "inputs": [
+   {
+    "key": "chat-link-p2",
+    "placeholder": "Paste the link of the chat here",
+    "submitLabel": "Save link",
+    "rows": 1,
+    "submit": true
+   }
+  ],
   "links": []
  },
- "creation: chat failed shows the cause, the permission rules and Retry chat": {
+ "creation: documents failed shows the cause and Create status and potential docs": {
   "buttons": [
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-chat-title-p2",
+    "text": "copy chat title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "create-docs-p2",
+    "text": "create status and potential docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -12753,12 +14012,6 @@
     "press": true
    },
    {
-    "key": "retry-chat-p2",
-    "text": "retry chat",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "stage-brief",
     "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
@@ -12766,14 +14019,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12802,14 +14055,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12819,14 +14072,94 @@
     "press": true
    }
   ],
-  "inputs": [],
+  "inputs": [
+   {
+    "key": "chat-link-p2",
+    "placeholder": "Paste the link of the chat here",
+    "submitLabel": "Save link",
+    "rows": 1,
+    "submit": true
+   }
+  ],
   "links": []
  },
- "creation: open refused shows the cause, the link and Retry chat": {
+ "creation: an older prototype with no docs step offers to create the documents": {
   "buttons": [
    {
     "key": "arch-p2",
     "text": "archive",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-chat-title-p2",
+    "text": "copy chat title",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "create-docs-p2",
+    "text": "create status and potential docs",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
     "hotkey": null,
     "press": true
    },
@@ -12867,12 +14200,6 @@
     "press": true
    },
    {
-    "key": "retry-chat-p2",
-    "text": "retry chat",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "stage-brief",
     "text": "2 ◆ 2-page brief asked",
     "hotkey": "2",
@@ -12880,14 +14207,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12916,14 +14243,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12933,13 +14260,16 @@
     "press": true
    }
   ],
-  "inputs": [],
-  "links": [
+  "inputs": [
    {
-    "href": "claude://x/local_a",
-    "label": "open in app"
+    "key": "chat-link-p2",
+    "placeholder": "Paste the link of the chat here",
+    "submitLabel": "Save link",
+    "rows": 1,
+    "submit": true
    }
-  ]
+  ],
+  "links": []
  },
  "creation: all done hides the block": {
   "buttons": [
@@ -12950,6 +14280,66 @@
     "press": true
    },
    {
+    "key": "copy-prompt-p2-brief",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-build",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-doccompleto",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-metricas",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-prevalid",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-publicar",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-template",
+    "text": "copy validation prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-thumb",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "copy-prompt-p2-titulo",
+    "text": "copy prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
+    "key": "gemini-prompt-p2",
+    "text": "copy gemini prompt",
+    "hotkey": null,
+    "press": true
+   },
+   {
     "key": "map-more",
     "text": "more",
     "hotkey": null,
@@ -12993,14 +14383,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -13029,14 +14419,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -13107,13 +14497,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -13143,13 +14533,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -13280,13 +14670,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -13316,13 +14706,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },

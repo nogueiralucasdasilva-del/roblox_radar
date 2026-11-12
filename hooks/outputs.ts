@@ -10,7 +10,7 @@
 import type { GateVerdict, RefCandidate } from './model'
 
 export const KINDS = ['scan', 'brief', 'refs', 're_packet', 'reveng_validation', 'template_doc', 'fulldoc', 'titles', 'thumb_prompts', 'build_plan', 'launch', 'results']
-export const OUTPUT_STAGES = ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
+export const OUTPUT_STAGES = ['prevalid', 'brief', 'template', 'titulo', 'thumb', 'doccompleto', 'build', 'publicar', 'metricas']
 // Which output kind completes which stage. refs and re_packet are steps inside the template stage.
 export const DONE_KIND: Record<string, string> = {
   prevalid: 'scan',
