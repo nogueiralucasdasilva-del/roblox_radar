@@ -2,6 +2,10 @@
 
 ## 0.9.2
 
+- Copy prompt reads the Drive skills list again once when the prompt file is not in it (the list may be older than the file), and the error names the files it did see.
+
+## 0.9.2
+
 The hooks module failed static analysis, so it never loaded: no panel, no /panel command, no hooks at all.
 
 - `uploadReveng` declared a local `note`, colliding with the top-level `note($, ...)` helper. Renamed to `setNote`.

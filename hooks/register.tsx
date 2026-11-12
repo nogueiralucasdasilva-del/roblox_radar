@@ -1242,10 +1242,18 @@ async function copyStagePrompt($: any, ideaId: string, stage: string, which: num
     const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
     const data = await load($)
     if (!i || !data) throw new Error('the prototype is not loaded')
-    const folder = skillsFolderName(skillsState, data.stages.find(s => s.id === stage) ?? { id: stage })
+    const stageDef = data.stages.find(s => s.id === stage) ?? { id: stage }
     const fname = PD.PROMPT_FILES[stage]?.[which]
-    const f = fname ? skillsState?.files[folder]?.find(x => x.name === fname) : undefined
-    if (!fname || !f || !f.id) throw new Error(`${fname ?? 'the prompt file'} is not in the Drive skills folder "${folder}". Open More, check the skills list, or add the file.`)
+    const lookup = () => (fname ? skillsState?.files[skillsFolderName(skillsState, stageDef)]?.find(x => x.name === fname) : undefined)
+    let f = lookup()
+    // The skills list may be older than the file: read Drive again once before giving up.
+    if (!f) {
+      skillsBusy = false
+      await fetchSkills($)
+      f = lookup()
+    }
+    const folder = skillsFolderName(skillsState, stageDef)
+    if (!fname || !f || !f.id) throw new Error(`${fname ?? 'the prompt file'} is not in the Drive skills folder "${folder}". Files seen there: ${(skillsState?.files[folder] ?? []).map(x => x.name).join(', ') || 'none'}${skillsState?.ok ? '' : ` (the skills list could not be read: ${skillsState?.error ?? 'unknown'})`}.`)
     const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
     const filled = PD.fillPrompt(text, { proto_id: i.proto_id ?? '', folder_url: i.driveFolderUrl ?? '', gen: nextGen(i.pdocs?.status?.rows[stage]), reveng_links: '<paste the Drive links of the extraction files here>' })
     const how = await copyText($, filled, press && press.surface)

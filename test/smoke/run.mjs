@@ -188,7 +188,7 @@ const reset = async () => {
 // Case and padding insensitive: the look changes, the words must not.
 const squash = t => t.toLowerCase().replace(/\[\s+/g, '[').replace(/\s+\]/g, ']').replace(/\s+/g, ' ')
 const need = (...words) => (t, text) => words.filter(w => !squash(text).includes(squash(w))).map(w => `missing "${w}"`)
-await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.9.1', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
+await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.9.2', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', 'Send to Factory', 'Discard', 'add-inbox', '[← Pipeline]'))
