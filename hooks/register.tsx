@@ -1122,7 +1122,7 @@ async function createProtoDocs($: any, ideaId: string): Promise<boolean> {
       let f = await findDocByName($, name, i0.driveFolderId)
       if (!f) {
         const text = which === 'status' ? statusDocText(i0.proto_id, ideaText, i0.driveFolderUrl ?? null, i0.chat?.link ?? null, now) : potentialDocText(i0.proto_id, ideaText, now)
-        const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i0.driveFolderId, contentMimeType: 'text/plain', textContent: text }))
+        const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i0.driveFolderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: text }))
         f = { id: String(created.id), url: String(created.viewUrl ?? `https://drive.google.com/file/d/${created.id}/view`) }
       }
       urls[which] = f.url
@@ -1149,7 +1149,7 @@ async function replaceDoc($: any, ideaId: string, which: 'status' | 'potential',
   const f = await findDocByName($, name, i.driveFolderId)
   if (!f) throw new Error(`${name} not found in the prototype folder`)
   const next = change(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
-  const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i.driveFolderId, contentMimeType: 'text/plain', textContent: next }))
+  const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i.driveFolderId, contentMimeType: 'text/plain', disableConversionToGoogleType: true, textContent: next }))
   await driveCall($, 'trash_file', { fileId: f.id })
   await mutate($, s => {
     const x = s.ideas.find(y => y.id === ideaId)
@@ -1851,7 +1851,7 @@ async function syncChats($: any, only?: string[], force = false): Promise<void> 
     if (pendingChats.size > 0) await resolvePending($)
     const s0 = await loadStore($)
     const targets: { kind: 'idea' | 'stage'; scope: string; chat: ChatLink; label: string; old: string }[] = []
-    for (const i of s0.ideas) if (i.chat && (!only || only.includes(i.id))) targets.push({ kind: 'idea', scope: i.id, chat: i.chat, label: `the prototype "${i.title}"`, old: i.memory ?? '' })
+    // Prototype chats are not read any more: their result is in the Drive documents (no transcript reading, no memory model call).
     if (!only) for (const [sid, chat] of Object.entries(s0.stageChats)) targets.push({ kind: 'stage', scope: sid, chat, label: `the "${sid}" stage`, old: s0.memory[sid]?.text ?? '' })
     for (const t of targets.slice(0, 20)) {
       let text = ''
@@ -2859,7 +2859,7 @@ async function renderPane($: any, e: any) {
       requestAdvance: (id, force) => requestAdvance($, id, force),
       overrideAdvance: id => overrideAdvance($, id),
       advanceNoGate: id => advanceNoGate($, id),
-      refreshNow: id => Promise.all([refreshProtoDocs($, id), syncChats($, [id], true)]).then(() => update($, rev, n => n + 1)),
+      refreshNow: id => refreshProtoDocs($, id),
       pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       archive: (id, archived) => archiveProto($, id, archived),

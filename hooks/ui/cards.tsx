@@ -5,7 +5,7 @@ import type { Ctx } from '../views'
 import { clip } from '../model'
 import type { Idea } from '../model'
 import { docLinks } from '../factory'
-import { PROMPT_FILES } from '../protodocs'
+import { PROMPT_FILES, SUGGESTED_MODEL } from '../protodocs'
 import { skillsFolderName } from '../skills'
 import type { SkillRef } from '../model'
 import { btn } from './kit'
@@ -64,6 +64,10 @@ export function stageExtras(x: Ctx, i: Idea, stage: string) {
           <Box gap={2} flexWrap="wrap">
             <Text color={MUTED}>Skills</Text>
             {links(x, skills.map(f => ({ key: `sk-${i.id}-${stage}-${f.name}`, label: f.name, url: f.id ? driveFile(f.id) : null })), x.skills?.ok ? 'none in Drive' : 'Drive not read yet')}
+          </Box>
+          <Box gap={2} flexWrap="wrap">
+            <Text color={MUTED}>Suggested model</Text>
+            <Text color={FG}>{SUGGESTED_MODEL[stage] ?? 'any'}</Text>
           </Box>
           <Box gap={2} flexWrap="wrap">
             <Text color={MUTED}>Prompt</Text>
