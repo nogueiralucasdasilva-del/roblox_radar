@@ -157,3 +157,10 @@ test('the real P003 documents written by the chat parse: two stages done, the br
   assert.equal(q.criteria.whitespace!.v, 40)
   assert.equal(esc('a_b').includes(BS), true)
 })
+
+test('the current stage is the first one not done, even when the status document still names a finished stage', () => {
+  const i = createPrototype(emptyStore(), { title: 'Soup', note: '', origin: 'own', from: null, now: NOW })
+  const status = parseStatus(['CURRENT STAGE: 2-page brief', '1 Pre-validation       done', '2 2-page brief         done', '3 Reverse engineering  not started'].join(NL))
+  applyProtoDocs(i, status, undefined, NOW)
+  assert.equal(i.stage, 'template')
+})

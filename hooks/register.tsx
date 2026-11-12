@@ -3187,7 +3187,7 @@ async function renderPane($: any, e: any) {
       const chipText = ` ${c.state.label.toUpperCase()} `
       const nameW = Math.max(8, inner - 4 - chipText.length - (c.done ? 3 : 0) - 1)
       return (
-        <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : c.done ? OLIVE_BG : PANEL} paddingX={1} width={nodeW}>
+        <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected && !c.done ? 'double' : 'round'} borderColor={c.selected && !c.done ? NEON : c.border} backgroundColor={c.done ? OLIVE_BG : c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
           <Box flexDirection="row" alignItems="center" gap={1}>
           <Box flexDirection="column" flexGrow={1}>
           <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
