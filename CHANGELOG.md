@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.4 (unreleased)
+
+- Stage order is now: Pre-validation, 2-page brief, Reverse engineering, Title, Thumbnail, Full doc, Build, Publish, Metrics. Document numbers follow (`_04_titles`, `_05_thumb-prompts`, `_06_fulldoc`, `_07_build-plan`). Parity baseline refreshed for the new button order (156 key and position changes, no other differences).
+
 ## 0.8.3
 
 - The main-chat route marks the prompt and background as data for `start_session` (the main chat used to answer them as if it were the new chat). If the main chat ends its turn without starting the chat, the card shows the failure with `Retry chat`.

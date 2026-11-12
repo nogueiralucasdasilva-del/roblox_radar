@@ -19,10 +19,10 @@ const STEPS: Record<string, { reply: string[]; kind: string; docs: number }> = {
   prevalid: { reply: ['prevalid', 'reply_plain.txt'], kind: 'scan', docs: 0 },
   brief: { reply: ['reply_brief.txt'], kind: 'brief', docs: 1 },
   template: { reply: ['reply_reveng_validation.txt'], kind: 'reveng_validation', docs: 1 },
-  doccompleto: { reply: ['reply_fulldoc.txt'], kind: 'fulldoc', docs: 1 },
-  build: { reply: ['reply_build_plan.txt'], kind: 'build_plan', docs: 1 },
   titulo: { reply: ['reply_titles.txt'], kind: 'titles', docs: 0 },
   thumb: { reply: ['reply_thumb_prompts.txt'], kind: 'thumb_prompts', docs: 0 },
+  doccompleto: { reply: ['reply_fulldoc.txt'], kind: 'fulldoc', docs: 1 },
+  build: { reply: ['reply_build_plan.txt'], kind: 'build_plan', docs: 1 },
   publicar: { reply: ['reply_launch.txt'], kind: 'launch', docs: 0 },
   metricas: { reply: ['reply_results.txt'], kind: 'results', docs: 0 },
 }

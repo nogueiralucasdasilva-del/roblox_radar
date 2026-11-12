@@ -110,7 +110,7 @@ export type Store = {
 }
 
 // The ladder an idea climbs. Each step is a stage id.
-export const IDEA_STAGES = ['prevalid', 'brief', 'template', 'doccompleto', 'build', 'titulo', 'thumb', 'publicar', 'metricas']
+export const IDEA_STAGES = ['prevalid', 'brief', 'template', 'titulo', 'thumb', 'doccompleto', 'build', 'publicar', 'metricas']
 export const KNOWLEDGE_KINDS: KnowledgeKind[] = ['principle', 'technique', 'pattern', 'pitfall', 'result']
 export const KNOWLEDGE_TAG = 'KNOWLEDGE:'
 

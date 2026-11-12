@@ -321,6 +321,102 @@
       "skills_folder": "reveng"
     },
     {
+      "id": "titulo",
+      "name": "Title",
+      "sub": "game name and listing text",
+      "gate": false,
+      "desc": "Picks the game name and store listing title for each prototype. Has its own repository of principles, patterns and techniques that grows with what gets launched.",
+      "inputs": "Brief and prototype",
+      "outputs": "Title options and the title used in the test",
+      "build": "not_built",
+      "build_note": "Not built. Repository seeded from the commandments and the weekly advisor reports.",
+      "owner_chat": "to create",
+      "trigger_ids": [],
+      "status_doc": "",
+      "docs": [
+        {
+          "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
+          "state": "installed"
+        }
+      ],
+      "skills": [
+        {
+          "name": "title-craft",
+          "state": "does not exist"
+        }
+      ],
+      "pendencies": [
+        {
+          "id": "ti1",
+          "text": "Create the title skill. The repository tab holds the knowledge it will use.",
+          "owner": "agent",
+          "since": "2026-10-19",
+          "done": false
+        }
+      ],
+      "no_task_note": "No automated task.",
+      "flag": null,
+      "checked_at": null,
+      "extra_tabs": [
+        {
+          "id": "knowledge",
+          "label": "Knowledge"
+        }
+      ],
+      "group": "factory",
+      "default_tab": "main"
+    },
+    {
+      "id": "thumb",
+      "name": "Thumbnail",
+      "sub": "icon, thumbnail and short video",
+      "gate": false,
+      "desc": "Builds the storefront image for each prototype. Has its own repository of principles, patterns and techniques. The weekly advisor already produces genre-agnostic thumbnail hooks that feed it.",
+      "inputs": "Brief, prototype and the weekly thumbnail hooks",
+      "outputs": "Thumbnail options and the one used in the test",
+      "build": "not_built",
+      "build_note": "Not built. Weekly hooks report exists in the advisor stage.",
+      "owner_chat": "to create",
+      "trigger_ids": [],
+      "status_doc": "",
+      "docs": [
+        {
+          "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
+          "state": "installed"
+        }
+      ],
+      "skills": [
+        {
+          "name": "store-listing-hook",
+          "state": "deferred"
+        },
+        {
+          "name": "thumbnail-brief",
+          "state": "installed"
+        }
+      ],
+      "pendencies": [
+        {
+          "id": "l1",
+          "text": "Confirm whether Ads Manager reports per thumbnail.",
+          "owner": "Lucas",
+          "since": "2026-10-16",
+          "done": false
+        }
+      ],
+      "no_task_note": "No automated task.",
+      "flag": null,
+      "checked_at": null,
+      "extra_tabs": [
+        {
+          "id": "knowledge",
+          "label": "Knowledge"
+        }
+      ],
+      "group": "factory",
+      "default_tab": "main"
+    },
+    {
       "id": "doccompleto",
       "name": "Full doc",
       "sub": "brief + template mechanics",
@@ -446,102 +542,6 @@
       "flag": null,
       "checked_at": null,
       "extra_tabs": [],
-      "group": "factory",
-      "default_tab": "main"
-    },
-    {
-      "id": "titulo",
-      "name": "Title",
-      "sub": "game name and listing text",
-      "gate": false,
-      "desc": "Picks the game name and store listing title for each prototype. Has its own repository of principles, patterns and techniques that grows with what gets launched.",
-      "inputs": "Brief and prototype",
-      "outputs": "Title options and the title used in the test",
-      "build": "not_built",
-      "build_note": "Not built. Repository seeded from the commandments and the weekly advisor reports.",
-      "owner_chat": "to create",
-      "trigger_ids": [],
-      "status_doc": "",
-      "docs": [
-        {
-          "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
-          "state": "installed"
-        }
-      ],
-      "skills": [
-        {
-          "name": "title-craft",
-          "state": "does not exist"
-        }
-      ],
-      "pendencies": [
-        {
-          "id": "ti1",
-          "text": "Create the title skill. The repository tab holds the knowledge it will use.",
-          "owner": "agent",
-          "since": "2026-10-19",
-          "done": false
-        }
-      ],
-      "no_task_note": "No automated task.",
-      "flag": null,
-      "checked_at": null,
-      "extra_tabs": [
-        {
-          "id": "knowledge",
-          "label": "Knowledge"
-        }
-      ],
-      "group": "factory",
-      "default_tab": "main"
-    },
-    {
-      "id": "thumb",
-      "name": "Thumbnail",
-      "sub": "icon, thumbnail and short video",
-      "gate": false,
-      "desc": "Builds the storefront image for each prototype. Has its own repository of principles, patterns and techniques. The weekly advisor already produces genre-agnostic thumbnail hooks that feed it.",
-      "inputs": "Brief, prototype and the weekly thumbnail hooks",
-      "outputs": "Thumbnail options and the one used in the test",
-      "build": "not_built",
-      "build_note": "Not built. Weekly hooks report exists in the advisor stage.",
-      "owner_chat": "to create",
-      "trigger_ids": [],
-      "status_doc": "",
-      "docs": [
-        {
-          "name": "NOSSOS_MANDAMENTOS_ROBLOX_DEFINITIVO_V2.md",
-          "state": "installed"
-        }
-      ],
-      "skills": [
-        {
-          "name": "store-listing-hook",
-          "state": "deferred"
-        },
-        {
-          "name": "thumbnail-brief",
-          "state": "installed"
-        }
-      ],
-      "pendencies": [
-        {
-          "id": "l1",
-          "text": "Confirm whether Ads Manager reports per thumbnail.",
-          "owner": "Lucas",
-          "since": "2026-10-16",
-          "done": false
-        }
-      ],
-      "no_task_note": "No automated task.",
-      "flag": null,
-      "checked_at": null,
-      "extra_tabs": [
-        {
-          "id": "knowledge",
-          "label": "Knowledge"
-        }
-      ],
       "group": "factory",
       "default_tab": "main"
     },

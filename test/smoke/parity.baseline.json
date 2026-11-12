@@ -917,14 +917,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -953,14 +953,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1025,14 +1025,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1061,14 +1061,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1151,14 +1151,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1187,14 +1187,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1253,14 +1253,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build none here",
-    "hotkey": "5",
+    "text": "7 build none here",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc none here",
-    "hotkey": "4",
+    "text": "6 ◆ full doc none here",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -1289,14 +1289,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail none here",
-    "hotkey": "7",
+    "text": "5 thumbnail none here",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title none here",
-    "hotkey": "6",
+    "text": "4 title none here",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -1325,13 +1325,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1361,13 +1361,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1463,13 +1463,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1499,13 +1499,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1606,13 +1606,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1642,13 +1642,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1779,13 +1779,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -1815,13 +1815,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -1857,7 +1857,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -2001,12 +2001,6 @@
     "press": true
    },
    {
-    "key": "done-p2-doccompleto",
-    "text": "mark done",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "factory-more",
     "text": "more",
     "hotkey": null,
@@ -2020,13 +2014,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2056,13 +2050,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2092,7 +2086,7 @@
    },
    {
     "key": "prev",
-    "text": "reverse engineering",
+    "text": "thumbnail",
     "hotkey": null,
     "press": true
    },
@@ -2150,12 +2144,6 @@
     "press": true
    },
    {
-    "key": "done-p2-build",
-    "text": "mark done",
-    "hotkey": null,
-    "press": true
-   },
-   {
     "key": "factory-more",
     "text": "more",
     "hotkey": null,
@@ -2169,13 +2157,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2205,13 +2193,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2235,7 +2223,7 @@
    },
    {
     "key": "next",
-    "text": "title",
+    "text": "publish and traffic",
     "hotkey": null,
     "press": true
    },
@@ -2336,13 +2324,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2372,13 +2360,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2408,7 +2396,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -2479,13 +2467,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2515,13 +2503,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2545,7 +2533,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -2622,13 +2610,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2658,13 +2646,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2694,7 +2682,7 @@
    },
    {
     "key": "prev",
-    "text": "thumbnail",
+    "text": "build",
     "hotkey": null,
     "press": true
    },
@@ -2765,13 +2753,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2801,13 +2789,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2914,13 +2902,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -2950,13 +2938,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -2980,7 +2968,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -3034,7 +3022,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3112,13 +3100,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3148,13 +3136,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3190,7 +3178,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3343,7 +3331,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3403,13 +3391,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3439,13 +3427,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3481,7 +3469,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3620,7 +3608,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3680,13 +3668,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -3716,13 +3704,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -3758,7 +3746,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -3897,7 +3885,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -3969,13 +3957,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4005,13 +3993,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4047,7 +4035,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4194,7 +4182,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4266,13 +4254,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4302,13 +4290,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4344,7 +4332,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4491,7 +4479,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4563,13 +4551,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4599,13 +4587,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4641,7 +4629,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -4788,7 +4776,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -4860,13 +4848,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -4896,13 +4884,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -4938,7 +4926,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5085,7 +5073,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -5151,13 +5139,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5187,13 +5175,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5229,7 +5217,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5384,7 +5372,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -5456,13 +5444,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5492,13 +5480,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5534,7 +5522,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -5717,13 +5705,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -5753,13 +5741,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -5888,14 +5876,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -5924,14 +5912,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -5966,7 +5954,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -6038,13 +6026,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6074,13 +6062,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6116,7 +6104,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -6263,7 +6251,7 @@
    },
    {
     "key": "adv-p2",
-    "text": "advance to full doc",
+    "text": "advance to title",
     "hotkey": null,
     "press": true
    },
@@ -6335,13 +6323,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6371,13 +6359,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6413,7 +6401,7 @@
    },
    {
     "key": "next",
-    "text": "full doc",
+    "text": "title",
     "hotkey": null,
     "press": true
    },
@@ -6596,13 +6584,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6632,13 +6620,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6668,7 +6656,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -6757,13 +6745,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -6793,13 +6781,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -6829,7 +6817,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -6906,14 +6894,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build none here",
-    "hotkey": "5",
+    "text": "7 build none here",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc none here",
-    "hotkey": "4",
+    "text": "6 ◆ full doc none here",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -6942,14 +6930,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail none here",
-    "hotkey": "7",
+    "text": "5 thumbnail none here",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title none here",
-    "hotkey": "6",
+    "text": "4 title none here",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7026,14 +7014,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7062,14 +7050,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7134,14 +7122,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not reached",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not reached",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7170,14 +7158,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not reached",
-    "hotkey": "6",
+    "text": "4 title not reached",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7742,14 +7730,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7778,14 +7766,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7868,14 +7856,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -7904,14 +7892,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -7988,13 +7976,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8024,13 +8012,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -8060,7 +8048,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -8143,13 +8131,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8179,13 +8167,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -8209,7 +8197,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -8287,13 +8275,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -8323,13 +8311,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9122,14 +9110,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -9158,14 +9146,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -9248,14 +9236,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -9284,14 +9272,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -9368,13 +9356,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9404,13 +9392,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9440,7 +9428,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -9523,13 +9511,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9559,13 +9547,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -9589,7 +9577,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -9667,13 +9655,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -9703,13 +9691,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10502,14 +10490,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -10538,14 +10526,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -10628,14 +10616,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -10664,14 +10652,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -10748,13 +10736,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -10784,13 +10772,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10820,7 +10808,7 @@
    },
    {
     "key": "prev",
-    "text": "build",
+    "text": "reverse engineering",
     "hotkey": null,
     "press": true
    },
@@ -10903,13 +10891,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -10939,13 +10927,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -10969,7 +10957,7 @@
    },
    {
     "key": "next",
-    "text": "publish and traffic",
+    "text": "full doc",
     "hotkey": null,
     "press": true
    },
@@ -11047,13 +11035,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11083,13 +11071,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11382,14 +11370,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -11418,14 +11406,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -11517,13 +11505,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11553,13 +11541,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11684,13 +11672,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11720,13 +11708,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -11851,13 +11839,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -11887,13 +11875,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12018,13 +12006,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12054,13 +12042,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12173,13 +12161,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12209,13 +12197,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12340,13 +12328,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12376,13 +12364,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12489,13 +12477,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -12525,13 +12513,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -12652,14 +12640,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12688,14 +12676,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12766,14 +12754,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12802,14 +12790,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12880,14 +12868,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -12916,14 +12904,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -12993,14 +12981,14 @@
    },
    {
     "key": "stage-build",
-    "text": "5 build not started",
-    "hotkey": "5",
+    "text": "7 build not reached",
+    "hotkey": "7",
     "press": true
    },
    {
     "key": "stage-doccompleto",
-    "text": "4 ◆ full doc not started",
-    "hotkey": "4",
+    "text": "6 ◆ full doc not reached",
+    "hotkey": "6",
     "press": true
    },
    {
@@ -13029,14 +13017,14 @@
    },
    {
     "key": "stage-thumb",
-    "text": "7 thumbnail not reached",
-    "hotkey": "7",
+    "text": "5 thumbnail not reached",
+    "hotkey": "5",
     "press": true
    },
    {
     "key": "stage-titulo",
-    "text": "6 title not started",
-    "hotkey": "6",
+    "text": "4 title not started",
+    "hotkey": "4",
     "press": true
    },
    {
@@ -13107,13 +13095,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -13143,13 +13131,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
@@ -13280,13 +13268,13 @@
    },
    {
     "key": "jump-build",
-    "text": "5",
+    "text": "7",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-doccompleto",
-    "text": "4",
+    "text": "6",
     "hotkey": null,
     "press": true
    },
@@ -13316,13 +13304,13 @@
    },
    {
     "key": "jump-thumb",
-    "text": "7",
+    "text": "5",
     "hotkey": null,
     "press": true
    },
    {
     "key": "jump-titulo",
-    "text": "6",
+    "text": "4",
     "hotkey": null,
     "press": true
    },
