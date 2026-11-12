@@ -68,6 +68,12 @@ export type Ctx = {
   folderNotice: (ideaId: string) => string | null
   chooseRef: (ideaId: string, index: number) => unknown
   retryChat: (ideaId: string) => unknown
+  createDocs: (ideaId: string) => unknown
+  copyStagePrompt: (ideaId: string, stage: string, which: number, press?: any) => unknown
+  stageNote: (ideaId: string, stage: string) => { text: string; level: 'ok' | 'warn' | 'error'; prompt?: string } | null
+  refreshDocs: (ideaId: string) => unknown
+  pasteChatLink: (ideaId: string, link: string) => unknown
+  copyChatTitle: (ideaId: string, press?: any) => unknown
   ready: import('./ready').ReadyReport | null
   readyBusy: boolean
   runReady: () => unknown

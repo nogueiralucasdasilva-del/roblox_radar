@@ -4,6 +4,7 @@ import type { Register } from 'claude-code'
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
+import { stageExtras } from './ui/cards'
 import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
 import { readyBlock, readyColor } from './ui/ready'
 import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
@@ -63,6 +64,8 @@ import { evalChatTools, evalDrive, evalDuplicates, evalFolders, evalRadar, evalS
 import type { ReadyItem, ReadyReport } from './ready'
 import { GOLDEN_FILES, PREVALID_FILES, runGolden, runPrevalid } from './selftest'
 import type { SelfResult } from './selftest'
+import { applyProtoDocs, docNameFor, nextGen, parseStatus, potentialDocText, statusDocText } from './protodocs'
+import * as PD from './protodocs'
 import { createChat, openBeside, permissionHelp, sessionRows, STEP_LABEL } from './chatflow'
 import type { Attempt, ChatDeps, CreateResult, StepName } from './chatflow'
 import { ensureProtoFolders, ensureProtosRoot } from './protos'
@@ -688,7 +691,7 @@ async function startDirect($: any, p: PendingChat): Promise<boolean> {
 /* ---------- prototype chat: a visible sequence (prototype, Drive folder, chat created, chat opened) ---------- */
 
 const newCreation = (): Creation => ({
-  steps: { proto: { state: 'done' }, folder: { state: 'pending' }, chat: { state: 'pending' }, open: { state: 'pending' } },
+  steps: { proto: { state: 'done' }, folder: { state: 'pending' }, docs: { state: 'pending' }, chat: { state: 'pending' }, open: { state: 'done' } },
   attempts: [],
 })
 
@@ -1091,6 +1094,174 @@ async function syncChatTitle($: any, ideaId: string): Promise<void> {
 // One action: allocate the proto ID, create the idea at pre-validation, create its chat, queue the memory event, give feedback.
 type SendSrc = { kind: 'inbox'; id: string } | { kind: 'advisor'; report: Report; si: number; ii: number }
 
+/* ---------- the two standing Drive documents (status and potential), and the chat link pasted by Lucas ---------- */
+
+// The newest non-trashed file with this exact name in the prototype folder (the chat replaces a document by a new file of the same name).
+async function findDocByName($: any, name: string, folderId: string): Promise<{ id: string; url: string } | null> {
+  const raw = await driveCall($, 'search_files', { query: `title = '${name}' and parentId = '${folderId}' and trashed = false`, excludeContentSnippets: true, orderBy: 'modifiedTime desc', pageSize: 5 })
+  const files: any[] = jsonOf(raw)?.files ?? []
+  const f = files.find(x => x && x.id)
+  return f ? { id: String(f.id), url: String(f.viewUrl ?? `https://drive.google.com/file/d/${f.id}/view`) } : null
+}
+
+// Step 3 of the creation: the status and the potential documents, in the prototype folder. Never makes a second copy.
+async function createProtoDocs($: any, ideaId: string): Promise<boolean> {
+  const i0 = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i0 || !i0.proto_id) return false
+  if (!i0.driveFolderId) {
+    await setStep($, ideaId, 'docs', 'failed', 'The Drive folder does not exist yet, so the documents cannot be created. Retry after the folder is created.')
+    return false
+  }
+  await setStep($, ideaId, 'docs', 'running')
+  try {
+    const now = new Date().toISOString()
+    const ideaText = `${i0.title}${i0.note ? ` | ${i0.note}` : ''}`.replace(/\s+/g, ' ').slice(0, 400)
+    const urls: Record<string, string> = {}
+    for (const which of ['status', 'potential'] as const) {
+      const name = docNameFor(i0.proto_id, which)
+      let f = await findDocByName($, name, i0.driveFolderId)
+      if (!f) {
+        const text = which === 'status' ? statusDocText(i0.proto_id, ideaText, i0.driveFolderUrl ?? null, i0.chat?.link ?? null, now) : potentialDocText(i0.proto_id, ideaText, now)
+        const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i0.driveFolderId, contentMimeType: 'text/plain', textContent: text }))
+        f = { id: String(created.id), url: String(created.viewUrl ?? `https://drive.google.com/file/d/${created.id}/view`) }
+      }
+      urls[which] = f.url
+    }
+    await mutate($, s => {
+      const x = s.ideas.find(y => y.id === ideaId)
+      if (!x) return
+      x.pdocs = { ...(x.pdocs ?? {}), statusUrl: urls.status, potentialUrl: urls.potential }
+    })
+    await setStep($, ideaId, 'docs', 'done')
+    return true
+  } catch (err: any) {
+    await setStep($, ideaId, 'docs', 'failed', `Could not create the documents: ${String((err && err.message) || err).slice(0, 200)}`)
+    return false
+  }
+}
+
+// Writes a change into a Drive document: the connector cannot edit file content, so this saves a new file with the same name
+// and trashes the old one.
+async function replaceDoc($: any, ideaId: string, which: 'status' | 'potential', change: (text: string) => string): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.proto_id || !i.driveFolderId) throw new Error('the prototype folder is not known yet')
+  const name = docNameFor(i.proto_id, which)
+  const f = await findDocByName($, name, i.driveFolderId)
+  if (!f) throw new Error(`${name} not found in the prototype folder`)
+  const next = change(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
+  const created = jsonOf(await driveCall($, 'create_file', { title: name, parentId: i.driveFolderId, contentMimeType: 'text/plain', textContent: next }))
+  await driveCall($, 'trash_file', { fileId: f.id })
+  await mutate($, s => {
+    const x = s.ideas.find(y => y.id === ideaId)
+    if (x) x.pdocs = { ...(x.pdocs ?? {}), [which === 'status' ? 'statusUrl' : 'potentialUrl']: String(created.viewUrl ?? '') }
+  })
+}
+
+// Lucas created the prototype chat himself (the app does not let the panel start one) and pasted its link.
+async function pasteChatLink($: any, ideaId: string, raw: string): Promise<void> {
+  const link = raw.trim().split(/\s+/)[0] ?? ''
+  if (!/^https?:\/\/\S+$/.test(link)) {
+    await setStep($, ideaId, 'chat', 'pending', 'Paste the full link of the chat. It starts with https://')
+    await update($, rev, n => n + 1)
+    return
+  }
+  const sid = /local_[0-9a-f-]{8,}/.exec(link)?.[0]
+  await mutate($, s => {
+    const i = s.ideas.find(x => x.id === ideaId)
+    if (!i) return
+    i.chat = { id: sid ?? link, title: ideaChatTitle(i), link, at: new Date().toISOString(), syncedAt: null, seen: 0 }
+    addLog(s, 'prevalid', 'chat', `${i.proto_id}: chat link saved.`)
+  })
+  await setStep($, ideaId, 'chat', 'done', undefined, { link })
+  try {
+    await replaceDoc($, ideaId, 'status', t => (/^CHAT:.*$/m.test(t) ? t.replace(/^CHAT:.*$/m, `CHAT: ${link}`) : `${t}${String.fromCharCode(10)}CHAT: ${link}`))
+  } catch (err: any) {
+    await setStep($, ideaId, 'chat', 'done', `The link is saved in the panel, but the status document was not updated: ${String((err && err.message) || err).slice(0, 160)}`, { link })
+  }
+  await update($, rev, n => n + 1)
+}
+
+async function copyChatTitle($: any, ideaId: string, press: any): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i) return
+  const how = await copyText($, ideaChatTitle(i), press && press.surface)
+  $.ui.toast(how ? `Chat title copied: ${ideaChatTitle(i)}` : `Could not copy. The title is: ${ideaChatTitle(i)}`)
+}
+
+/* ---------- reading the two Drive documents, and the standard prompt of each stage ---------- */
+
+type StageNote = { text: string; level: 'ok' | 'warn' | 'error'; prompt?: string }
+const stageNotes: Record<string, StageNote> = {}
+let docsBusy = false
+
+// Reads the status and potential documents of a prototype from Drive and copies them onto the card. Silent when Drive is slow:
+// the error stays on the prototype and the next refresh tries again.
+async function refreshProtoDocs($: any, ideaId: string): Promise<void> {
+  if (docsBusy) return
+  docsBusy = true
+  try {
+    const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+    if (!i || !i.proto_id || !i.driveFolderId) return
+    let status: PD.ParsedStatus | undefined
+    let potential: PD.ParsedPotential | undefined
+    let statusUrl: string | undefined
+    let potentialUrl: string | undefined
+    let error: string | undefined
+    try {
+      const sf = await findDocByName($, docNameFor(i.proto_id, 'status'), i.driveFolderId)
+      if (sf) {
+        statusUrl = sf.url
+        status = parseStatus(unwrapDoc(await driveCall($, 'read_file_content', { fileId: sf.id })))
+      } else error = `${docNameFor(i.proto_id, 'status')} not found in the prototype folder`
+      const pf = await findDocByName($, docNameFor(i.proto_id, 'potential'), i.driveFolderId)
+      if (pf) {
+        potentialUrl = pf.url
+        potential = PD.parsePotential(unwrapDoc(await driveCall($, 'read_file_content', { fileId: pf.id })))
+      }
+    } catch (err: any) {
+      error = `Could not read the documents: ${String((err && err.message) || err).slice(0, 160)}`
+    }
+    const now = new Date().toISOString()
+    await mutate($, s => {
+      const x = s.ideas.find(y => y.id === ideaId)
+      if (!x) return
+      applyProtoDocs(x, status, potential, now)
+      x.pdocs = { ...(x.pdocs ?? {}), statusUrl: statusUrl ?? x.pdocs?.statusUrl, potentialUrl: potentialUrl ?? x.pdocs?.potentialUrl, status: status?.ok ? status : x.pdocs?.status, potential: potential?.ok ? potential : x.pdocs?.potential, readAt: now, error }
+    })
+  } finally {
+    docsBusy = false
+    await update($, rev, n => n + 1)
+  }
+}
+
+// "Copy prompt" on a stage card: reads the stage's prompt file from the Drive skills folder, fills the prototype's values
+// and puts it on the clipboard. Without a clipboard the prompt is shown on the card to select and copy.
+async function copyStagePrompt($: any, ideaId: string, stage: string, which: number, press: any): Promise<void> {
+  const key = `${ideaId}:${stage}`
+  try {
+    const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+    const data = await load($)
+    if (!i || !data) throw new Error('the prototype is not loaded')
+    const folder = skillsFolderName(skillsState, data.stages.find(s => s.id === stage) ?? { id: stage })
+    const fname = PD.PROMPT_FILES[stage]?.[which]
+    const f = fname ? skillsState?.files[folder]?.find(x => x.name === fname) : undefined
+    if (!fname || !f || !f.id) throw new Error(`${fname ?? 'the prompt file'} is not in the Drive skills folder "${folder}". Open More, check the skills list, or add the file.`)
+    const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
+    const filled = PD.fillPrompt(text, { proto_id: i.proto_id ?? '', folder_url: i.driveFolderUrl ?? '', gen: nextGen(i.pdocs?.status?.rows[stage]), reveng_links: '<paste the Drive links of the extraction files here>' })
+    const how = await copyText($, filled, press && press.surface)
+    stageNotes[key] = how ? { text: `Prompt copied (${how}). Paste it in the prototype chat.`, level: 'ok' } : { text: 'No clipboard here. The prompt is shown below: select and copy it.', level: 'warn', prompt: filled }
+    $.ui.toast(how ? 'Prompt copied. Paste it in the prototype chat.' : 'No clipboard here. The prompt is shown on the card.')
+  } catch (err: any) {
+    stageNotes[key] = { text: `Could not prepare the prompt: ${String((err && err.message) || err).slice(0, 220)}`, level: 'error' }
+  }
+  await update($, rev, n => n + 1)
+}
+
+async function refreshSelectedDocs($: any): Promise<void> {
+  const id = await read($, protoAtom)
+  if (id) await refreshProtoDocs($, id as string)
+}
+
 async function sendToFactory($: any, src: SendSrc): Promise<void> {
   let ideaId = ''
   let protoId = ''
@@ -1134,12 +1305,11 @@ async function sendToFactory($: any, src: SendSrc): Promise<void> {
   if (folderOk) await setStep($, ideaId, 'folder', 'done')
   else await setStep($, ideaId, 'folder', 'failed', folderNotes[ideaId] ?? 'Drive folder not created.')
   void flushOutbox($)
-  // Steps 3 and 4 never depend on step 2: a failed folder does not stop the chat.
-  const idea = (await loadStore($)).ideas.find(x => x.id === ideaId)
-  if (idea?.chat) await syncChatTitle($, ideaId)
-  await createProtoChat($, ideaId, AUTO_OPEN_CHAT_ON_SEND)
-  const done = (await loadStore($)).ideas.find(x => x.id === ideaId)?.creation
-  factoryNote = { ideaId, text: done && done.steps.chat.state === 'done' ? `Created ${protoId} and its chat` : `Created ${protoId}. See the steps below.` }
+  // Step 3: the status and potential documents. Step 4 is Lucas: he creates the chat and pastes its link on the card.
+  await createProtoDocs($, ideaId)
+  const created = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (created) await setStep($, ideaId, 'chat', 'pending', `Create a chat titled "${ideaChatTitle(created)}" and paste its link on the card.`)
+  factoryNote = { ideaId, text: `Created ${protoId}. Create its chat and paste the link.` }
   await update($, rev, n => n + 1)
 }
 
@@ -2271,6 +2441,7 @@ export const register: Register = on => {
     $.clock.every(60 * 1000, () => void flushOutbox($))
     $.clock.every(5 * 60 * 1000, () => void syncChats($))
     $.clock.every(30 * 1000, () => void syncPending($))
+    $.clock.every(60 * 1000, () => void refreshSelectedDocs($))
     $.clock.every(FETCH_MS, () => void fetchSkills($))
     $.clock.every(FETCH_MS, () => void fetchLive($))
     $.clock.every(FETCH_MS, () => void fetchReceipts($))
@@ -2657,13 +2828,19 @@ async function renderPane($: any, e: any) {
       requestAdvance: (id, force) => requestAdvance($, id, force),
       overrideAdvance: id => overrideAdvance($, id),
       advanceNoGate: id => advanceNoGate($, id),
-      refreshNow: id => syncChats($, [id], true).then(() => update($, rev, n => n + 1)),
+      refreshNow: id => Promise.all([refreshProtoDocs($, id), syncChats($, [id], true)]).then(() => update($, rev, n => n + 1)),
       pickItem: (id, st, item, m) => pickItem($, id, st, item, m),
       setTemplateMode: (id, m) => setTemplateMode($, id, m),
       archive: (id, archived) => archiveProto($, id, archived),
       folderNotice: id => folderNotes[id] ?? null,
       chooseRef: (id, n) => chooseRef($, id, n),
       retryChat: id => retryChat($, id),
+      createDocs: id => createProtoDocs($, id).then(() => refreshProtoDocs($, id)),
+      copyStagePrompt: (id, st, which, press) => copyStagePrompt($, id, st, which, press),
+      stageNote: (id, st) => stageNotes[`${id}:${st}`] ?? null,
+      refreshDocs: id => refreshProtoDocs($, id),
+      pasteChatLink: (id, link) => pasteChatLink($, id, link),
+      copyChatTitle: (id, press) => copyChatTitle($, id, press),
       ready: readyReport,
       readyBusy,
       runReady: () => runReadyCheck($),
@@ -2965,11 +3142,12 @@ async function renderPane($: any, e: any) {
       )
     }
     // A one-cell connector under every card but the last, so the list reads as a pipeline.
-    const flowMap = (cards: Card[]) => (
+    const flowMap = (cards: Card[], extra?: (id: string) => any) => (
       <Box flexDirection="column">
         {cards.map((c, k) => (
           <Box key={`fm-${c.id}`} flexDirection="column">
             {cardNode(c)}
+            {extra ? extra(c.id) : null}
             {k < cards.length - 1 ? <Text color={c.connector ?? LINE_SOFT}>{'   │'}</Text> : null}
           </Box>
         ))}
@@ -3152,7 +3330,7 @@ async function renderPane($: any, e: any) {
           done: isDone,
           docUrl: docLinks(idea, id)[0]?.url,
           connector: doneAbove ? OLIVE : undefined,
-          onPress: () => goF(id),
+          onPress: () => void toggleOpen($, `card:${idea.id}:${id}`),
         }
       }
       const here = store.ideas.filter(i => i.status !== 'rejected' && i.stage === id).length
@@ -3168,5 +3346,5 @@ async function renderPane($: any, e: any) {
         onPress: () => goF(id),
       }
     })
-    return frame(factoryNoteBar(vctx), protoPicker(vctx, idea), idea ? protoHeader(vctx, idea) : null, flowMap(cardsF), skillsBlock)
+    return frame(factoryNoteBar(vctx), protoPicker(vctx, idea), idea ? protoHeader(vctx, idea) : null, flowMap(cardsF, idea ? (id: string) => stageExtras(vctx, idea, id) : undefined), skillsBlock)
 }

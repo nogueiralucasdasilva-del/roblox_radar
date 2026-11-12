@@ -89,34 +89,47 @@ const STEP_GLYPH: Record<string, { glyph: string; color: string }> = {
 
 // Shown on the prototype until all four steps are done. Each step has its own glyph and its own error text.
 export function creationBlock(x: Ctx, i: Idea) {
-  const { Box, Text, Link } = x.C
+  const { Box, Text, Link, Input } = x.C
   const c = i.creation
   if (!c) return null
-  const all = STEP_ORDER.every(k => c.steps[k].state === 'done')
+  const stateOf = (k: (typeof STEP_ORDER)[number]) => c.steps[k]?.state ?? 'pending'
+  const errorOf = (k: (typeof STEP_ORDER)[number]) => c.steps[k]?.error
+  const all = STEP_ORDER.every(k => stateOf(k) === 'done' && !errorOf(k))
   if (all) return null
-  const chatBad = c.steps.chat.state === 'failed' || c.steps.open.state === 'failed'
+  const docsBad = stateOf('docs') === 'failed' || (stateOf('docs') === 'pending' && stateOf('folder') === 'done' && !i.pdocs?.statusUrl)
+  const chatOpen = stateOf('chat') !== 'done'
   return (
-    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={chatBad ? RUST : LINE_SOFT} paddingX={1}>
+    <Box flexDirection="column" gap={1} borderStyle="round" borderColor={docsBad ? RUST : LINE_SOFT} paddingX={1}>
       <Box gap={2} flexWrap="wrap">
         {STEP_ORDER.map((k, n) => {
-          const g = STEP_GLYPH[c.steps[k].state] ?? STEP_GLYPH.pending!
+          const g = STEP_GLYPH[stateOf(k)] ?? STEP_GLYPH.pending!
           return (
-            <Text key={`cs-${i.id}-${k}`} bold={c.steps[k].state === 'running'} color={g.color}>
+            <Text key={`cs-${i.id}-${k}`} bold={stateOf(k) === 'running'} color={g.color}>
               {`${g.glyph} ${n + 1} ${STEP_LABEL[k]}`}
             </Text>
           )
         })}
       </Box>
-      {STEP_ORDER.filter(k => c.steps[k].error).map(k => (
-        <Text key={`ce-${i.id}-${k}`} color={c.steps[k].state === 'failed' ? RUST : AMBER}>
-          {`${STEP_LABEL[k]}: ${clip(c.steps[k].error ?? '', 400)}`}
+      {STEP_ORDER.filter(k => errorOf(k)).map(k => (
+        <Text key={`ce-${i.id}-${k}`} color={stateOf(k) === 'failed' ? RUST : AMBER}>
+          {`${STEP_LABEL[k]}: ${clip(errorOf(k) ?? '', 400)}`}
         </Text>
       ))}
-      {c.notice && c.steps.chat.state === 'failed' ? notice(x.C, 'error', clip(c.notice, 600)) : null}
-      <Box gap={2} flexWrap="wrap" alignItems="center">
-        {chatBad ? btn(x.C, `retry-chat-${i.id}`, 'Retry chat', 'primary', () => x.retryChat(i.id)) : null}
-        {c.link && Link ? <Link key={`chat-session-${i.id}`} href={c.link} label="open in app" /> : null}
-      </Box>
+      {docsBad ? (
+        <Box gap={2} flexWrap="wrap" alignItems="center">
+          {btn(x.C, `create-docs-${i.id}`, 'Create status and potential docs', 'primary', () => x.createDocs(i.id))}
+        </Box>
+      ) : null}
+      {chatOpen ? (
+        <Box flexDirection="column" gap={1}>
+          <Box gap={2} flexWrap="wrap" alignItems="center">
+            <Text color={FG}>{`Create a chat titled: ${i.proto_id} | ${clip(i.title, 60)}`}</Text>
+            {btn(x.C, `copy-chat-title-${i.id}`, 'Copy chat title', 'secondary', (press: any) => x.copyChatTitle(i.id, press))}
+          </Box>
+          <Input key={`chat-link-${i.id}`} placeholder="Paste the link of the chat here" rows={1} submitLabel="Save link" onSubmit={(v: string) => void x.pasteChatLink(i.id, v)} />
+        </Box>
+      ) : null}
+      {c.link && Link ? <Link key={`chat-session-${i.id}`} href={c.link} label="Open chat" /> : null}
     </Box>
   )
 }

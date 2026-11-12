@@ -188,7 +188,7 @@ const reset = async () => {
 // Case and padding insensitive: the look changes, the words must not.
 const squash = t => t.toLowerCase().replace(/\[\s+/g, '[').replace(/\s+\]/g, ']').replace(/\s+/g, ' ')
 const need = (...words) => (t, text) => words.filter(w => !squash(text).includes(squash(w))).map(w => `missing "${w}"`)
-await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.8.3', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
+await scenario('radar map: numbered cards for collection, screening, loose ideas, plus the auditor bar', reset, need('[        RADAR        ]', 'FACTORY', 'v0.9.0', '[ 1  Radar and collection', '[ 2  Screening and advisor', '[ 3  Loose ideas', 'Auditor'))
 await scenario('radar: collection card opens full screen with its sources', async () => { await reset(); await setAtom('rstage', 'coleta') }, need('[← Pipeline]', 'Open chat', 'google_trends', '[Sources]'))
 await scenario('radar: advisor card opens with the latest report and Send to Factory', async () => { await reset(); await setAtom('rstage', 'triagem') }, need('Send to Factory', 'Latest report is open'))
 await scenario('radar: loose ideas card opens with the inbox', async () => { await reset(); putStore(rich()); await setAtom('rstage', 'inbox') }, need('Skate park', 'Send to Factory', 'Discard', 'add-inbox', '[← Pipeline]'))
@@ -311,6 +311,10 @@ await scenario('scan card: an unrecognized scan shows the missing keys and the r
   need('Scan format not recognized: missing WEDGE, CONFIANCA', 'POTENCIAL: MEDIO'))
 await scenario('scan card: the chosen decision shows as a tint', async () => { await reset(); putStore(scanIdea(mkScan('ALTO'), { decision: 'brief' })); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('fstage', 'prevalid') },
   need('BRIEF CHOSEN'))
+await scenario('factory cards: static, each with Copy prompt; Reverse engineering has the Gemini and validation buttons', async () => { await reset(); putStore(rich()); await setAtom('mode', 'factory'); await setAtom('proto', 'p2') },
+  need('Copy prompt', 'Copy Gemini prompt', 'Copy validation prompt'))
+await scenario('factory cards: an opened card lists skills, prompt and documents by name', async () => { await reset(); const s = rich(); s.ideas[1].docs = { brief: [{ name: 'P002-MONSTER2_02_brief_v1', url: 'https://docs.google.com/document/d/AAAAAAAAAAAA/edit', fileId: 'AAAAAAAAAAAA', at: NOW, gen: 1, kind: 'brief' }] }; putStore(s); await setAtom('mode', 'factory'); await setAtom('proto', 'p2'); await setAtom('open', ['card:p2:brief']) },
+  need('Skills', 'Prompt', 'Documents', 'P002-MONSTER2_02_brief_v1'))
 await scenario('factory: stage panel lists documents and the failure', async () => {
   await reset()
   const s = rich()
@@ -327,10 +331,10 @@ const creationState = (steps, notice, link) => async () => {
   putStore(s)
   await setAtom('mode', 'factory'); await setAtom('proto', 'p2')
 }
-await scenario('creation: all four steps show, chat running', creationState({ chat: { state: 'running', error: 'Waiting for the main chat to create it. Approve the request if the app asks.' } }), need('1 Prototype and ID', '2 Drive folder', '3 Chat created', '4 Chat opened', 'Waiting for the main chat'))
-await scenario('creation: chat failed shows the cause, the permission rules and Retry chat', creationState({ chat: { state: 'failed', error: 'start_session denied' } }, 'start_session denied Add these permission rules to your Claude settings: mcp__ccd_session__start_session'), need('✖ 3 Chat created', 'start_session denied', 'mcp__ccd_session__start_session', 'Retry chat'))
-await scenario('creation: open refused shows the cause, the link and Retry chat', creationState({ chat: { state: 'done' }, open: { state: 'failed', error: 'the app refused; open it from the link' } }, undefined, 'claude://x/local_a'), need('✖ 4 Chat opened', 'open it from the link', '<link open in app>', 'Retry chat'))
-await scenario('creation: all done hides the block', creationState({ chat: { state: 'done' }, open: { state: 'done' } }), (t, text) => (/Chat created/.test(text) ? ['the finished sequence is still shown'] : []))
+await scenario('creation: four steps, the chat step asks Lucas to create the chat and paste its link', creationState({ docs: { state: 'done' } }), need('1 Prototype and ID', '2 Drive folder', '3 Status and potential docs', '4 Chat link', 'Create a chat titled', 'Copy chat title', 'Paste the link of the chat here'))
+await scenario('creation: documents failed shows the cause and Create status and potential docs', creationState({ docs: { state: 'failed', error: 'Could not create the documents: denied' } }), need('Could not create the documents: denied', 'Create status and potential docs'))
+await scenario('creation: an older prototype with no docs step offers to create the documents', async () => { await creationState({})(); }, need('Create status and potential docs'))
+await scenario('creation: all done hides the block', creationState({ docs: { state: 'done' }, chat: { state: 'done' }, open: { state: 'done' } }), (t, text) => (/Chat link/.test(text) ? ['the finished sequence is still shown'] : []))
 const OLD = new Date(Date.now() - 20 * 60 * 1000).toISOString()
 const waiting = extra => async () => {
   await reset()

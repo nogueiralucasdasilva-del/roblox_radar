@@ -1,8 +1,25 @@
 # Changelog
 
-## 0.8.4 (unreleased)
+## 0.9.0
 
-- Stage order is now: Pre-validation, 2-page brief, Reverse engineering, Title, Thumbnail, Full doc, Build, Publish, Metrics. Document numbers follow (`_04_titles`, `_05_thumb-prompts`, `_06_fulldoc`, `_07_build-plan`). Parity baseline refreshed for the new button order (156 key and position changes, no other differences).
+The panel is a cover over Drive. The chat does the work and keeps two documents; the panel shows them and copies prompts.
+
+- Creating a prototype: ID, Drive folder, then two standing documents in the folder (`<proto_id>_00_status`, `<proto_id>_00_potential`). The chat is created by Lucas (the app does not let a plugin start one): the card shows the title to copy and a box to paste the chat link, which is written into the status document. Older prototypes get a `Create status and potential docs` button.
+- Stage cards are static. Each has a `Copy prompt` button; opening a card lists the skills, the prompt and the documents of the stage by name, each a link to Drive. Reverse engineering has `Copy Gemini prompt` and `Copy validation prompt`.
+- Standard prompts live in Drive as `prompt_<stage>.md` next to the skills. The panel fills `{{proto_id}}`, `{{folder_url}}`, `{{gen}}` and copies the text. Each prompt tells the chat to read the status document and every document it lists, use the skill and template, save the stage document, and update the status and potential documents.
+- The panel reads the status and potential documents from Drive (every 60 seconds for the selected prototype, and on `Refresh now`): stage statuses, document links, the current stage and the potential scores come from there.
+- Stage order: Pre-validation, 2-page brief, Reverse engineering, Title, Thumbnail, Full doc, Build, Publish, Metrics. Document numbers follow (`_04_titles`, `_05_thumb-prompts`, `_06_fulldoc`, `_07_build-plan`).
+- Skills rewritten with document templates in Drive (`template_*_doc.md`). The Pre-validation document uses the 8-criteria layout (POTENTIAL, CONFIDENCE, CRITERIA, KNOCKOUTS, COMPARABLES, RECOMMENDATION). The full doc has 14 sections that the build reads.
+
+### Deliberate parity changes
+
+- Factory card presses toggle the card instead of opening the full stage screen; new rows under each card; new creation scenarios; stage order change (156 key and position changes).
+
+### Decisions taken
+
+- The old `@@` tag reader and the per-stage action buttons stay in the code but are no longer reachable from the cards; they are removed in a later version once the Drive flow is proven.
+- The Pre-validation scan card of 0.8.2 is not shown any more (its parser expects the old format).
+- Not tested live: document creation, replacement and prompt copy against the real Drive connector.
 
 ## 0.8.3
 

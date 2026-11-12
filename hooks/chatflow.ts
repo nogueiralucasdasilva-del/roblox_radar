@@ -127,10 +127,10 @@ export async function openBeside(deps: ChatDeps, id: string): Promise<{ ok: bool
   }
 }
 
-export type StepName = 'proto' | 'folder' | 'chat' | 'open'
+export type StepName = 'proto' | 'folder' | 'docs' | 'chat' | 'open'
 export type StepState = 'pending' | 'running' | 'done' | 'failed'
-export const STEP_LABEL: Record<StepName, string> = { proto: 'Prototype and ID', folder: 'Drive folder', chat: 'Chat created', open: 'Chat opened' }
-export const STEP_ORDER: StepName[] = ['proto', 'folder', 'chat', 'open']
+export const STEP_LABEL: Record<StepName, string> = { proto: 'Prototype and ID', folder: 'Drive folder', docs: 'Status and potential docs', chat: 'Chat link', open: 'Chat opened' }
+export const STEP_ORDER: StepName[] = ['proto', 'folder', 'docs', 'chat']
 
 // The text of the notice when the chat could not be created: the cause, and the rules that let the app do it from a click.
 export function permissionHelp(): string {
