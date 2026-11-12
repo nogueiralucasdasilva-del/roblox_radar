@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.4
+
+Fewer tokens in every stage.
+
+- No tagged blocks any more (only `@@FAIL`). The result lives in the Drive documents, so the reply is at most 4 short lines with no narration. `_all/skill_output_protocol.md` is version 3 and shorter.
+- The panel no longer reads prototype chat transcripts and no longer calls a model (Haiku) every 5 minutes to rewrite a chat memory.
+- Status and potential documents are plain text files (no Google Doc conversion, no escaping). The status document has a `SUMMARIES` section, one line per finished stage.
+- Pre-validation research is capped at 5 web sources and 3 competitor pages.
+- Each card shows a suggested model (Sonnet, or Opus for Full doc and Build) in its opened details.
+
 ## 0.9.3
 
 - Copy prompt reads Drive on every click and takes the newest prompt file by name in the stage folder, so an edit in Drive is used at once.

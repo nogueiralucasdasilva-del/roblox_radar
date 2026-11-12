@@ -37,6 +37,9 @@ export function statusDocText(protoId: string, idea: string, folderUrl: string |
     'STAGE                  STATUS       DOCUMENT       UPDATED',
     ...rows,
     '',
+    'SUMMARIES (one line per finished stage):',
+    'none yet',
+    '',
     'DECISIONS: none yet',
     'OPEN QUESTIONS: none',
     '',
@@ -72,8 +75,10 @@ const URL = /https?:\/\/[^\s)>\]]+/
 export function parseStatus(text: string): ParsedStatus {
   const out: ParsedStatus = { chat: null, folder: null, current: null, rows: {}, ok: false }
   try {
+    let inRows = true
     for (const raw of lines(text)) {
       const line = raw.trim()
+      if (/^(SUMMARIES|DECISIONS|OPEN QUESTIONS)/i.test(line)) inRows = false
       let m = /^CHAT:\s*(\S.*)$/i.exec(line)
       if (m && m[1]) out.chat = URL.exec(m[1])?.[0] ?? null
       m = /^FOLDER:\s*(\S.*)$/i.exec(line)
@@ -81,7 +86,7 @@ export function parseStatus(text: string): ParsedStatus {
       m = /^CURRENT STAGE:\s*(\S.*)$/i.exec(line)
       if (m && m[1]) out.current = m[1].trim()
       const row = /^(\d)\s+(.*)$/.exec(line)
-      if (!row || !row[1] || !row[2]) continue
+      if (!inRows || !row || !row[1] || !row[2]) continue
       const id = STATUS_STAGES[Number(row[1]) - 1]
       if (!id || !row[2].toLowerCase().startsWith(STAGE_LABELS[id]!.toLowerCase().slice(0, 8))) continue
       const rest = row[2].slice(STAGE_LABELS[id]!.length)
@@ -155,6 +160,9 @@ export function fillPrompt(template: string, vars: Record<string, string | numbe
 }
 
 // The Drive file name of the standard prompt of a stage (and the second prompt of Reverse engineering).
+// The model that fits each stage. A suggestion shown on the card: the panel cannot switch the model of a chat.
+export const SUGGESTED_MODEL: Record<string, string> = { prevalid: 'Sonnet', brief: 'Sonnet', template: 'Sonnet', titulo: 'Sonnet', thumb: 'Sonnet', doccompleto: 'Opus', build: 'Opus', publicar: 'Sonnet', metricas: 'Sonnet' }
+
 export const PROMPT_FILES: Record<string, string[]> = {
   prevalid: ['prompt_prevalid.md'],
   brief: ['prompt_brief.md'],

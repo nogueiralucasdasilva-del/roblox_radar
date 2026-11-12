@@ -106,3 +106,10 @@ test('applyProtoDocs copies statuses, document links, current stage and potentia
   assert.equal(i.docs!.prevalid!.length, 1)
   assert.equal(i.scores!.length, 1)
 })
+
+test('summary lines under SUMMARIES never overwrite a stage row', () => {
+  const t = ['1 Pre-validation       done   P003-ATRAVES_01_scan_v1 2026-11-12', 'SUMMARIES (one line per finished stage):', '1 Pre-validation: MEDIUM 59 percent, adjust the angle', 'DECISIONS: none'].join(NL)
+  const p = parseStatus(t)
+  assert.equal(p.rows.prevalid!.status, 'done')
+  assert.equal(p.rows.prevalid!.doc, 'P003-ATRAVES_01_scan_v1')
+})
