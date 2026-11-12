@@ -1408,8 +1408,8 @@ async function decideScan($: any, ideaId: string, decision: 'brief'): Promise<vo
   await runFactory($, ideaId, 'brief')
 }
 
-async function adjustScan($: any, ideaId: string, note: string): Promise<void> {
-  const text = note.replace(/\s+/g, ' ').trim().slice(0, 200)
+async function adjustScan($: any, ideaId: string, raw: string): Promise<void> {
+  const text = raw.replace(/\s+/g, ' ').trim().slice(0, 200)
   if (!text) return
   await setDecision($, ideaId, 'adjusting')
   await runFactory($, ideaId, 'scan', { adjust: text })
@@ -1584,25 +1584,25 @@ async function setReveng($: any, ideaId: string, patch: { segment?: number; mode
 // Reads the local files Lucas names (files, or a folder read one level deep), classifies and numbers them, and uploads each
 // to <proto folder>/inputs with its standard name. Nothing is validated here: the chat validates.
 async function uploadReveng($: any, ideaId: string, raw: string): Promise<void> {
-  const note = (n: RevengNote) => {
+  const setNote = (n: RevengNote) => {
     revengNotes[ideaId] = n
   }
   const s0 = await loadStore($)
   const i0 = s0.ideas.find(x => x.id === ideaId)
   if (!i0) return
   if (!i0.refs || i0.refs.chosenIndex === null) {
-    note({ text: 'Choose a reference first.', level: 'warn' })
+    setNote({ text: 'Choose a reference first.', level: 'warn' })
     await update($, rev, n => n + 1)
     return
   }
   const paths = splitPaths(raw).map(p => expandHome(p, homeDir($)))
   if (paths.length === 0) {
-    note({ text: 'Type or paste one or more file or folder paths first.', level: 'warn' })
+    setNote({ text: 'Type or paste one or more file or folder paths first.', level: 'warn' })
     await update($, rev, n => n + 1)
     return
   }
   if (!(await ensureProtoFolder($, ideaId))) {
-    note({ text: 'The prototype Drive folder is not ready, so nothing was uploaded. It is retried on the next press.', level: 'error' })
+    setNote({ text: 'The prototype Drive folder is not ready, so nothing was uploaded. It is retried on the next press.', level: 'error' })
     await update($, rev, n => n + 1)
     return
   }
@@ -1679,7 +1679,7 @@ async function uploadReveng($: any, ideaId: string, raw: string): Promise<void> 
     void flushOutbox($)
   }
   const rej = plan.rejected.map(r => `${r.name}: ${r.reason}`)
-  note({
+  setNote({
     text: uploaded.length > 0 ? `${summarizePlan({ accepted: plan.accepted.filter(a => uploaded.some(u => u.name === a.stdName)), rejected: plan.rejected }, gen)}.${rej.length > 0 ? ` Not uploaded: ${rej.join('; ')}` : ''}` : `Nothing was uploaded.${rej.length > 0 ? ` ${rej.join('; ')}` : ''}`,
     level: uploaded.length > 0 ? (rej.length > 0 ? 'warn' : 'ok') : 'error',
     fsFailed,

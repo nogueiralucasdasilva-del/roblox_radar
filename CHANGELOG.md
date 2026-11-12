@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.2
+
+The hooks module failed static analysis, so it never loaded: no panel, no /panel command, no hooks at all.
+
+- `uploadReveng` declared a local `note`, colliding with the top-level `note($, ...)` helper. Renamed to `setNote`.
+- `adjustScan` took a parameter named `note`, the same collision. Renamed to `raw`.
+- `archiveProto` and its caller used a parameter named `on`, shadowing the `on` that `register` receives. Renamed to `archived`.
+- A mod may not reuse the name of a function that is handed `$`, and may not redeclare `on` inside `register`. `claude plugin test` reports both.
+
 ## 0.9.1
 
 - The Radar and Factory buttons have the same spacing as Refresh and More.
