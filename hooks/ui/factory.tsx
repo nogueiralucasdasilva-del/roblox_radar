@@ -126,6 +126,7 @@ export function creationBlock(x: Ctx, i: Idea) {
             <Text color={FG}>{`Create a chat titled: ${i.proto_id} | ${clip(i.title, 60)}`}</Text>
             {btn(x.C, `copy-chat-title-${i.id}`, 'Copy chat title', 'secondary', (press: any) => x.copyChatTitle(i.id, press))}
           </Box>
+          <Text color={MUTED}>The panel finds the chat by this title and opens it. Paste the link below only if it does not appear.</Text>
           <Input key={`chat-link-${i.id}`} placeholder="Paste the link of the chat here" rows={1} submitLabel="Save link" onSubmit={(v: string) => void x.pasteChatLink(i.id, v)} />
         </Box>
       ) : null}

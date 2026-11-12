@@ -4,7 +4,7 @@ import type { Register } from 'claude-code'
 import type { Data, Report, ReportItem, ReportsFile, SeedFile, SourcesFile, Stage } from '../types'
 import { AMBER, BG, CLAY, FG, LINE, LINE_SOFT, MUTED, NEON, NEON_BG, OLIVE, PANEL, RAISED, RUST, SAND, SKY, USER_BG } from './theme'
 import { ago, knowledgeView, openChatButton, receiptsView, reportsView, sourcesView, templatesView } from './views'
-import { stageExtras } from './ui/cards'
+import { stageExtras, stageSide } from './ui/cards'
 import { SHOW_LIBRARY_PATH, checkGlyph, protoHeader, protoLine, protoPicker, skillsRow, stagePanel } from './ui/factory'
 import { readyBlock, readyColor } from './ui/ready'
 import { btn, btnText, cardWidth, chip as kitChip, emptyState, kv, notice, pill, rail, rule, sectionTitle, tierOf, tint } from './ui/kit'
@@ -1244,16 +1244,18 @@ async function copyStagePrompt($: any, ideaId: string, stage: string, which: num
     if (!i || !data) throw new Error('the prototype is not loaded')
     const stageDef = data.stages.find(s => s.id === stage) ?? { id: stage }
     const fname = PD.PROMPT_FILES[stage]?.[which]
-    const lookup = () => (fname ? skillsState?.files[skillsFolderName(skillsState, stageDef)]?.find(x => x.name === fname) : undefined)
-    let f = lookup()
-    // The skills list may be older than the file: read Drive again once before giving up.
-    if (!f) {
+    if (!fname) throw new Error('this stage has no prompt file')
+    // Every click reads Drive again and takes the newest file with that name, so an edit in Drive is used at once.
+    let folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
+    if (!folderId) {
       skillsBusy = false
       await fetchSkills($)
-      f = lookup()
+      folderId = skillsState?.ids[skillsFolderName(skillsState, stageDef)]
     }
-    const folder = skillsFolderName(skillsState, stageDef)
-    if (!fname || !f || !f.id) throw new Error(`${fname ?? 'the prompt file'} is not in the Drive skills folder "${folder}". Files seen there: ${(skillsState?.files[folder] ?? []).map(x => x.name).join(', ') || 'none'}${skillsState?.ok ? '' : ` (the skills list could not be read: ${skillsState?.error ?? 'unknown'})`}.`)
+    if (!folderId) throw new Error(`the Drive skills folder of this stage was not found. ${skillsState?.ok ? '' : (skillsState?.error ?? 'Run /seed-skills.')}`)
+    const found = await driveCall($, 'search_files', { query: `title = '${fname}' and parentId = '${folderId}' and trashed = false`, excludeContentSnippets: true, orderBy: 'modifiedTime desc', pageSize: 5 })
+    const f = (jsonOf(found)?.files ?? []).find((x: any) => x && x.id)
+    if (!f) throw new Error(`${fname} is not in the Drive skills folder of this stage.`)
     const text = tidyPrompt(unwrapDoc(await driveCall($, 'read_file_content', { fileId: f.id })))
     const filled = PD.fillPrompt(text, { proto_id: i.proto_id ?? '', folder_url: i.driveFolderUrl ?? '', gen: nextGen(i.pdocs?.status?.rows[stage]), reveng_links: '<paste the Drive links of the extraction files here>' })
     const how = await copyText($, filled, press && press.surface)
@@ -1264,10 +1266,30 @@ async function copyStagePrompt($: any, ideaId: string, stage: string, which: num
   }
   await update($, rev, n => n + 1)
 }
+
+// Lucas creates the prototype chat by hand with the title the card shows. The panel finds it by that title, keeps its id and
+// link, writes the link into the status document and shows it beside the panel. Selecting the prototype shows it again.
+async function findAndShowChat($: any, ideaId: string, show: boolean): Promise<void> {
+  const i = (await loadStore($)).ideas.find(x => x.id === ideaId)
+  if (!i || !i.proto_id) return
+  const title = ideaChatTitle(i)
+  if (!i.chat || !/^local_/.test(i.chat.id)) {
+    const hit = await findSessionByTitle($, title)
+    if (!hit) return
+    await saveStartedChat($, { key: `idea:${ideaId}`, kind: 'idea', scope: ideaId, title, prompt: '', background: '', noOpen: !show }, hit.id)
+    const link = (await loadStore($)).ideas.find(x => x.id === ideaId)?.chat?.link
+    if (link) void replaceDoc($, ideaId, 'status', t => (/^CHAT:.*$/m.test(t) ? t.replace(/^CHAT:.*$/m, `CHAT: ${link}`) : `${t}${String.fromCharCode(10)}CHAT: ${link}`)).catch(() => undefined)
+    return
+  }
+  if (show) await showChat($, i.chat, `idea:${ideaId}`)
+}
 
 async function refreshSelectedDocs($: any): Promise<void> {
   const id = await read($, protoAtom)
-  if (id) await refreshProtoDocs($, id as string)
+  if (!id) return
+  await refreshProtoDocs($, id as string)
+  const i = (await loadStore($)).ideas.find(x => x.id === id)
+  if (i && (!i.chat || !/^local_/.test(i.chat.id))) await findAndShowChat($, id as string, false)
 }
 
 async function sendToFactory($: any, src: SendSrc): Promise<void> {
@@ -2713,6 +2735,7 @@ async function renderPane($: any, e: any) {
       await update($, fstageAtom, () => null)
       await update($, protoMenuAtom, () => false)
       if (id) await setMode('factory')
+      if (id) void findAndShowChat($, id, true)
     }
 
     /* header: name, general status, the two big mode buttons, the other buttons */
@@ -3115,14 +3138,18 @@ async function renderPane($: any, e: any) {
       docUrl?: string
       state: { label: string; color: string; dim?: boolean }
       connector?: string
+      side?: any
       onPress: () => unknown
     }
     const cardNode = (c: Card) => {
-      const inner = nodeW - 4
+      const sideRight = !!c.side && columns >= 70
+      const inner = nodeW - 4 - (sideRight ? 22 : 0)
       const chipText = ` ${c.state.label.toUpperCase()} `
       const nameW = Math.max(8, inner - 4 - chipText.length - (c.done ? 3 : 0) - 1)
       return (
         <Box key={`node-${c.id}`} flexDirection="column" borderStyle={c.selected ? 'double' : 'round'} borderColor={c.selected ? NEON : c.border} backgroundColor={c.selected ? NEON_BG : PANEL} paddingX={1} width={nodeW}>
+          <Box flexDirection="row" alignItems="center" gap={1}>
+          <Box flexDirection="column" flexGrow={1}>
           <Button key={`stage-${c.id}`} hotkey={HOTKEYS[c.n - 1]} onPress={c.onPress}>
             <Text bold color={BG} backgroundColor={c.selected ? NEON : CLAY}>
               {` ${c.n} `}
@@ -3146,6 +3173,10 @@ async function renderPane($: any, e: any) {
               {clip(l.text, inner)}
             </Text>
           ))}
+          {c.side && !sideRight ? <Box>{c.side}</Box> : null}
+          </Box>
+          {sideRight ? <Box flexDirection="column" alignItems="center" justifyContent="center">{c.side}</Box> : null}
+          </Box>
         </Box>
       )
     }
@@ -3338,6 +3369,7 @@ async function renderPane($: any, e: any) {
           done: isDone,
           docUrl: docLinks(idea, id)[0]?.url,
           connector: doneAbove ? OLIVE : undefined,
+          side: stageSide(vctx, idea, id),
           onPress: () => void toggleOpen($, `card:${idea.id}:${id}`),
         }
       }
