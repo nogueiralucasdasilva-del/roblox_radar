@@ -24,6 +24,19 @@ function links(x: Ctx, items: { key: string; label: string; url: string | null }
   )
 }
 
+
+// The prompt buttons, drawn inside the card on its right side.
+export function stageSide(x: Ctx, i: Idea, stage: string) {
+  const { Box } = x.C
+  const reveng = stage === 'template'
+  return (
+    <Box flexDirection="column" gap={1} alignItems="center">
+      {reveng ? btn(x.C, `gemini-prompt-${i.id}`, 'Copy Gemini prompt', 'secondary', (press: any) => x.copyPrompt(i.id, press)) : null}
+      {btn(x.C, `copy-prompt-${i.id}-${stage}`, reveng ? 'Copy validation prompt' : 'Copy prompt', reveng ? 'secondary' : 'primary', (press: any) => x.copyStagePrompt(i.id, stage, 0, press))}
+    </Box>
+  )
+}
+
 export function stageExtras(x: Ctx, i: Idea, stage: string) {
   const { Box, Text } = x.C
   const open = x.open.includes(cardKey(i, stage))
@@ -40,11 +53,7 @@ export function stageExtras(x: Ctx, i: Idea, stage: string) {
   const reveng = stage === 'template'
   return (
     <Box flexDirection="column" gap={1} paddingLeft={3}>
-      <Box gap={2} flexWrap="wrap" alignItems="center">
-        {reveng ? btn(x.C, `gemini-prompt-${i.id}`, 'Copy Gemini prompt', 'secondary', (press: any) => x.copyPrompt(i.id, press)) : null}
-        {btn(x.C, `copy-prompt-${i.id}-${stage}`, reveng ? 'Copy validation prompt' : 'Copy prompt', reveng ? 'secondary' : 'primary', (press: any) => x.copyStagePrompt(i.id, stage, 0, press))}
-        {note ? <Text color={note.level === 'ok' ? OLIVE : note.level === 'warn' ? AMBER : RUST}>{clip(note.text, 200)}</Text> : null}
-      </Box>
+      {note ? <Text color={note.level === 'ok' ? OLIVE : note.level === 'warn' ? AMBER : RUST}>{clip(note.text, 200)}</Text> : null}
       {note?.prompt ? (
         <Box borderStyle="round" borderColor={LINE_SOFT} paddingX={1}>
           <Text color={FG}>{clip(note.prompt, 2500)}</Text>

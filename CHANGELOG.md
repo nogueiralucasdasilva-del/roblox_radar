@@ -1,13 +1,10 @@
 # Changelog
 
-## 0.9.2
+## 0.9.3
 
-The hooks module failed static analysis, so it never loaded: no panel, no /panel command, no hooks at all.
-
-- `uploadReveng` declared a local `note`, colliding with the top-level `note($, ...)` helper. Renamed to `setNote`.
-- `adjustScan` took a parameter named `note`, the same collision. Renamed to `raw`.
-- `archiveProto` and its caller used a parameter named `on`, shadowing the `on` that `register` receives. Renamed to `archived`.
-- A mod may not reuse the name of a function that is handed `$`, and may not redeclare `on` inside `register`. `claude plugin test` reports both.
+- Copy prompt reads Drive on every click and takes the newest prompt file by name in the stage folder, so an edit in Drive is used at once.
+- The Copy prompt buttons sit inside the card, on the right, centered.
+- The panel finds the prototype chat by its title (the one you create by hand), saves its id and link, writes the link into the status document, and shows the chat beside the panel when the prototype is selected. Pasting the link stays as a fallback.
 
 ## 0.9.1
 
