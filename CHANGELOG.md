@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.6
+
+- A done stage stays green even when it is the current one (the orange highlight was hiding it). The current stage is now the first stage that is not done, so it moves on as soon as the status document shows a stage done.
+
 ## 0.9.5
 
 - The panel reads the Drive documents of every active prototype (not only the selected one) every minute, and the top Refresh button reads them too. Before, a prototype that was only the default choice was never read, so the potential and the statuses never updated.

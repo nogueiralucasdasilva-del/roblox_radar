@@ -200,8 +200,9 @@ export function applyProtoDocs(i: Idea, status: ParsedStatus | undefined, potent
         i.docs[stage] = list
       }
     }
-    const cur = status.current ? STATUS_STAGES.find(s => STAGE_LABELS[s]!.toLowerCase() === status.current!.toLowerCase()) : undefined
-    if (cur) i.stage = cur
+    // The stage Lucas is on is the first one not done. The CURRENT STAGE line the chat writes can lag behind the rows.
+    const next = STATUS_STAGES.find(s => status.rows[s]?.status !== 'done')
+    i.stage = next ?? STATUS_STAGES[STATUS_STAGES.length - 1]!
     if (status.chat && !i.chat) i.chat = { id: status.chat, title: `${i.proto_id} | ${i.title}`, link: status.chat, at: now, syncedAt: null, seen: 0 }
   }
   if (potential?.ok && Object.keys(potential.criteria).length > 0) {
